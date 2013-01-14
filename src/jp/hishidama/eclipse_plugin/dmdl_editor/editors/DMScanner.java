@@ -17,6 +17,9 @@ public class DMScanner extends RuleBasedScanner {
 	static final String[] DMDL_PROPERTY_TYPE = { "INT", "LONG", "FLOAT",
 			"DOUBLE", "TEXT", "DECIMAL", "DATE", "DATETIME", "BOOLEAN", "BYTE",
 			"SHORT" };
+	static final String[] MODEL_TYPE = { "joined", "summarized", "projective" };
+	static final String[] SUMMARIZED_TYPE = { "any", "sum", "max", "min",
+			"count" };
 
 	/**
 	 * コンストラクター.
@@ -25,11 +28,16 @@ public class DMScanner extends RuleBasedScanner {
 	 */
 	public DMScanner(ColorManager colorManager) {
 		RGB c = new RGB(192, 0, 0);
-		int style = SWT.BOLD;
 		IToken typeToken = new Token(new TextAttribute(
-				colorManager.getColor(c), null, style));
+				colorManager.getColor(c), null, 0));
+		IToken modelToken = new Token(new TextAttribute(
+				colorManager.getColor(c), null, SWT.BOLD));
+		IToken sumToken = new Token(new TextAttribute(colorManager.getColor(c),
+				null, 0));
 
-		IRule[] rules = { new DMWordRule(DMDL_PROPERTY_TYPE, typeToken), };
+		IRule[] rules = { new DMWordRule(DMDL_PROPERTY_TYPE, typeToken),
+				new DMWordRule(MODEL_TYPE, modelToken),
+				new DMWordRule(SUMMARIZED_TYPE, sumToken), };
 		setRules(rules);
 	}
 
@@ -44,14 +52,32 @@ public class DMScanner extends RuleBasedScanner {
 	}
 
 	static class DMWordDetector implements IWordDetector {
+		protected boolean accept(char c) {
+			switch (c) {
+			case ' ':
+			case '\t':
+			case '\r':
+			case '\n':
+			case ':':
+			case ';':
+			case '%':
+			case '=':
+			case '-':
+			case '+':
+				return false;
+			default:
+				return true;
+			}
+		}
+
 		@Override
 		public boolean isWordStart(char c) {
-			return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z');
+			return accept(c);
 		}
 
 		@Override
 		public boolean isWordPart(char c) {
-			return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z');
+			return accept(c);
 		}
 	}
 }

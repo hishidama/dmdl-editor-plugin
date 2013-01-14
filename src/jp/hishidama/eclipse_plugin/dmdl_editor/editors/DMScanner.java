@@ -5,6 +5,7 @@ import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
+import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.rules.WordRule;
 import org.eclipse.swt.SWT;
@@ -34,10 +35,13 @@ public class DMScanner extends RuleBasedScanner {
 				colorManager.getColor(c), null, SWT.BOLD));
 		IToken sumToken = new Token(new TextAttribute(colorManager.getColor(c),
 				null, 0));
+		IToken descToken = new Token(new TextAttribute(
+				colorManager.getColor(new RGB(0, 0, 192)), null, 0));
 
 		IRule[] rules = { new DMWordRule(DMDL_PROPERTY_TYPE, typeToken),
 				new DMWordRule(MODEL_TYPE, modelToken),
-				new DMWordRule(SUMMARIZED_TYPE, sumToken), };
+				new DMWordRule(SUMMARIZED_TYPE, sumToken),
+				new SingleLineRule("\"", "\"", descToken) };
 		setRules(rules);
 	}
 

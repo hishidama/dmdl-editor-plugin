@@ -35,13 +35,16 @@ public class DMScanner extends RuleBasedScanner {
 				colorManager.getColor(c), null, SWT.BOLD));
 		IToken sumToken = new Token(new TextAttribute(colorManager.getColor(c),
 				null, 0));
+		IToken annToken = new Token(new TextAttribute(colorManager.getColor(c),
+				null, SWT.BOLD));
 		IToken descToken = new Token(new TextAttribute(
 				colorManager.getColor(new RGB(0, 0, 192)), null, 0));
 
 		IRule[] rules = { new DMWordRule(DMDL_PROPERTY_TYPE, typeToken),
 				new DMWordRule(MODEL_TYPE, modelToken),
 				new DMWordRule(SUMMARIZED_TYPE, sumToken),
-				new SingleLineRule("\"", "\"", descToken) };
+				new DMAnnotationRule(annToken),
+				new SingleLineRule("\"", "\"", descToken), };
 		setRules(rules);
 	}
 

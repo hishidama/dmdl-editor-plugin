@@ -26,16 +26,25 @@ public class DMBraceMatcher implements ICharacterPairMatcher {
 		if (offset >= len) {
 			return null;
 		}
+		IRegion r = match(document, offset, '{', '}');
+		if (r != null) {
+			return r;
+		}
+		r = match(document, offset, '(', ')');
+		return r;
+	}
+
+	protected IRegion match(IDocument document, int offset, char c, char d) {
 		try {
-			if (offset > 0 && document.getChar(offset - 1) == '{') {
-				// 対応する'}'の位置を返す
-				int end = document.get().indexOf("}", offset);
+			if (offset > 0 && document.getChar(offset - 1) == c) {
+				// 対応する閉じ括弧の位置を返す
+				int end = document.get().indexOf(d, offset);
 				if (end >= 0) {
 					return new Region(end, 1);
 				}
-			} else if (document.getChar(offset) == '}') {
-				// 対応する'{'の位置を返す
-				int start = document.get().lastIndexOf("{", offset);
+			} else if (document.getChar(offset) == d) {
+				// 対応する開き括弧の位置を返す
+				int start = document.get().lastIndexOf(c, offset);
 				if (start >= 0) {
 					return new Region(start, 1);
 				}

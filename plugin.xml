@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="Asakusa Framework DMDL エディター"
+            extensions="dmdl"
+            icon="icons/sample.gif"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLEditor"
+            id="dmdl_editor.editors.DMDLEditor">
+      </editor>
+   </extension>
+
+</plugin>

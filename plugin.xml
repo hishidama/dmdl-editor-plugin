@@ -7,7 +7,7 @@
       <editor
             name="Asakusa Framework DMDL エディター"
             extensions="dmdl"
-            icon="icons/sample.gif"
+            icon="icons/hishidama16.gif"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLEditor"
             id="dmdl_editor.editors.DMDLEditor">

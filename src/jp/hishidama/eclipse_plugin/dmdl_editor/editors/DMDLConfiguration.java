@@ -15,7 +15,7 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 
 public class DMDLConfiguration extends SourceViewerConfiguration {
-	private ColorManager colorManager;
+	private AttributeManager attrManager;
 
 	/**
 	 * コンストラクター.
@@ -23,7 +23,7 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 	 * @param colorManager
 	 */
 	public DMDLConfiguration(ColorManager colorManager) {
-		this.colorManager = colorManager;
+		attrManager = new AttributeManager(colorManager);
 	}
 
 	@Override
@@ -33,24 +33,43 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 				DMDLPartitionScanner.DMDL_BLOCK, };
 	}
 
+	private DMDefaultScanner defaultScanner;
+
+	protected DMDefaultScanner getDefaultScanner() {
+		if (defaultScanner == null) {
+			defaultScanner = new DMDefaultScanner(attrManager);
+			defaultScanner.setDefaultReturnToken(new Token(attrManager
+					.getDefaultAttribute()));
+		}
+		return defaultScanner;
+	}
+
+	private DMBlockScanner blockScanner;
+
+	protected DMBlockScanner getBlockScanner() {
+		if (blockScanner == null) {
+			blockScanner = new DMBlockScanner(attrManager);
+			blockScanner.setDefaultReturnToken(new Token(attrManager
+					.getDefaultAttribute()));
+		}
+		return blockScanner;
+	}
+
+	private PresentationReconciler reconciler;
+
 	@Override
 	public IPresentationReconciler getPresentationReconciler(
 			ISourceViewer sourceViewer) {
-		PresentationReconciler reconciler = new PresentationReconciler();
+		reconciler = new PresentationReconciler();
 
-		AttributeManager attrManager = new AttributeManager(colorManager);
 		{ // デフォルトの色の設定
-			DMDefaultScanner scanner = new DMDefaultScanner(attrManager);
-			scanner.setDefaultReturnToken(new Token(attrManager
-					.getDefaultAttribute()));
+			DMDefaultScanner scanner = getDefaultScanner();
 			DefaultDamagerRepairer dr = new DefaultDamagerRepairer(scanner);
 			reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 			reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		}
 		{ // データモデルブロック内の色の設定
-			DMBlockScanner scanner = new DMBlockScanner(attrManager);
-			scanner.setDefaultReturnToken(new Token(attrManager
-					.getDefaultAttribute()));
+			DMBlockScanner scanner = getBlockScanner();
 			DefaultDamagerRepairer dr = new DefaultDamagerRepairer(scanner);
 			reconciler.setDamager(dr, DMDLPartitionScanner.DMDL_BLOCK);
 			reconciler.setRepairer(dr, DMDLPartitionScanner.DMDL_BLOCK);
@@ -63,5 +82,26 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 		}
 
 		return reconciler;
+	}
+
+	/**
+	 * Preference更新時に呼ばれる処理.
+	 * <p>
+	 * 色を設定し直す。
+	 * </p>
+	 */
+	public void updatePreferences() {
+		// デフォルトの色の設定
+		getDefaultScanner().initialize();
+
+		// データモデルブロック内の色の設定
+		getBlockScanner().initialize();
+
+		{ // コメントの色の設定
+			NonRuleBasedDamagerRepairer dr = new NonRuleBasedDamagerRepairer(
+					attrManager.getCommentAttribute());
+			reconciler.setDamager(dr, DMDLPartitionScanner.DMDL_COMMENT);
+			reconciler.setRepairer(dr, DMDLPartitionScanner.DMDL_COMMENT);
+		}
 	}
 }

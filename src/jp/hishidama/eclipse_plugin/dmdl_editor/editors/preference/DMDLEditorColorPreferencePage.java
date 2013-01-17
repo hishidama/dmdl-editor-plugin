@@ -20,11 +20,12 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
-public class DMDLEditorPreferencePage extends PreferencePage implements
+public class DMDLEditorColorPreferencePage extends PreferencePage implements
 		IWorkbenchPreferencePage {
 	protected List<Field> list = new ArrayList<Field>();
 
-	public DMDLEditorPreferencePage() {
+	public DMDLEditorColorPreferencePage() {
+		super("color preference");
 		setPreferenceStore(Activator.getDefault().getPreferenceStore());
 	}
 
@@ -54,7 +55,7 @@ public class DMDLEditorPreferencePage extends PreferencePage implements
 		list.clear();
 		list.add(new Field(composite, "comment", store, COLOR_COMMENT,
 				STYLE_COMMENT));
-		list.add(new Field(composite, "annotation", store, COLOR_ANNOTATION,
+		list.add(new Field(composite, "attribute", store, COLOR_ANNOTATION,
 				STYLE_ANNOTATION));
 		list.add(new Field(composite, "description", store, COLOR_DESCRIPTION,
 				STYLE_DESCRIPTION));

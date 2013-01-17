@@ -1,6 +1,5 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.style;
 
-
 import org.eclipse.jface.text.rules.EndOfLineRule;
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
@@ -21,12 +20,19 @@ public class DMBlockScanner extends RuleBasedScanner {
 	static final String[] SUMMARIZED_TYPE = { "any", "sum", "max", "min",
 			"count" };
 
+	private AttributeManager attrManager;
+
 	/**
 	 * コンストラクター.
 	 *
 	 * @param colorManager
 	 */
 	public DMBlockScanner(AttributeManager attrManager) {
+		this.attrManager = attrManager;
+		initialize();
+	}
+
+	public void initialize() {
 		IToken commentToken = new Token(attrManager.getCommentAttribute());
 		IToken typeToken = new Token(attrManager.getDataTypeAttribute());
 		IToken sumToken = new Token(attrManager.getSumTypeAttribute());

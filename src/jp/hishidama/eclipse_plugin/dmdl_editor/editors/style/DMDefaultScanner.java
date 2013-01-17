@@ -1,6 +1,5 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.style;
 
-
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.IWordDetector;
@@ -15,12 +14,19 @@ import org.eclipse.jface.text.rules.WordRule;
 public class DMDefaultScanner extends RuleBasedScanner {
 	static final String[] MODEL_TYPE = { "joined", "summarized", "projective" };
 
+	private AttributeManager attrManager;
+
 	/**
 	 * コンストラクター.
 	 *
 	 * @param colorManager
 	 */
 	public DMDefaultScanner(AttributeManager attrManager) {
+		this.attrManager = attrManager;
+		initialize();
+	}
+
+	public void initialize() {
 		IToken modelToken = new Token(attrManager.getModelTypeAttribute());
 		IToken annToken = new Token(attrManager.getAnnotationAttribute());
 		IToken descToken = new Token(attrManager.getDescriptionAttribute());

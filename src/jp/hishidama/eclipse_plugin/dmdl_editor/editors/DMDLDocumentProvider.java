@@ -1,5 +1,7 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.DMDLPartitionScanner;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentPartitioner;

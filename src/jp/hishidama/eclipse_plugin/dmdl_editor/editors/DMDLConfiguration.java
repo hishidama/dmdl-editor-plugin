@@ -1,14 +1,18 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.AttributeManager;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.DMBlockScanner;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.DMDLPartitionScanner;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.DMDefaultScanner;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.NonRuleBasedDamagerRepairer;
+
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
-import org.eclipse.swt.graphics.RGB;
 
 public class DMDLConfiguration extends SourceViewerConfiguration {
 	private ColorManager colorManager;
@@ -34,27 +38,26 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 			ISourceViewer sourceViewer) {
 		PresentationReconciler reconciler = new PresentationReconciler();
 
-		RGB defaultColor = new RGB(0, 0, 0);
+		AttributeManager attrManager = new AttributeManager(colorManager);
 		{ // デフォルトの色の設定
-			DMDefaultScanner scanner = new DMDefaultScanner(colorManager);
-			scanner.setDefaultReturnToken(new Token(new TextAttribute(
-					colorManager.getColor(defaultColor))));
+			DMDefaultScanner scanner = new DMDefaultScanner(attrManager);
+			scanner.setDefaultReturnToken(new Token(attrManager
+					.getDefaultAttribute()));
 			DefaultDamagerRepairer dr = new DefaultDamagerRepairer(scanner);
 			reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 			reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		}
 		{ // データモデルブロック内の色の設定
-			DMBlockScanner scanner = new DMBlockScanner(colorManager);
-			scanner.setDefaultReturnToken(new Token(new TextAttribute(
-					colorManager.getColor(defaultColor))));
+			DMBlockScanner scanner = new DMBlockScanner(attrManager);
+			scanner.setDefaultReturnToken(new Token(attrManager
+					.getDefaultAttribute()));
 			DefaultDamagerRepairer dr = new DefaultDamagerRepairer(scanner);
 			reconciler.setDamager(dr, DMDLPartitionScanner.DMDL_BLOCK);
 			reconciler.setRepairer(dr, DMDLPartitionScanner.DMDL_BLOCK);
 		}
 		{ // コメントの色の設定
-			RGB c = new RGB(0, 192, 0);
 			NonRuleBasedDamagerRepairer dr = new NonRuleBasedDamagerRepairer(
-					new TextAttribute(colorManager.getColor(c)));
+					attrManager.getCommentAttribute());
 			reconciler.setDamager(dr, DMDLPartitionScanner.DMDL_COMMENT);
 			reconciler.setRepairer(dr, DMDLPartitionScanner.DMDL_COMMENT);
 		}

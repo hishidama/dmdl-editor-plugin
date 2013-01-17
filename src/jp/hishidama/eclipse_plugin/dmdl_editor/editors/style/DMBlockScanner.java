@@ -1,6 +1,6 @@
-package jp.hishidama.eclipse_plugin.dmdl_editor.editors;
+package jp.hishidama.eclipse_plugin.dmdl_editor.editors.style;
 
-import org.eclipse.jface.text.TextAttribute;
+
 import org.eclipse.jface.text.rules.EndOfLineRule;
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
@@ -10,8 +10,6 @@ import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.rules.WordRule;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.RGB;
 
 /**
  * データモデルブロックScanner.
@@ -28,18 +26,12 @@ public class DMBlockScanner extends RuleBasedScanner {
 	 *
 	 * @param colorManager
 	 */
-	public DMBlockScanner(ColorManager colorManager) {
-		RGB c = new RGB(192, 0, 0);
-		IToken commentToken = new Token(new TextAttribute(
-				colorManager.getColor(new RGB(0, 192, 0)), null, SWT.NORMAL));
-		IToken typeToken = new Token(new TextAttribute(
-				colorManager.getColor(c), null, SWT.NORMAL));
-		IToken sumToken = new Token(new TextAttribute(colorManager.getColor(c),
-				null, SWT.NORMAL));
-		IToken annToken = new Token(new TextAttribute(colorManager.getColor(c),
-				null, SWT.BOLD));
-		IToken descToken = new Token(new TextAttribute(
-				colorManager.getColor(new RGB(0, 0, 192)), null, SWT.NORMAL));
+	public DMBlockScanner(AttributeManager attrManager) {
+		IToken commentToken = new Token(attrManager.getCommentAttribute());
+		IToken typeToken = new Token(attrManager.getDataTypeAttribute());
+		IToken sumToken = new Token(attrManager.getSumTypeAttribute());
+		IToken annToken = new Token(attrManager.getAnnotationAttribute());
+		IToken descToken = new Token(attrManager.getDescriptionAttribute());
 
 		IRule[] rules = { new EndOfLineRule("--", commentToken),
 				new EndOfLineRule("//", commentToken),

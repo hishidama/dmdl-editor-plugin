@@ -1,4 +1,4 @@
-package jp.hishidama.eclipse_plugin.dmdl_editor.editors;
+package jp.hishidama.eclipse_plugin.dmdl_editor.editors.style;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentEvent;

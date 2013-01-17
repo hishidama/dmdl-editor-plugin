@@ -13,5 +13,17 @@
             id="dmdl_editor.editors.DMDLEditor">
       </editor>
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.preference.DMDLEditorPreferenceInitializer"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.preference.DMDLEditorPreferencePage"
+            id="dmdl-editor-plugin.preference-page"
+            name="dmdl-editor preference-page">
+      </page>
+   </extension>
 
 </plugin>

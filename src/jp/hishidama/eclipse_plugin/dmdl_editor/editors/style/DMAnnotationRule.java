@@ -1,4 +1,4 @@
-package jp.hishidama.eclipse_plugin.dmdl_editor.editors;
+package jp.hishidama.eclipse_plugin.dmdl_editor.editors.style;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.rules.ICharacterScanner;

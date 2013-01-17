@@ -56,6 +56,7 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 	}
 
 	private PresentationReconciler reconciler;
+	private NonRuleBasedDamagerRepairer commentDamagerPepairer;
 
 	@Override
 	public IPresentationReconciler getPresentationReconciler(
@@ -77,6 +78,7 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 		{ // コメントの色の設定
 			NonRuleBasedDamagerRepairer dr = new NonRuleBasedDamagerRepairer(
 					attrManager.getCommentAttribute());
+			commentDamagerPepairer = dr;
 			reconciler.setDamager(dr, DMDLPartitionScanner.DMDL_COMMENT);
 			reconciler.setRepairer(dr, DMDLPartitionScanner.DMDL_COMMENT);
 		}
@@ -97,11 +99,8 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 		// データモデルブロック内の色の設定
 		getBlockScanner().initialize();
 
-		{ // コメントの色の設定
-			NonRuleBasedDamagerRepairer dr = new NonRuleBasedDamagerRepairer(
-					attrManager.getCommentAttribute());
-			reconciler.setDamager(dr, DMDLPartitionScanner.DMDL_COMMENT);
-			reconciler.setRepairer(dr, DMDLPartitionScanner.DMDL_COMMENT);
-		}
+		// コメントの色の設定
+		commentDamagerPepairer.setDefaultTextAttribute(attrManager
+				.getCommentAttribute());
 	}
 }

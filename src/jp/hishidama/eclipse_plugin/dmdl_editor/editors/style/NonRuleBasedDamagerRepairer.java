@@ -1,7 +1,6 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.style;
 
-import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
-
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
@@ -12,9 +11,6 @@ import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.jface.text.presentation.IPresentationDamager;
 import org.eclipse.jface.text.presentation.IPresentationRepairer;
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.ILog;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.custom.StyleRange;
 
 public class NonRuleBasedDamagerRepairer implements IPresentationDamager,

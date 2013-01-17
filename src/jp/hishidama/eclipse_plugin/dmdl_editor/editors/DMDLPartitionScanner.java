@@ -9,22 +9,19 @@ import org.eclipse.jface.text.rules.Token;
 
 public class DMDLPartitionScanner extends RuleBasedPartitionScanner {
 	public final static String DMDL_COMMENT = "__dmdl_comment";
+	public final static String DMDL_BLOCK = "__dmdl_block";
 
 	/**
 	 * コンストラクター.
 	 */
 	public DMDLPartitionScanner() {
 		IToken commentToken = new Token(DMDL_COMMENT);
+		IToken blockToken = new Token(DMDL_BLOCK);
 
 		IPredicateRule[] rules = { new EndOfLineRule("--", commentToken),
 				new EndOfLineRule("//", commentToken),
-				new MultiLineRule("/*", "*/", commentToken), };
+				new MultiLineRule("/*", "*/", commentToken),
+				new MultiLineRule("{", "}", blockToken), };
 		setPredicateRules(rules);
-
-		/*
-		 * RGB c = new RGB(128, 0, 0); ColorManager colorManager = new
-		 * ColorManager(); setDefaultReturnToken(new Token(new TextAttribute(
-		 * colorManager.getColor(c))));
-		 */
 	}
 }

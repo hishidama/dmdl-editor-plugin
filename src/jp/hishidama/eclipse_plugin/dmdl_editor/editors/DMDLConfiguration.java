@@ -25,7 +25,8 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 	@Override
 	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
 		return new String[] { IDocument.DEFAULT_CONTENT_TYPE,
-				DMDLPartitionScanner.DMDL_COMMENT, };
+				DMDLPartitionScanner.DMDL_COMMENT,
+				DMDLPartitionScanner.DMDL_BLOCK, };
 	}
 
 	@Override
@@ -34,13 +35,21 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 		PresentationReconciler reconciler = new PresentationReconciler();
 
 		RGB defaultColor = new RGB(0, 0, 0);
-		{ // データモデルの色の設定
-			DMScanner scanner = new DMScanner(colorManager);
+		{ // デフォルトの色の設定
+			DMDefaultScanner scanner = new DMDefaultScanner(colorManager);
 			scanner.setDefaultReturnToken(new Token(new TextAttribute(
 					colorManager.getColor(defaultColor))));
 			DefaultDamagerRepairer dr = new DefaultDamagerRepairer(scanner);
 			reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 			reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
+		}
+		{ // データモデルブロック内の色の設定
+			DMBlockScanner scanner = new DMBlockScanner(colorManager);
+			scanner.setDefaultReturnToken(new Token(new TextAttribute(
+					colorManager.getColor(defaultColor))));
+			DefaultDamagerRepairer dr = new DefaultDamagerRepairer(scanner);
+			reconciler.setDamager(dr, DMDLPartitionScanner.DMDL_BLOCK);
+			reconciler.setRepairer(dr, DMDLPartitionScanner.DMDL_BLOCK);
 		}
 		{ // コメントの色の設定
 			RGB c = new RGB(0, 192, 0);

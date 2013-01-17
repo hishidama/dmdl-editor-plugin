@@ -1,9 +1,11 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors;
 
 import org.eclipse.jface.text.TextAttribute;
+import org.eclipse.jface.text.rules.EndOfLineRule;
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.IWordDetector;
+import org.eclipse.jface.text.rules.MultiLineRule;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
@@ -12,13 +14,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
 
 /**
- * データモデルScanner.
+ * データモデルブロックScanner.
  */
-public class DMScanner extends RuleBasedScanner {
+public class DMBlockScanner extends RuleBasedScanner {
 	static final String[] DMDL_PROPERTY_TYPE = { "INT", "LONG", "FLOAT",
 			"DOUBLE", "TEXT", "DECIMAL", "DATE", "DATETIME", "BOOLEAN", "BYTE",
 			"SHORT" };
-	static final String[] MODEL_TYPE = { "joined", "summarized", "projective" };
 	static final String[] SUMMARIZED_TYPE = { "any", "sum", "max", "min",
 			"count" };
 
@@ -27,21 +28,23 @@ public class DMScanner extends RuleBasedScanner {
 	 *
 	 * @param colorManager
 	 */
-	public DMScanner(ColorManager colorManager) {
+	public DMBlockScanner(ColorManager colorManager) {
 		RGB c = new RGB(192, 0, 0);
+		IToken commentToken = new Token(new TextAttribute(
+				colorManager.getColor(new RGB(0, 192, 0)), null, SWT.NORMAL));
 		IToken typeToken = new Token(new TextAttribute(
-				colorManager.getColor(c), null, 0));
-		IToken modelToken = new Token(new TextAttribute(
-				colorManager.getColor(c), null, SWT.BOLD));
+				colorManager.getColor(c), null, SWT.NORMAL));
 		IToken sumToken = new Token(new TextAttribute(colorManager.getColor(c),
-				null, 0));
+				null, SWT.NORMAL));
 		IToken annToken = new Token(new TextAttribute(colorManager.getColor(c),
 				null, SWT.BOLD));
 		IToken descToken = new Token(new TextAttribute(
-				colorManager.getColor(new RGB(0, 0, 192)), null, 0));
+				colorManager.getColor(new RGB(0, 0, 192)), null, SWT.NORMAL));
 
-		IRule[] rules = { new DMWordRule(DMDL_PROPERTY_TYPE, typeToken),
-				new DMWordRule(MODEL_TYPE, modelToken),
+		IRule[] rules = { new EndOfLineRule("--", commentToken),
+				new EndOfLineRule("//", commentToken),
+				new MultiLineRule("/*", "*/", commentToken),
+				new DMWordRule(DMDL_PROPERTY_TYPE, typeToken),
 				new DMWordRule(SUMMARIZED_TYPE, sumToken),
 				new DMAnnotationRule(annToken),
 				new SingleLineRule("\"", "\"", descToken), };

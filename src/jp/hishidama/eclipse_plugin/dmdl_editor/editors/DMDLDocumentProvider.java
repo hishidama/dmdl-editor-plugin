@@ -13,8 +13,9 @@ public class DMDLDocumentProvider extends FileDocumentProvider {
 		IDocument document = super.createDocument(element);
 		if (document != null) {
 			IDocumentPartitioner partitioner = new FastPartitioner(
-					new DMDLPartitionScanner(),
-					new String[] { DMDLPartitionScanner.DMDL_COMMENT });
+					new DMDLPartitionScanner(), new String[] {
+							DMDLPartitionScanner.DMDL_COMMENT,
+							DMDLPartitionScanner.DMDL_BLOCK });
 			partitioner.connect(document);
 			document.setDocumentPartitioner(partitioner);
 		}

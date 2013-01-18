@@ -11,7 +11,7 @@ import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.rules.WordRule;
 
 /**
- * ƒf[ƒ^ƒ‚ƒfƒ‹ƒuƒƒbƒNScanner.
+ * ãƒ‡ãƒ¼ã‚¿ãƒ¢ãƒ‡ãƒ«ãƒ–ãƒ­ãƒƒã‚¯Scanner.
  */
 public class DMBlockScanner extends RuleBasedScanner {
 	static final String[] DMDL_PROPERTY_TYPE = { "INT", "LONG", "FLOAT",
@@ -23,7 +23,7 @@ public class DMBlockScanner extends RuleBasedScanner {
 	private AttributeManager attrManager;
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^[.
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãƒ¼.
 	 *
 	 * @param colorManager
 	 */
@@ -50,7 +50,7 @@ public class DMBlockScanner extends RuleBasedScanner {
 	}
 
 	static class DMWordRule extends WordRule {
-		/** ƒRƒ“ƒXƒgƒ‰ƒNƒ^[. */
+		/** ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãƒ¼. */
 		public DMWordRule(String[] words, IToken token) {
 			super(new DMWordDetector());
 			for (String word : words) {

@@ -12,7 +12,7 @@ public class DMDLPartitionScanner extends RuleBasedPartitionScanner {
 	public final static String DMDL_BLOCK = "__dmdl_block";
 
 	/**
-	 * コンストラクター.
+	 * 繧ｳ繝ｳ繧ｹ繝医Λ繧ｯ繧ｿ繝ｼ.
 	 */
 	public DMDLPartitionScanner() {
 		IToken commentToken = new Token(DMDL_COMMENT);

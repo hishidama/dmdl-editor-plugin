@@ -12,7 +12,7 @@ public class AttributeManager {
 	private ColorManager colorManager;
 
 	/**
-	 * コンストラクター.
+	 * 繧ｳ繝ｳ繧ｹ繝医Λ繧ｯ繧ｿ繝ｼ.
 	 *
 	 * @param colorManager
 	 */

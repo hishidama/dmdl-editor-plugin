@@ -37,13 +37,13 @@ public class DMBraceMatcher implements ICharacterPairMatcher {
 	protected IRegion match(IDocument document, int offset, char c, char d) {
 		try {
 			if (offset > 0 && document.getChar(offset - 1) == c) {
-				// ‘Î‰‚·‚é•Â‚¶Š‡ŒÊ‚ÌˆÊ’u‚ğ•Ô‚·
+				// å¯¾å¿œã™ã‚‹é–‰ã˜æ‹¬å¼§ã®ä½ç½®ã‚’è¿”ã™
 				int end = document.get().indexOf(d, offset);
 				if (end >= 0) {
 					return new Region(end, 1);
 				}
 			} else if (document.getChar(offset) == d) {
-				// ‘Î‰‚·‚éŠJ‚«Š‡ŒÊ‚ÌˆÊ’u‚ğ•Ô‚·
+				// å¯¾å¿œã™ã‚‹é–‹ãæ‹¬å¼§ã®ä½ç½®ã‚’è¿”ã™
 				int start = document.get().lastIndexOf(c, offset);
 				if (start >= 0) {
 					return new Region(start, 1);

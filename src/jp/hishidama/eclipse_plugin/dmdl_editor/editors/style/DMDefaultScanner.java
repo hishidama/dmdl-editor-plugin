@@ -9,7 +9,7 @@ import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.rules.WordRule;
 
 /**
- * ƒf[ƒ^ƒ‚ƒfƒ‹ŠO‘¤Scanner.
+ * ãƒ‡ãƒ¼ã‚¿ãƒ¢ãƒ‡ãƒ«å¤–å´Scanner.
  */
 public class DMDefaultScanner extends RuleBasedScanner {
 	static final String[] MODEL_TYPE = { "joined", "summarized", "projective" };
@@ -17,7 +17,7 @@ public class DMDefaultScanner extends RuleBasedScanner {
 	private AttributeManager attrManager;
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^[.
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãƒ¼.
 	 *
 	 * @param colorManager
 	 */
@@ -38,7 +38,7 @@ public class DMDefaultScanner extends RuleBasedScanner {
 	}
 
 	static class DMWordRule extends WordRule {
-		/** ƒRƒ“ƒXƒgƒ‰ƒNƒ^[. */
+		/** ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãƒ¼. */
 		public DMWordRule(String[] words, IToken token) {
 			super(new DMWordDetector());
 			for (String word : words) {

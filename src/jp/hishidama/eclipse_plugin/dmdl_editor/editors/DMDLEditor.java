@@ -16,13 +16,13 @@ public class DMDLEditor extends TextEditor implements IPropertyChangeListener {
 	private ColorManager colorManager = new ColorManager();
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^[.
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãƒ¼.
 	 */
 	public DMDLEditor() {
 		setDocumentProvider(new DMDLDocumentProvider());
 		setSourceViewerConfiguration(new DMDLConfiguration(colorManager));
 
-		// Preference‚ÌXVƒŠƒXƒi[‚ğ“o˜^
+		// Preferenceã®æ›´æ–°ãƒªã‚¹ãƒŠãƒ¼ã‚’ç™»éŒ²
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 		store.addPropertyChangeListener(this);
 	}
@@ -41,7 +41,7 @@ public class DMDLEditor extends TextEditor implements IPropertyChangeListener {
 
 	@Override
 	public void dispose() {
-		// Preference‚ÌXVƒŠƒXƒi[‚ğíœ
+		// Preferenceã®æ›´æ–°ãƒªã‚¹ãƒŠãƒ¼ã‚’å‰Šé™¤
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 		store.removePropertyChangeListener(this);
 
@@ -49,14 +49,14 @@ public class DMDLEditor extends TextEditor implements IPropertyChangeListener {
 		super.dispose();
 	}
 
-	// Preference‚ÌXVƒCƒxƒ“ƒgˆ—
+	// Preferenceã®æ›´æ–°ã‚¤ãƒ™ãƒ³ãƒˆå‡¦ç†
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
-		// F‚ğPreference‚©‚çæ“¾‚µ’¼‚·
+		// è‰²ã‚’Preferenceã‹ã‚‰å–å¾—ã—ç›´ã™
 		DMDLConfiguration config = (DMDLConfiguration) getSourceViewerConfiguration();
 		config.updatePreferences();
 
-		// ƒGƒfƒBƒ^[‚ğÄ•`‰æ‚·‚é
+		// ã‚¨ãƒ‡ã‚£ã‚¿ãƒ¼ã‚’å†æç”»ã™ã‚‹
 		getSourceViewer().invalidateTextPresentation();
 	}
 }

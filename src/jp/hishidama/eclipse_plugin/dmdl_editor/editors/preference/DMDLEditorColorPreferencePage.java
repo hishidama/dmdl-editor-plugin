@@ -40,7 +40,7 @@ public class DMDLEditorColorPreferencePage extends PreferencePage implements
 		Composite composite = new Composite(parent, SWT.NONE);
 		{
 			GridLayout layout = new GridLayout();
-			layout.numColumns = 3; // —ñ”
+			layout.numColumns = 3; // åˆ—æ•°
 			composite.setLayout(layout);
 		}
 		{

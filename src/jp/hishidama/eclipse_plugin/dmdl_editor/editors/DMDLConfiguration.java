@@ -18,7 +18,7 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 	private AttributeManager attrManager;
 
 	/**
-	 * ƒRƒ“ƒXƒgƒ‰ƒNƒ^[.
+	 * ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãƒ¼.
 	 *
 	 * @param colorManager
 	 */
@@ -63,19 +63,19 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 			ISourceViewer sourceViewer) {
 		reconciler = new PresentationReconciler();
 
-		{ // ƒfƒtƒHƒ‹ƒg‚ÌF‚Ìİ’è
+		{ // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®è‰²ã®è¨­å®š
 			DMDefaultScanner scanner = getDefaultScanner();
 			DefaultDamagerRepairer dr = new DefaultDamagerRepairer(scanner);
 			reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 			reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		}
-		{ // ƒf[ƒ^ƒ‚ƒfƒ‹ƒuƒƒbƒN“à‚ÌF‚Ìİ’è
+		{ // ãƒ‡ãƒ¼ã‚¿ãƒ¢ãƒ‡ãƒ«ãƒ–ãƒ­ãƒƒã‚¯å†…ã®è‰²ã®è¨­å®š
 			DMBlockScanner scanner = getBlockScanner();
 			DefaultDamagerRepairer dr = new DefaultDamagerRepairer(scanner);
 			reconciler.setDamager(dr, DMDLPartitionScanner.DMDL_BLOCK);
 			reconciler.setRepairer(dr, DMDLPartitionScanner.DMDL_BLOCK);
 		}
-		{ // ƒRƒƒ“ƒg‚ÌF‚Ìİ’è
+		{ // ã‚³ãƒ¡ãƒ³ãƒˆã®è‰²ã®è¨­å®š
 			NonRuleBasedDamagerRepairer dr = new NonRuleBasedDamagerRepairer(
 					attrManager.getCommentAttribute());
 			commentDamagerPepairer = dr;
@@ -87,19 +87,19 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 	}
 
 	/**
-	 * PreferenceXV‚ÉŒÄ‚Î‚ê‚éˆ—.
+	 * Preferenceæ›´æ–°æ™‚ã«å‘¼ã°ã‚Œã‚‹å‡¦ç†.
 	 * <p>
-	 * F‚ğİ’è‚µ’¼‚·B
+	 * è‰²ã‚’è¨­å®šã—ç›´ã™ã€‚
 	 * </p>
 	 */
 	public void updatePreferences() {
-		// ƒfƒtƒHƒ‹ƒg‚ÌF‚Ìİ’è
+		// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®è‰²ã®è¨­å®š
 		getDefaultScanner().initialize();
 
-		// ƒf[ƒ^ƒ‚ƒfƒ‹ƒuƒƒbƒN“à‚ÌF‚Ìİ’è
+		// ãƒ‡ãƒ¼ã‚¿ãƒ¢ãƒ‡ãƒ«ãƒ–ãƒ­ãƒƒã‚¯å†…ã®è‰²ã®è¨­å®š
 		getBlockScanner().initialize();
 
-		// ƒRƒƒ“ƒg‚ÌF‚Ìİ’è
+		// ã‚³ãƒ¡ãƒ³ãƒˆã®è‰²ã®è¨­å®š
 		commentDamagerPepairer.setDefaultTextAttribute(attrManager
 				.getCommentAttribute());
 	}

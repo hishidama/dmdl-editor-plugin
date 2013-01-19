@@ -3,7 +3,6 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.editors;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.AttributeManager;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.DMBlockScanner;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.DMDefaultScanner;
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.NonRuleBasedDamagerRepairer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.PartitionDamagerRepairer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.partition.DMDLPartitionScanner;
 
@@ -29,7 +28,6 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 	@Override
 	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
 		return new String[] { IDocument.DEFAULT_CONTENT_TYPE,
-				DMDLPartitionScanner.DMDL_COMMENT,
 				DMDLPartitionScanner.DMDL_BLOCK, };
 	}
 
@@ -56,7 +54,6 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 	}
 
 	private PresentationReconciler reconciler;
-	private NonRuleBasedDamagerRepairer commentDamagerPepairer;
 
 	@Override
 	public IPresentationReconciler getPresentationReconciler(
@@ -75,13 +72,6 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 			reconciler.setDamager(dr, DMDLPartitionScanner.DMDL_BLOCK);
 			reconciler.setRepairer(dr, DMDLPartitionScanner.DMDL_BLOCK);
 		}
-		{ // コメントの色の設定
-			NonRuleBasedDamagerRepairer dr = new NonRuleBasedDamagerRepairer(
-					attrManager.getCommentAttribute());
-			commentDamagerPepairer = dr;
-			reconciler.setDamager(dr, DMDLPartitionScanner.DMDL_COMMENT);
-			reconciler.setRepairer(dr, DMDLPartitionScanner.DMDL_COMMENT);
-		}
 
 		return reconciler;
 	}
@@ -98,9 +88,5 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 
 		// データモデルブロック内の色の設定
 		getBlockScanner().initialize();
-
-		// コメントの色の設定
-		commentDamagerPepairer.setDefaultTextAttribute(attrManager
-				.getCommentAttribute());
 	}
 }

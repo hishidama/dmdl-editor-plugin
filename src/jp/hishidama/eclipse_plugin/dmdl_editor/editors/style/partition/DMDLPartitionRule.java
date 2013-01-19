@@ -6,18 +6,21 @@ import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
 
 /**
- * データモデルブロック Partitionルール.
- * <p>
- * 波括弧で囲まれた部分「{～}」をPartitionにする為のルール。
- * </p>
+ * データモデル Partitionルール.
  *
  * @see org.eclipse.jface.text.rules.PatternRule
  */
-public class DMBlockPartitionRule implements IPredicateRule {
+public class DMDLPartitionRule implements IPredicateRule {
 	/** The token to be returned on success */
 	protected IToken fToken;
 
-	public DMBlockPartitionRule(IToken token) {
+	/**
+	 * コンストラクター.
+	 *
+	 * @param token
+	 *            解釈成功時に返すToken
+	 */
+	public DMDLPartitionRule(IToken token) {
 		fToken = token;
 	}
 
@@ -34,35 +37,42 @@ public class DMBlockPartitionRule implements IPredicateRule {
 	@Override
 	public IToken evaluate(ICharacterScanner scanner, boolean resume) {
 		if (resume) {
-			if (endSequenceDetected(scanner)) {
-				return fToken;
-			}
-		} else {
 			int c = scanner.read();
-			switch (c) {
-			case '{':
-				if (endSequenceDetected(scanner)) {
-					return fToken;
-				}
-				break;
+			if (c == ICharacterScanner.EOF) {
+				scanner.unread();
+				return Token.EOF;
 			}
+			endSequenceDetected(scanner);
+			return fToken;
 		}
 
+		int c = scanner.read();
+		switch (c) {
+		case ICharacterScanner.EOF:
+			return Token.EOF;
+		case ' ':
+		case '\t':
+		case '\r':
+		case '\n':
+			scanner.unread();
+			return Token.UNDEFINED;
+		}
 		scanner.unread();
-		return Token.UNDEFINED;
+		endSequenceDetected(scanner);
+		return fToken;
 	}
 
-	protected boolean endSequenceDetected(ICharacterScanner scanner) {
+	protected void endSequenceDetected(ICharacterScanner scanner) {
 		for (;;) {
 			int c = scanner.read();
 			switch (c) {
 			case ICharacterScanner.EOF:
-				return true;
-			case '}':
-				return true;
+				return;
+			case ';':
+				return;
 			case '{':
-				scanner.unread();
-				return true;
+				readBlock(scanner);
+				break;
 			case '-':
 				switch (scanner.read()) {
 				case '-':
@@ -79,7 +89,45 @@ public class DMBlockPartitionRule implements IPredicateRule {
 					readToEOL(scanner);
 					break;
 				case '*':
-					readToCommentEnd(scanner);
+					readToCommentEnd(scanner, true);
+					break;
+				default:
+					scanner.unread();
+					break;
+				}
+				break;
+			case '\"':
+				readToDescriptionEnd(scanner);
+				break;
+			}
+		}
+	}
+
+	protected void readBlock(ICharacterScanner scanner) {
+		for (;;) {
+			int c = scanner.read();
+			switch (c) {
+			case ICharacterScanner.EOF:
+				return;
+			case '}':
+				return;
+			case '-':
+				switch (scanner.read()) {
+				case '-':
+					readToEOL(scanner);
+					break;
+				default:
+					scanner.unread();
+					break;
+				}
+				break;
+			case '/':
+				switch (scanner.read()) {
+				case '/':
+					readToEOL(scanner);
+					break;
+				case '*':
+					readToCommentEnd(scanner, false);
 					break;
 				default:
 					scanner.unread();
@@ -105,7 +153,7 @@ public class DMBlockPartitionRule implements IPredicateRule {
 		}
 	}
 
-	protected void readToCommentEnd(ICharacterScanner scanner) {
+	protected void readToCommentEnd(ICharacterScanner scanner, boolean top) {
 		for (;;) {
 			int c = scanner.read();
 			switch (c) {

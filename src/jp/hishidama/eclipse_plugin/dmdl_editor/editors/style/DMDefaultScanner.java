@@ -19,7 +19,7 @@ public class DMDefaultScanner extends RuleBasedScanner {
 	/**
 	 * コンストラクター.
 	 *
-	 * @param colorManager
+	 * @param attrManager
 	 */
 	public DMDefaultScanner(AttributeManager attrManager) {
 		this.attrManager = attrManager;

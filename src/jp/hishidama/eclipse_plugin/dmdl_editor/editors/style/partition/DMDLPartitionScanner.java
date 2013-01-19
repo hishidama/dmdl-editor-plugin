@@ -1,4 +1,5 @@
-package jp.hishidama.eclipse_plugin.dmdl_editor.editors.style;
+package jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.partition;
+
 
 import org.eclipse.jface.text.rules.EndOfLineRule;
 import org.eclipse.jface.text.rules.IPredicateRule;
@@ -21,7 +22,7 @@ public class DMDLPartitionScanner extends RuleBasedPartitionScanner {
 		IPredicateRule[] rules = { new EndOfLineRule("--", commentToken),
 				new EndOfLineRule("//", commentToken),
 				new MultiLineRule("/*", "*/", commentToken),
-				new MultiLineRule("{", "}", blockToken), };
+				new DMBlockPartitionRule(blockToken), };
 		setPredicateRules(rules);
 	}
 }

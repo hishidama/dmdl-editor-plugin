@@ -2,10 +2,10 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.editors;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.AttributeManager;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.DMBlockScanner;
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.DMDLPartitionScanner;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.DMDefaultScanner;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.NonRuleBasedDamagerRepairer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.PartitionDamagerRepairer;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.partition.DMDLPartitionScanner;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;

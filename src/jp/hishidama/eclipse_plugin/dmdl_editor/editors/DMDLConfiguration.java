@@ -5,11 +5,11 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.DMBlockScanner;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.DMDLPartitionScanner;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.DMDefaultScanner;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.NonRuleBasedDamagerRepairer;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.PartitionDamagerRepairer;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
-import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
@@ -65,13 +65,13 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 
 		{ // デフォルトの色の設定
 			DMDefaultScanner scanner = getDefaultScanner();
-			DefaultDamagerRepairer dr = new DefaultDamagerRepairer(scanner);
+			PartitionDamagerRepairer dr = new PartitionDamagerRepairer(scanner);
 			reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 			reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		}
 		{ // データモデルブロック内の色の設定
 			DMBlockScanner scanner = getBlockScanner();
-			DefaultDamagerRepairer dr = new DefaultDamagerRepairer(scanner);
+			PartitionDamagerRepairer dr = new PartitionDamagerRepairer(scanner);
 			reconciler.setDamager(dr, DMDLPartitionScanner.DMDL_BLOCK);
 			reconciler.setRepairer(dr, DMDLPartitionScanner.DMDL_BLOCK);
 		}

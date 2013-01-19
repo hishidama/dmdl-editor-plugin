@@ -10,7 +10,11 @@ import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -77,9 +81,16 @@ public class DMDLEditorColorPreferencePage extends PreferencePage implements
 	}
 
 	@Override
-	public boolean performOk() {
+	public void performApply() {
 		for (Field f : list) {
-			f.performOk();
+			f.performApply();
+		}
+	}
+
+	@Override
+	public boolean performCancel() {
+		for (Field f : list) {
+			f.performCancel();
 		}
 		return true;
 	}
@@ -90,6 +101,8 @@ public class DMDLEditorColorPreferencePage extends PreferencePage implements
 		protected String styleKey;
 		protected ColorSelector color;
 		protected Button check;
+		protected RGB backupColor;
+		protected int backupStyle;
 
 		public Field(Composite composite, String text, IPreferenceStore store,
 				String colorKey, String styleKey) {
@@ -101,33 +114,84 @@ public class DMDLEditorColorPreferencePage extends PreferencePage implements
 			label.setText(text);
 
 			color = new ColorSelector(composite);
+			color.addListener(new ColorListener());
+			backupColor = PreferenceConverter.getColor(store, colorKey);
+			setInputColor(backupColor);
+
 			check = new Button(composite, SWT.CHECK | SWT.CENTER);
-
-			RGB rgb = PreferenceConverter.getColor(store, colorKey);
-			int style = store.getInt(styleKey);
-			set(rgb, style);
+			check.addSelectionListener(new CheckListener());
+			backupStyle = store.getInt(styleKey);
+			setInputStyle(backupStyle);
 		}
 
-		public void performDefault() {
-			RGB rgb = PreferenceConverter.getDefaultColor(store, colorKey);
-			int style = store.getDefaultInt(styleKey);
-			set(rgb, style);
-		}
-
-		protected void set(RGB rgb, int style) {
+		protected void setInputColor(RGB rgb) {
 			color.setColorValue(rgb);
+		}
+
+		protected RGB getInputColor() {
+			return color.getColorValue();
+		}
+
+		protected void setInputStyle(int style) {
 			check.setSelection((style & SWT.BOLD) != 0);
 		}
 
-		public void performOk() {
-			RGB rgb = color.getColorValue();
-			PreferenceConverter.setValue(store, colorKey, rgb);
-
+		protected int getInputStyle() {
 			int style = SWT.NORMAL;
 			if (check.getSelection()) {
 				style |= SWT.BOLD;
 			}
-			store.setValue(styleKey, style);
+			return style;
+		}
+
+		protected class ColorListener implements IPropertyChangeListener {
+			@Override
+			public void propertyChange(PropertyChangeEvent event) {
+				RGB rgb = (RGB) event.getNewValue();
+				PreferenceConverter.setValue(store, colorKey, rgb);
+			}
+		}
+
+		protected class CheckListener implements SelectionListener {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				int style = getInputStyle();
+				store.setValue(styleKey, style);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				store.setValue(styleKey, SWT.NORMAL);
+			}
+		}
+
+		public void performDefault() {
+			RGB rgb = PreferenceConverter.getDefaultColor(store, colorKey);
+			if (!rgb.equals(getInputColor())) {
+				PreferenceConverter.setValue(store, colorKey, rgb);
+				setInputColor(rgb);
+			}
+
+			int style = store.getDefaultInt(styleKey);
+			if (style != getInputStyle()) {
+				store.setValue(styleKey, style);
+				setInputStyle(style);
+			}
+		}
+
+		public void performApply() {
+			backupColor = getInputColor();
+			backupStyle = getInputStyle();
+		}
+
+		public void performCancel() {
+			if (!backupColor.equals(getInputColor())) {
+				PreferenceConverter.setValue(store, colorKey, backupColor);
+			}
+
+			if (backupStyle != getInputStyle()) {
+				store.setValue(styleKey, backupStyle);
+			}
 		}
 	}
 }

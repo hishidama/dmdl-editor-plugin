@@ -189,6 +189,8 @@ public class FoldingManager {
 				super.readToCommentEnd(scanner, top);
 				int end = s.getOffset();
 				apply(s.document, start, end, s.model);
+			} else {
+				super.readToCommentEnd(scanner, top);
 			}
 		}
 

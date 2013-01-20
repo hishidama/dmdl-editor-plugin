@@ -49,6 +49,7 @@ public class DMDLPartitionRule implements IPredicateRule {
 		int c = scanner.read();
 		switch (c) {
 		case ICharacterScanner.EOF:
+			scanner.unread();
 			return Token.EOF;
 		case ' ':
 		case '\t':
@@ -67,6 +68,7 @@ public class DMDLPartitionRule implements IPredicateRule {
 			int c = scanner.read();
 			switch (c) {
 			case ICharacterScanner.EOF:
+				scanner.unread();
 				return;
 			case ';':
 				return;
@@ -108,6 +110,7 @@ public class DMDLPartitionRule implements IPredicateRule {
 			int c = scanner.read();
 			switch (c) {
 			case ICharacterScanner.EOF:
+				scanner.unread();
 				return;
 			case '}':
 				return;
@@ -146,6 +149,8 @@ public class DMDLPartitionRule implements IPredicateRule {
 			int c = scanner.read();
 			switch (c) {
 			case ICharacterScanner.EOF:
+				scanner.unread();
+				return;
 			case '\r':
 			case '\n':
 				return;
@@ -158,6 +163,7 @@ public class DMDLPartitionRule implements IPredicateRule {
 			int c = scanner.read();
 			switch (c) {
 			case ICharacterScanner.EOF:
+				scanner.unread();
 				return;
 			case '*':
 				c = scanner.read();
@@ -176,6 +182,8 @@ public class DMDLPartitionRule implements IPredicateRule {
 			int c = scanner.read();
 			switch (c) {
 			case ICharacterScanner.EOF:
+				scanner.unread();
+				return;
 			case '\r':
 			case '\n':
 				return;
@@ -184,6 +192,7 @@ public class DMDLPartitionRule implements IPredicateRule {
 			case '\\':
 				c = scanner.read();
 				if (c == ICharacterScanner.EOF) {
+					scanner.unread();
 					return;
 				}
 				break;

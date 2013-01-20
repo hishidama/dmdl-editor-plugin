@@ -200,7 +200,40 @@ public class FoldingManager {
 				int startLine = document.getLineOfOffset(start);
 				int endLine = document.getLineOfOffset(end);
 				if (startLine != endLine) {
-					Position pos = new Position(start, end - start + 1);
+					int len = end - start + 1;
+					loop: for (;;) {
+						char c;
+						try {
+							c = document.getChar(start + len);
+						} catch (BadLocationException e) {
+							len--;
+							break loop;
+						}
+						switch (c) {
+						case ';':
+						case ' ':
+						case '\t':
+							len++;
+							break;
+						default:
+							break loop;
+						}
+					}
+					try {
+						char c = document.getChar(start + len);
+						if (c == '\r') {
+							len++;
+						}
+					} catch (BadLocationException e) {
+					}
+					try {
+						char c = document.getChar(start + len);
+						if (c == '\n') {
+							len++;
+						}
+					} catch (BadLocationException e) {
+					}
+					Position pos = new Position(start, len);
 					model.addAnnotation(new ProjectionAnnotation(), pos);
 				}
 			} catch (BadLocationException e) {

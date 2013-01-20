@@ -38,8 +38,10 @@ public class DMDLEditor extends TextEditor implements IPropertyChangeListener {
 	protected ISourceViewer createSourceViewer(Composite parent,
 			IVerticalRuler ruler, int styles) {
 		// フォールディングの為のViewerを作成
-		return foldingManager.createSourceViewer(parent, ruler, fOverviewRuler,
-				styles);
+		ISourceViewer viewer = foldingManager.createSourceViewer(parent, ruler,
+				fOverviewRuler, styles);
+		getSourceViewerDecorationSupport(viewer);
+		return viewer;
 	}
 
 	@Override

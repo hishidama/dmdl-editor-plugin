@@ -38,15 +38,18 @@ public class DMScanner extends RuleBasedScanner {
 		IToken sumToken = new Token(attrManager.getSumTypeAttribute());
 		IToken annToken = new Token(attrManager.getAnnotationAttribute());
 		IToken descToken = new Token(attrManager.getDescriptionAttribute());
+		IToken defaultToken = new Token(attrManager.getDefaultAttribute());
+
+		DMWordRule wordRule = new DMWordRule(defaultToken);
+		wordRule.addWords(MODEL_TYPE, modelToken);
+		wordRule.addWords(DMDL_PROPERTY_TYPE, typeToken);
+		wordRule.addWords(SUMMARIZED_TYPE, sumToken);
 
 		IRule[] rules = { new EndOfLineRule("--", commentToken),
 				new EndOfLineRule("//", commentToken),
 				new MultiLineRule("/*", "*/", commentToken),
-				new DMWordRule(MODEL_TYPE, modelToken),
-				new DMWordRule(DMDL_PROPERTY_TYPE, typeToken),
-				new DMWordRule(SUMMARIZED_TYPE, sumToken),
 				new DMAnnotationRule(annToken),
-				new SingleLineRule("\"", "\"", descToken), };
+				new SingleLineRule("\"", "\"", descToken), wordRule, };
 		setRules(rules);
 	}
 }

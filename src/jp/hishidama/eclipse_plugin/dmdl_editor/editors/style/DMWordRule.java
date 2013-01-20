@@ -7,10 +7,14 @@ import org.eclipse.jface.text.rules.WordRule;
 public class DMWordRule extends WordRule {
 	/**
 	 * コンストラクター.
+	 *
+	 * @param defaultToken
 	 */
-	public DMWordRule(String[] words, IToken token) {
-		super(new DMWordDetector());
+	public DMWordRule(IToken defaultToken) {
+		super(new DMWordDetector(), defaultToken);
+	}
 
+	public void addWords(String[] words, IToken token) {
 		for (String word : words) {
 			addWord(word, token);
 		}

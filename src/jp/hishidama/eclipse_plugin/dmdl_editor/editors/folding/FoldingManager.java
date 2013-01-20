@@ -1,14 +1,12 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.folding;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.partition.DMDLPartitionScanner;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.partition.DMDLPartitionRule;
 
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.rules.ICharacterScanner;
 import org.eclipse.jface.text.rules.IToken;
@@ -80,15 +78,8 @@ public class FoldingManager {
 			// 全てのフォールディング範囲をクリア
 			model.removeAllAnnotations();
 
-			// ドキュメントのパーティションを走査してフォールディング範囲を決定
-			for (int offset = 0; offset < document.getLength();) {
-				ITypedRegion part = document.getPartition(offset);
-				String type = part.getType();
-				if (DMDLPartitionScanner.DMDL_BLOCK.equals(type)) {
-					applyFolding(document, part, model);
-				}
-				offset += part.getLength();
-			}
+			// ドキュメントを走査してフォールディング範囲を決定
+			applyFolding(document, model);
 		} catch (Exception e) {
 			ILog log = Activator.getDefault().getLog();
 			log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,
@@ -98,10 +89,10 @@ public class FoldingManager {
 
 	private ApplyRule rule = new ApplyRule();
 
-	protected void applyFolding(IDocument document, ITypedRegion part,
+	protected void applyFolding(IDocument document,
 			ProjectionAnnotationModel model) throws BadLocationException {
-		int offset = part.getOffset();
-		int length = part.getLength();
+		int offset = 0;
+		int length = document.getLength();
 		Scanner scanner = new Scanner(document, offset, length, model);
 		for (;;) {
 			IToken t = rule.evaluate(scanner);

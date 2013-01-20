@@ -2,6 +2,7 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.editors;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.folding.FoldingManager;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.ColorManager;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.preference.IPreferenceStore;

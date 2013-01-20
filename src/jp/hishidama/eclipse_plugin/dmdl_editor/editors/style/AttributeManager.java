@@ -5,7 +5,6 @@ import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.swt.graphics.Color;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.ColorManager;
 import static jp.hishidama.eclipse_plugin.dmdl_editor.editors.preference.PreferenceConst.*;
 
 public class AttributeManager {

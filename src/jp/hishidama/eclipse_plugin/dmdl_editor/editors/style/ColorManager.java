@@ -1,4 +1,4 @@
-package jp.hishidama.eclipse_plugin.dmdl_editor.editors;
+package jp.hishidama.eclipse_plugin.dmdl_editor.editors.style;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -2,15 +2,15 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.parser.token;
 
 public class CommentToken extends DMDLTextToken {
 
-	protected boolean top;
+	protected boolean block;
 
-	public CommentToken(int start, int end, String text, boolean top) {
+	public CommentToken(int start, int end, String text, boolean block) {
 		super(start, end, text);
-		this.top = top;
+		this.block = block;
 	}
 
-	public boolean isTop() {
-		return top;
+	public boolean isBlock() {
+		return block;
 	}
 
 	@Override

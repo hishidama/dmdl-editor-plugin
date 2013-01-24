@@ -17,4 +17,8 @@ public class DMDLToken {
 	public int getEnd() {
 		return end;
 	}
+
+	public int getLength() {
+		return end - start;
+	}
 }

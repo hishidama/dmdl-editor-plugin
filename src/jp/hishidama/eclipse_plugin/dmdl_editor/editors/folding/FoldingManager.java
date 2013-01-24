@@ -1,16 +1,19 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.folding;
 
+import java.util.List;
+
 import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.partition.DMDLPartitionRule;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.DMDLSimpleParser;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.BlockToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.CommentToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
 
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.Position;
-import org.eclipse.jface.text.rules.ICharacterScanner;
-import org.eclipse.jface.text.rules.IToken;
-import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.source.IAnnotationAccess;
 import org.eclipse.jface.text.source.IOverviewRuler;
 import org.eclipse.jface.text.source.ISharedTextColors;
@@ -87,149 +90,109 @@ public class FoldingManager {
 		}
 	}
 
-	private ApplyRule rule = new ApplyRule();
-
 	protected void applyFolding(IDocument document,
 			ProjectionAnnotationModel model) throws BadLocationException {
-		int offset = 0;
-		int length = document.getLength();
-		Scanner scanner = new Scanner(document, offset, length, model);
-		for (;;) {
-			IToken t = rule.evaluate(scanner);
-			if (t == Token.EOF) {
-				break;
-			}
-			if (t == Token.UNDEFINED) {
-				scanner.read();
+		DMDLSimpleParser parser = new DMDLSimpleParser();
+		List<DMDLToken> list = parser.parse(document);
+		for (DMDLToken token : list) {
+			if (token instanceof ModelToken) {
+				applyFolding(document, (ModelToken) token, model);
 			}
 		}
 	}
 
-	class Scanner implements ICharacterScanner {
-		private IDocument document;
-		private int offset;
-		private int length;
-		private int pos;
-		private ProjectionAnnotationModel model;
-
-		public Scanner(IDocument document, int offset, int length,
-				ProjectionAnnotationModel model) {
-			this.document = document;
-			this.offset = offset;
-			this.length = length;
-			pos = 0;
-			this.model = model;
-		}
-
-		@Override
-		public char[][] getLegalLineDelimiters() {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public int getColumn() {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public int read() {
-			if (pos >= length) {
-				return EOF;
+	protected void applyFolding(IDocument document, ModelToken modelToken,
+			ProjectionAnnotationModel model) {
+		for (DMDLToken token : modelToken.getBody()) {
+			if (token instanceof BlockToken) {
+				applyFolding(document, (BlockToken) token, model);
+			} else if (token instanceof CommentToken) {
+				applyFolding(document, (CommentToken) token, model);
 			}
-
-			int n = offset + pos;
-			pos++;
-			try {
-				return document.getChar(n);
-			} catch (BadLocationException e) {
-				pos--;
-				return EOF;
-			}
-		}
-
-		@Override
-		public void unread() {
-			pos--;
-		}
-
-		public int getOffset() {
-			return offset + pos - 1;
 		}
 	}
 
-	class ApplyRule extends DMDLPartitionRule {
-
-		public ApplyRule() {
-			super(null);
-		}
-
-		@Override
-		protected void readBlock(ICharacterScanner scanner) {
-			Scanner s = (Scanner) scanner;
-			int start = s.getOffset();
-			super.readBlock(scanner);
-			int end = s.getOffset();
-			apply(s.document, start, end, s.model);
-		}
-
-		@Override
-		protected void readToCommentEnd(ICharacterScanner scanner, boolean top) {
-			if (top) {
-				Scanner s = (Scanner) scanner;
-				int start = s.getOffset();
-				super.readToCommentEnd(scanner, top);
-				int end = s.getOffset();
-				apply(s.document, start, end, s.model);
-			} else {
-				super.readToCommentEnd(scanner, top);
-			}
-		}
-
-		void apply(IDocument document, int start, int end,
-				ProjectionAnnotationModel model) {
+	protected void applyFolding(IDocument document, BlockToken token,
+			ProjectionAnnotationModel model) {
+		int start = token.getStart();
+		int end = token.getEnd();
+		loop: while (end < document.getLength()) {
 			try {
-				int startLine = document.getLineOfOffset(start);
-				int endLine = document.getLineOfOffset(end);
-				if (startLine != endLine) {
-					int len = end - start + 1;
-					loop: for (;;) {
-						char c;
-						try {
-							c = document.getChar(start + len);
-						} catch (BadLocationException e) {
-							len--;
-							break loop;
-						}
-						switch (c) {
-						case ';':
-						case ' ':
-						case '\t':
-							len++;
-							break;
-						default:
-							break loop;
-						}
+				char c = document.getChar(end);
+				switch (c) {
+				case ';':
+				case ' ':
+				case '\t':
+					end++;
+					break;
+				case '\r': {
+					end++;
+					char d = document.getChar(end);
+					if (d == '\n') {
+						end++;
 					}
-					try {
-						char c = document.getChar(start + len);
-						if (c == '\r') {
-							len++;
-						}
-					} catch (BadLocationException e) {
-					}
-					try {
-						char c = document.getChar(start + len);
-						if (c == '\n') {
-							len++;
-						}
-					} catch (BadLocationException e) {
-					}
-					Position pos = new Position(start, len);
-					model.addAnnotation(new ProjectionAnnotation(), pos);
+					break loop;
+				}
+				case '\n':
+					end++;
+					break loop;
+				default:
+					break loop;
 				}
 			} catch (BadLocationException e) {
+				break;
 			}
 		}
+		applyFolding(document, start, end, model);
+	}
 
+	protected void applyFolding(IDocument document, CommentToken token,
+			ProjectionAnnotationModel model) {
+		if (!token.isBlock()) {
+			return;
+		}
+		int start = token.getStart();
+		int end = token.getEnd();
+		loop: while (end < document.getLength()) {
+			try {
+				char c = document.getChar(end);
+				switch (c) {
+				case ' ':
+				case '\t':
+					end++;
+					break;
+				case '\r': {
+					end++;
+					char d = document.getChar(end);
+					if (d == '\n') {
+						end++;
+					}
+					break loop;
+				}
+				case '\n':
+					end++;
+					break loop;
+				default:
+					break loop;
+				}
+			} catch (BadLocationException e) {
+				break;
+			}
+		}
+		applyFolding(document, start, end, model);
+	}
+
+	protected void applyFolding(IDocument document, int start, int end,
+			ProjectionAnnotationModel model) {
+		try {
+			int line0 = document.getLineOfOffset(start);
+			int line1 = document.getLineOfOffset(end - 1);
+			if (line0 == line1) {
+				return;
+			}
+		} catch (BadLocationException e) {
+		}
+		Position pos = new Position(start, end - start);
+		model.addAnnotation(new ProjectionAnnotation(), pos);
 	}
 }

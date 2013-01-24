@@ -219,13 +219,13 @@ public class DMDLSimpleParser {
 			switch (c) {
 			case DocumentScanner.EOF:
 				acceptComment(list, scanner, blockStart, scanner.getOffset(),
-						top);
+						true, top);
 				return;
 			case '*':
 				char d = scanner.read();
 				if (d == '/') {
 					acceptComment(list, scanner, blockStart,
-							scanner.getOffset(), top);
+							scanner.getOffset(), true, top);
 					return;
 				} else {
 					scanner.unread();
@@ -248,12 +248,12 @@ public class DMDLSimpleParser {
 					scanner.unread();
 				}
 				acceptComment(list, scanner, commentStart, scanner.getOffset(),
-						top);
+						false, top);
 				return;
 			case '\n':
 			case DocumentScanner.EOF:
 				acceptComment(list, scanner, commentStart, scanner.getOffset(),
-						top);
+						false, top);
 				return;
 			default:
 				break;
@@ -262,9 +262,9 @@ public class DMDLSimpleParser {
 	}
 
 	protected void acceptComment(List<DMDLToken> list, DocumentScanner scanner,
-			int start, int end, boolean top) {
+			int start, int end, boolean block, boolean top) {
 		String s = scanner.getString(start, end);
-		list.add(new CommentToken(start, end, s, top));
+		list.add(new CommentToken(start, end, s, block));
 	}
 
 	protected void parseDescription(List<DMDLToken> list,

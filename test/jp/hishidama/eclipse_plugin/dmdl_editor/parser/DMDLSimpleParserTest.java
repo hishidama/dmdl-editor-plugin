@@ -394,7 +394,7 @@ public class DMDLSimpleParserTest {
 	}
 
 	public CommentToken comm(String s) {
-		return new CommentToken(0, 0, s, true);
+		return new CommentToken(0, 0, s, false);
 	}
 
 	public ModelToken model(DMDLToken... ts) {

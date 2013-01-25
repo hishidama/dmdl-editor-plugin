@@ -15,6 +15,30 @@ public class DMDLBodyToken extends DMDLToken {
 		return bodyList;
 	}
 
+	public int indexOfWord(String text) {
+		for (int i = 0; i < bodyList.size(); i++) {
+			DMDLToken token = bodyList.get(i);
+			if (token instanceof WordToken) {
+				WordToken t = (WordToken) token;
+				if (text.equals(t.getBody())) {
+					return i;
+				}
+			}
+		}
+		return -1;
+	}
+
+	public WordToken findWord(int n, int step) {
+		while (0 <= n && n < bodyList.size()) {
+			DMDLToken token = bodyList.get(n);
+			if (token instanceof WordToken) {
+				return (WordToken) token;
+			}
+			n += step;
+		}
+		return null;
+	}
+
 	public String toString(String name, String tab) {
 		if (bodyList.isEmpty()) {
 			return name + "()";

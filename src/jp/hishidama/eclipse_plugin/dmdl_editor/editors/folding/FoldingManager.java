@@ -1,12 +1,10 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.folding;
 
-import java.util.List;
-
 import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
-import jp.hishidama.eclipse_plugin.dmdl_editor.parser.DMDLSimpleParser;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.BlockToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.CommentToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelList;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
 
 import org.eclipse.core.runtime.ILog;
@@ -67,7 +65,7 @@ public class FoldingManager {
 	 * 『Eclipse3.4 プラグイン開発 徹底攻略』p.184
 	 * </p>
 	 */
-	public void updateFolding(IDocument document) {
+	public void updateFolding(IDocument document, ModelList models) {
 		try {
 			if (viewer == null) {
 				return;
@@ -82,7 +80,7 @@ public class FoldingManager {
 			model.removeAllAnnotations();
 
 			// ドキュメントを走査してフォールディング範囲を決定
-			applyFolding(document, model);
+			applyFolding(document, models, model);
 		} catch (Exception e) {
 			ILog log = Activator.getDefault().getLog();
 			log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,
@@ -90,11 +88,9 @@ public class FoldingManager {
 		}
 	}
 
-	protected void applyFolding(IDocument document,
+	protected void applyFolding(IDocument document, ModelList models,
 			ProjectionAnnotationModel model) throws BadLocationException {
-		DMDLSimpleParser parser = new DMDLSimpleParser();
-		List<DMDLToken> list = parser.parse(document);
-		for (DMDLToken token : list) {
+		for (DMDLToken token : models.getBody()) {
 			if (token instanceof ModelToken) {
 				applyFolding(document, (ModelToken) token, model);
 			}

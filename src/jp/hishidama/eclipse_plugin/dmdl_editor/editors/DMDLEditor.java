@@ -2,10 +2,14 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.editors;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.folding.FoldingManager;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.outline.OutlinePage;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.ColorManager;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.DMDLSimpleParser;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelList;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewerExtension2;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
@@ -16,11 +20,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 public class DMDLEditor extends TextEditor implements IPropertyChangeListener {
 	private ColorManager colorManager = new ColorManager();
 
 	protected FoldingManager foldingManager = new FoldingManager();
+	protected OutlinePage outlinePage;
 
 	/**
 	 * コンストラクター.
@@ -50,7 +56,7 @@ public class DMDLEditor extends TextEditor implements IPropertyChangeListener {
 
 		{ // フォールディングの設定
 			foldingManager.install(getAnnotationAccess(), getSharedColors());
-			updateFolding();
+			update();
 		}
 		{ // 対応する括弧の強調表示の設定
 			MatchingCharacterPainter painter = new MatchingCharacterPainter(
@@ -75,6 +81,13 @@ public class DMDLEditor extends TextEditor implements IPropertyChangeListener {
 
 	@Override
 	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
+		if (IContentOutlinePage.class.equals(adapter)) {
+			if (outlinePage == null) {
+				outlinePage = new OutlinePage(this);
+			}
+			return outlinePage;
+		}
+
 		Object obj = foldingManager.getAdapter(adapter);
 		if (obj != null) {
 			return obj;
@@ -100,21 +113,28 @@ public class DMDLEditor extends TextEditor implements IPropertyChangeListener {
 	public void doSaveAs() {
 		super.doSaveAs();
 
-		updateFolding();
+		update();
 	}
 
 	@Override
 	public void doSave(IProgressMonitor progressMonitor) {
 		super.doSave(progressMonitor);
 
-		updateFolding();
+		update();
 	}
 
-	/**
-	 * フォールディング範囲を最新状態に更新する.
-	 */
-	private void updateFolding() {
-		foldingManager.updateFolding(getDocumentProvider().getDocument(
-				getEditorInput()));
+	private void update() {
+		IDocument document = getDocumentProvider()
+				.getDocument(getEditorInput());
+		DMDLSimpleParser parser = new DMDLSimpleParser();
+		ModelList models = parser.parse(document);
+
+		// フォールディング範囲を最新状態に更新する
+		foldingManager.updateFolding(document, models);
+
+		// アウトラインを最新状態に更新する
+		if (outlinePage != null) {
+			outlinePage.refresh(models);
+		}
 	}
 }

@@ -27,7 +27,7 @@ public class DMDLSimpleParserTest {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		DocumentMock document = new DocumentMock("test = { aaa: TEXT; };");
 
-		List<DMDLToken> list = parser.parse(document);
+		List<DMDLToken> list = parser.parse(document).getBody();
 
 		assertEquals(1, list.size());
 		DMDLToken token = list.get(0);
@@ -58,7 +58,7 @@ public class DMDLSimpleParserTest {
 				+ "  prop2: LONG;\n" //
 				+ "};");
 
-		List<DMDLToken> list = parser.parse(document);
+		List<DMDLToken> list = parser.parse(document).getBody();
 
 		assertEquals(1, list.size());
 		DMDLToken token = list.get(0);
@@ -93,7 +93,7 @@ public class DMDLSimpleParserTest {
 				+ "  prop2: LONG;\n" //
 				+ "};");
 
-		List<DMDLToken> list = parser.parse(document);
+		List<DMDLToken> list = parser.parse(document).getBody();
 
 		assertEquals(1, list.size());
 		DMDLToken token = list.get(0);
@@ -126,7 +126,7 @@ public class DMDLSimpleParserTest {
 		DocumentMock document = new DocumentMock(
 				"joined item_order = item % code, id + order % item_code, item_id;");
 
-		List<DMDLToken> list = parser.parse(document);
+		List<DMDLToken> list = parser.parse(document).getBody();
 
 		assertEquals(1, list.size());
 		DMDLToken token = list.get(0);
@@ -153,7 +153,7 @@ public class DMDLSimpleParserTest {
 						+ "    amount -> total;\n"
 						+ "} % code;\n");
 
-		List<DMDLToken> list = parser.parse(document);
+		List<DMDLToken> list = parser.parse(document).getBody();
 
 		assertEquals(1, list.size());
 		DMDLToken token = list.get(0);
@@ -194,7 +194,7 @@ public class DMDLSimpleParserTest {
 				+ "  count count -> count;\n"
 				+ "};");
 
-		List<DMDLToken> list = parser.parse(document);
+		List<DMDLToken> list = parser.parse(document).getBody();
 
 		assertEquals(1, list.size());
 		DMDLToken token = list.get(0);
@@ -227,7 +227,7 @@ public class DMDLSimpleParserTest {
 						+ "    sum price -> total;\n"
 						+ "    count item_code -> count;\n" + "} % code;\n");
 
-		List<DMDLToken> list = parser.parse(document);
+		List<DMDLToken> list = parser.parse(document).getBody();
 
 		assertEquals(1, list.size());
 		DMDLToken token = list.get(0);
@@ -262,7 +262,7 @@ public class DMDLSimpleParserTest {
 				+ "    other : INT;" + //
 				"};\n");
 
-		List<DMDLToken> list = parser.parse(document);
+		List<DMDLToken> list = parser.parse(document).getBody();
 
 		assertEquals(2, list.size());
 
@@ -293,7 +293,7 @@ public class DMDLSimpleParserTest {
 						+ "projective sub_proj = super_proj + { b : INT; };\n"
 						+ "record = sub_proj;\n");
 
-		List<DMDLToken> list = parser.parse(document);
+		List<DMDLToken> list = parser.parse(document).getBody();
 
 		assertEquals(3, list.size());
 
@@ -337,7 +337,7 @@ public class DMDLSimpleParserTest {
 				+ "};\n" //
 				+ "*/\n");
 
-		List<DMDLToken> list = parser.parse(document);
+		List<DMDLToken> list = parser.parse(document).getBody();
 
 		assertEquals(2, list.size());
 

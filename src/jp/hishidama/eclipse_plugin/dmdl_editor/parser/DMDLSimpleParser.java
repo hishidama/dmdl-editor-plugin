@@ -12,6 +12,7 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.BlockToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.CommentToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DescriptionToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelList;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.PropertyToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.WordToken;
@@ -28,11 +29,11 @@ public class DMDLSimpleParser {
 		}
 	}
 
-	public List<DMDLToken> parse(IDocument document) {
+	public ModelList parse(IDocument document) {
 		List<DMDLToken> list = new ArrayList<DMDLToken>();
 		DocumentScanner scanner = new DocumentScanner(document);
 		parse(list, scanner);
-		return list;
+		return new ModelList(0, document.getLength(), list);
 	}
 
 	protected void parse(List<DMDLToken> topList, DocumentScanner scanner) {

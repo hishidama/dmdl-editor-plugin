@@ -1,6 +1,9 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLImages;
+
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -43,6 +46,12 @@ public class Activator extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		super.stop(context);
+	}
+
+	@Override
+	protected void initializeImageRegistry(ImageRegistry reg) {
+		reg.put(DMDLImages.MODEL_IMANE,
+				getImageDescriptor("/icons/hishidama16.gif"));
 	}
 
 	/**

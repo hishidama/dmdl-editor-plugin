@@ -2,6 +2,7 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.editors;
 
 import java.util.Arrays;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.assist.DMDLContentAssistProcessor;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.hyperlink.DMDLHyperlinkDetector;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.AttributeManager;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.ColorManager;
@@ -11,6 +12,8 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.PartitionDamagerRep
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.partition.DMDLPartitionScanner;
 
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.contentassist.ContentAssistant;
+import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
@@ -96,5 +99,17 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 		IHyperlinkDetector[] ds2 = Arrays.copyOf(ds, ds.length + 1);
 		ds2[ds2.length - 1] = getHyperlinkDetector();
 		return ds2;
+	}
+
+	@Override
+	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
+		ContentAssistant assistant = new ContentAssistant();
+
+		DMDLContentAssistProcessor processor = new DMDLContentAssistProcessor();
+		assistant.setContentAssistProcessor(processor,
+				DMDLPartitionScanner.DMDL_BLOCK);
+		assistant.install(sourceViewer);
+
+		return assistant;
 	}
 }

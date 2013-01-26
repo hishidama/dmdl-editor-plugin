@@ -50,7 +50,7 @@ public class Activator extends AbstractUIPlugin {
 
 	@Override
 	protected void initializeImageRegistry(ImageRegistry reg) {
-		reg.put(DMDLImages.MODEL_IMANE,
+		reg.put(DMDLImages.MODEL_IMAGE,
 				getImageDescriptor("/icons/hishidama16.gif"));
 	}
 

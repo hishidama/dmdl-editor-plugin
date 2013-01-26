@@ -15,7 +15,7 @@ public class DMDLLabelProvider extends LabelProvider {
 	public Image getImage(Object element) {
 		if (element instanceof ModelToken) {
 			ImageRegistry registry = Activator.getDefault().getImageRegistry();
-			Image image = registry.get(DMDLImages.MODEL_IMANE);
+			Image image = registry.get(DMDLImages.MODEL_IMAGE);
 			return image;
 		}
 		return null;

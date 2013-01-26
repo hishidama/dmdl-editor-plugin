@@ -2,10 +2,63 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.parser.token;
 
 import java.util.List;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.WordToken.WordType;
+
 public class PropertyToken extends DMDLBodyToken {
+	private WordToken nameToken;
+	private WordToken typeToken;
+
+	// private WordToken refNameToken;
 
 	public PropertyToken(int start, int end, List<DMDLToken> bodyList) {
 		super(start, end, bodyList);
+		parse();
+	}
+
+	protected void parse() {
+		int n = indexOf(WordType.TYPE_SEPARATOR);
+		if (n >= 0) {
+			setNameToken(findWord(n - 1, -1));
+			setTypeToken(findWord(n + 1, +1));
+		} else {
+			n = indexOf(WordType.ALLOW);
+			if (n >= 0) {
+				setRefNameToken(findWord(n - 1, -1));
+				setNameToken(findWord(n + 1, +1));
+			}
+		}
+	}
+
+	public void setNameToken(WordToken token) {
+		nameToken = token;
+		if (token != null) {
+			token.setWordType(WordType.PROPERTY_NAME);
+		}
+	}
+
+	public WordToken getNameToken() {
+		return nameToken;
+	}
+
+	public String getName() {
+		if (nameToken != null) {
+			return nameToken.getBody();
+		}
+		return null;
+	}
+
+	public void setTypeToken(WordToken token) {
+		typeToken = token;
+		if (token != null) {
+			token.setWordType(WordType.DATA_TYPE);
+		}
+	}
+
+	public void setRefNameToken(WordToken token) {
+		// refNameToken = token;
+		if (token != null) {
+			token.setWordType(WordType.REF_PROPERTY_NAME);
+		}
 	}
 
 	@Override
@@ -13,22 +66,7 @@ public class PropertyToken extends DMDLBodyToken {
 		return toString("PropertyToken", "      ");
 	}
 
-	private boolean searchName = false;
-	private WordToken nameToken;
-
 	public WordToken getPropertyNameToken() {
-		if (!searchName) {
-			int n = indexOfWord(":");
-			if (n >= 0) {
-				nameToken = findWord(n - 1, -1);
-			} else {
-				n = indexOfWord("->");
-				if (n >= 0) {
-					nameToken = findWord(n + 1, +1);
-				}
-			}
-			searchName = true;
-		}
 		return nameToken;
 	}
 
@@ -40,17 +78,7 @@ public class PropertyToken extends DMDLBodyToken {
 		return null;
 	}
 
-	private boolean searchType = false;
-	private WordToken typeToken;
-
 	public WordToken getDataTypeToken() {
-		if (!searchType) {
-			int n = indexOfWord(":");
-			if (n >= 0) {
-				typeToken = findWord(n + 1, +1);
-			}
-			searchType = true;
-		}
 		return typeToken;
 	}
 

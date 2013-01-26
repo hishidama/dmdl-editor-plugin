@@ -16,4 +16,12 @@ public class DMDLTextToken extends DMDLToken {
 	public String toString(String name) {
 		return name + "(" + text + ")";
 	}
+
+	@Override
+	public DMDLToken getTokenByOffset(int offset) {
+		if (start <= offset && offset < end) {
+			return this;
+		}
+		return null;
+	}
 }

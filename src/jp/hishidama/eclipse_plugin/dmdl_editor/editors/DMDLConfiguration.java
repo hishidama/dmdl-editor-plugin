@@ -1,5 +1,8 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors;
 
+import java.util.Arrays;
+
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.hyperlink.DMDLHyperlinkDetector;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.AttributeManager;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.ColorManager;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.DMScanner;
@@ -8,6 +11,7 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.PartitionDamagerRep
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.partition.DMDLPartitionScanner;
 
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.Token;
@@ -75,5 +79,22 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 	public void updatePreferences() {
 		// データモデルブロック内の色の設定
 		getBlockScanner().initialize();
+	}
+
+	private DMDLHyperlinkDetector hyperlinkDetector;
+
+	public DMDLHyperlinkDetector getHyperlinkDetector() {
+		if (hyperlinkDetector == null) {
+			hyperlinkDetector = new DMDLHyperlinkDetector();
+		}
+		return hyperlinkDetector;
+	}
+
+	@Override
+	public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
+		IHyperlinkDetector[] ds = super.getHyperlinkDetectors(sourceViewer);
+		IHyperlinkDetector[] ds2 = Arrays.copyOf(ds, ds.length + 1);
+		ds2[ds2.length - 1] = getHyperlinkDetector();
+		return ds2;
 	}
 }

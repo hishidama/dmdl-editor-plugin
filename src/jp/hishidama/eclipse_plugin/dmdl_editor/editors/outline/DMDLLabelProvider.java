@@ -6,36 +6,48 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.PropertyToken;
 
 import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StyledCellLabelProvider;
+import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.graphics.Image;
 
-public class DMDLLabelProvider extends LabelProvider {
+public class DMDLLabelProvider extends StyledCellLabelProvider {
 
 	@Override
-	public Image getImage(Object element) {
-		if (element instanceof ModelToken) {
-			ImageRegistry registry = Activator.getDefault().getImageRegistry();
-			Image image = registry.get(DMDLImages.MODEL_IMAGE);
-			return image;
-		}
-		return null;
-	}
+	public void update(ViewerCell cell) {
 
-	@Override
-	public String getText(Object element) {
+		Object element = cell.getElement();
 		if (element instanceof ModelToken) {
 			ModelToken token = (ModelToken) element;
-			return token.getModelName();
-		}
-		if (element instanceof PropertyToken) {
+			update(cell, token);
+		} else if (element instanceof PropertyToken) {
 			PropertyToken token = (PropertyToken) element;
-			String name = token.getPropertyName();
-			String type = token.getDataType();
-			if (type == null) {
-				return name;
-			}
-			return name + " : " + type;
+			update(cell, token);
 		}
-		return element.toString();
+
+		super.update(cell);
+	}
+
+	protected void update(ViewerCell cell, ModelToken model) {
+		StyledString styledString = new StyledString(model.getModelName());
+
+		cell.setText(styledString.toString());
+		cell.setStyleRanges(styledString.getStyleRanges());
+
+		ImageRegistry registry = Activator.getDefault().getImageRegistry();
+		Image image = registry.get(DMDLImages.MODEL_IMAGE);
+		cell.setImage(image);
+	}
+
+	protected void update(ViewerCell cell, PropertyToken prop) {
+		StyledString styledString = new StyledString(prop.getPropertyName());
+
+		String type = prop.getDataType();
+		if (type != null) {
+			styledString.append(" : " + type, StyledString.DECORATIONS_STYLER);
+		}
+
+		cell.setText(styledString.toString());
+		cell.setStyleRanges(styledString.getStyleRanges());
 	}
 }

@@ -1,5 +1,7 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.parser.token;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.DMScanner.AttrType;
+
 public abstract class DMDLToken {
 
 	protected int start;
@@ -53,6 +55,10 @@ public abstract class DMDLToken {
 	}
 
 	public abstract DMDLToken getTokenByOffset(int offset);
+
+	public AttrType getStyleAttribute() {
+		return AttrType.DEFAULT;
+	}
 
 	public ModelList getTop() {
 		for (DMDLToken token = this; token != null; token = token.getParent()) {

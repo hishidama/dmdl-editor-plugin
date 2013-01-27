@@ -1,5 +1,7 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.parser.token;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.DMScanner.AttrType;
+
 public class CommentToken extends DMDLTextToken {
 
 	protected boolean block;
@@ -16,5 +18,10 @@ public class CommentToken extends DMDLTextToken {
 	@Override
 	public String toString() {
 		return toString("CommentToken");
+	}
+
+	@Override
+	public AttrType getStyleAttribute() {
+		return AttrType.COMMENT;
 	}
 }

@@ -1,15 +1,8 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.style;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLDocument;
-import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.AnnotationToken;
-import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.CommentToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
-import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DescriptionToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelList;
-import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.WordToken;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.IToken;
@@ -20,27 +13,8 @@ import org.eclipse.jface.text.rules.Token;
  * データモデルScanner.
  */
 public class DMScanner implements ITokenScanner {
-	static final Set<String> MODEL_TYPE = new HashSet<String>();
-	static {
-		String[] ss = { "joined", "summarized", "projective" };
-		for (String s : ss) {
-			MODEL_TYPE.add(s);
-		}
-	}
-	static final Set<String> DMDL_PROPERTY_TYPE = new HashSet<String>();
-	static {
-		String[] ss = { "INT", "LONG", "FLOAT", "DOUBLE", "TEXT", "DECIMAL",
-				"DATE", "DATETIME", "BOOLEAN", "BYTE", "SHORT" };
-		for (String s : ss) {
-			DMDL_PROPERTY_TYPE.add(s);
-		}
-	}
-	static final Set<String> SUMMARIZED_TYPE = new HashSet<String>();
-	static {
-		String[] ss = { "any", "sum", "max", "min", "count" };
-		for (String s : ss) {
-			MODEL_TYPE.add(s);
-		}
+	public static enum AttrType {
+		DEFAULT, COMMENT, MODEL_TYPE, DATA_TYPE, SUM_TYPE, ANNOTATION, DESCRIPTION,
 	}
 
 	private AttributeManager attrManager;
@@ -109,22 +83,22 @@ public class DMScanner implements ITokenScanner {
 			tokenOffset = token.getStart();
 			tokenLength = token.getLength();
 			charOffset = token.getEnd();
-			// TODO instanceofを使わないよう修正
-			if (token instanceof CommentToken) {
+
+			switch (token.getStyleAttribute()) {
+			case COMMENT:
 				return commentToken;
-			} else if (token instanceof DescriptionToken) {
-				return descToken;
-			} else if (token instanceof AnnotationToken) {
+			case MODEL_TYPE:
+				return modelToken;
+			case DATA_TYPE:
+				return typeToken;
+			case SUM_TYPE:
+				return sumToken;
+			case ANNOTATION:
 				return annToken;
-			} else if (token instanceof WordToken) {
-				WordToken word = (WordToken) token;
-				switch (word.getWordType()) {
-				case DATA_TYPE:
-					if (DMDL_PROPERTY_TYPE.contains(word.getBody())) {
-						return typeToken;
-					}
-					break;
-				}
+			case DESCRIPTION:
+				return descToken;
+			default:
+				break;
 			}
 			return defaultToken;
 		}

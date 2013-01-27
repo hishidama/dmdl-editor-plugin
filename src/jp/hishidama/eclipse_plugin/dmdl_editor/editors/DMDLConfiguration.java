@@ -17,7 +17,6 @@ import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
-import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 
@@ -44,8 +43,6 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 	protected DMScanner getBlockScanner() {
 		if (blockScanner == null) {
 			blockScanner = new DMScanner(attrManager);
-			blockScanner.setDefaultReturnToken(new Token(attrManager
-					.getDefaultAttribute()));
 		}
 		return blockScanner;
 	}

@@ -14,6 +14,7 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLBodyToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLTextToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DescriptionToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelList;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.PropertyToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.WordToken;
@@ -25,9 +26,11 @@ public class DMDLSimpleParserTest {
 	@Test
 	public void parse1() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
-		DocumentMock document = new DocumentMock("test = { aaa: TEXT; };");
+		String actual = "test = { aaa: TEXT; };";
+		DocumentMock document = new DocumentMock(actual);
 
-		List<DMDLToken> list = parser.parse(document).getBody();
+		ModelList models = parser.parse(document);
+		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
 		DMDLToken token = list.get(0);
@@ -40,12 +43,14 @@ public class DMDLSimpleParserTest {
 						prop(word("aaa"), word(":"), word("TEXT"), word(";")),
 						word("}")), word(";"));
 		assertEqualsToken(expected, token);
+
+		assertEnd(actual, models);
 	}
 
 	@Test
 	public void parse2() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
-		DocumentMock document = new DocumentMock("/*\n" //
+		String actual = "/*\n" //
 				+ " * コメント\n" //
 				+ " */\n"//
 				+ "\"test2\"\n" //
@@ -56,9 +61,11 @@ public class DMDLSimpleParserTest {
 				+ "-- comment2\n" //
 				+ "\"desc2\"\n" //
 				+ "  prop2: LONG;\n" //
-				+ "};");
+				+ "};";
+		DocumentMock document = new DocumentMock(actual);
 
-		List<DMDLToken> list = parser.parse(document).getBody();
+		ModelList models = parser.parse(document);
+		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
 		DMDLToken token = list.get(0);
@@ -77,12 +84,14 @@ public class DMDLSimpleParserTest {
 								word("prop2"), word(":"), word("LONG"),
 								word(";")), word("}")), word(";"));
 		assertEqualsToken(expected, token);
+
+		assertEnd(actual, models);
 	}
 
 	@Test
 	public void parse_annotation() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
-		DocumentMock document = new DocumentMock("@zzz\n"//
+		String actual = "@zzz\n"//
 				+ "@abc()\n" //
 				+ "@foo.bar(name = \"baaa\")\n" //
 				+ "\"test3\"\n" //
@@ -91,9 +100,11 @@ public class DMDLSimpleParserTest {
 				+ "  prop1: TEXT;\n" //
 				+ "@line2(name = \"abc\",value=TRUE)\n" //
 				+ "  prop2: LONG;\n" //
-				+ "};");
+				+ "};";
+		DocumentMock document = new DocumentMock(actual);
 
-		List<DMDLToken> list = parser.parse(document).getBody();
+		ModelList models = parser.parse(document);
+		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
 		DMDLToken token = list.get(0);
@@ -118,15 +129,18 @@ public class DMDLSimpleParserTest {
 		// System.out.println("expected=" + expected);
 		// System.out.println("actual  =" + token);
 		assertEqualsToken(expected, token);
+
+		assertEnd(actual, models);
 	}
 
 	@Test
 	public void parse_join1() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
-		DocumentMock document = new DocumentMock(
-				"joined item_order = item % code, id + order % item_code, item_id;");
+		String actual = "joined item_order = item % code, id + order % item_code, item_id;";
+		DocumentMock document = new DocumentMock(actual);
 
-		List<DMDLToken> list = parser.parse(document).getBody();
+		ModelList models = parser.parse(document);
+		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
 		DMDLToken token = list.get(0);
@@ -139,21 +153,23 @@ public class DMDLSimpleParserTest {
 		// System.out.println("expected=" + expected);
 		// System.out.println("actual  =" + token);
 		assertEqualsToken(expected, token);
+
+		assertEnd(actual, models);
 	}
 
 	@Test
 	public void parse_join2() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
-		DocumentMock document = new DocumentMock(
-				"joined item_order = item -> {\n" //
-						+ "    code -> code;\n"
-						+ "    price -> price;\n"
-						+ "} % code + order -> {\n"
-						+ "    item_code -> code;\n"
-						+ "    amount -> total;\n"
-						+ "} % code;\n");
+		String actual = "joined item_order = item -> {\n" //
+				+ "    code -> code;\n"
+				+ "    price -> price;\n"
+				+ "} % code + order -> {\n"
+				+ "    item_code -> code;\n"
+				+ "    amount -> total;\n" + "} % code;\n";
+		DocumentMock document = new DocumentMock(actual);
 
-		List<DMDLToken> list = parser.parse(document).getBody();
+		ModelList models = parser.parse(document);
+		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
 		DMDLToken token = list.get(0);
@@ -183,18 +199,22 @@ public class DMDLSimpleParserTest {
 		// System.out.println("expected=" + expected);
 		// System.out.println("actual  =" + token);
 		assertEqualsToken(expected, token);
+
+		assertEnd(actual, models);
 	}
 
 	@Test
 	public void parse_summarize() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
-		DocumentMock document = new DocumentMock("\"test4\"\n" //
+		String actual = "\"test4\"\n" //
 				+ "summarized word_count_total = word_count_model => {\n"
 				+ "  any   word  -> word;\n"
 				+ "  count count -> count;\n"
-				+ "};");
+				+ "};";
+		DocumentMock document = new DocumentMock(actual);
 
-		List<DMDLToken> list = parser.parse(document).getBody();
+		ModelList models = parser.parse(document);
+		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
 		DMDLToken token = list.get(0);
@@ -216,18 +236,20 @@ public class DMDLSimpleParserTest {
 		// System.out.println("expected=" + expected);
 		// System.out.println("actual  =" + token);
 		assertEqualsToken(expected, token);
+
+		assertEnd(actual, models);
 	}
 
 	@Test
 	public void parse_summarize2() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
-		DocumentMock document = new DocumentMock(
-				"summarized order_summary = order => {\n"
-						+ "    any item_code -> code;\n"
-						+ "    sum price -> total;\n"
-						+ "    count item_code -> count;\n" + "} % code;\n");
+		String actual = "summarized order_summary = order => {\n"
+				+ "    any item_code -> code;\n" + "    sum price -> total;\n"
+				+ "    count item_code -> count;\n" + "} % code;\n";
+		DocumentMock document = new DocumentMock(actual);
 
-		List<DMDLToken> list = parser.parse(document).getBody();
+		ModelList models = parser.parse(document);
+		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
 		DMDLToken token = list.get(0);
@@ -250,19 +272,23 @@ public class DMDLSimpleParserTest {
 		// System.out.println("expected=" + expected);
 		// System.out.println("actual  =" + token);
 		assertEqualsToken(expected, token);
+
+		assertEnd(actual, models);
 	}
 
 	@Test
 	public void parse_projective1() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
-		DocumentMock document = new DocumentMock("projective proj_model = {\n"
+		String actual = "projective proj_model = {\n"//
 				+ "    value : INT;\n"//
 				+ "};\n" + "\n" //
 				+ "conc_model = proj_model + {" //
-				+ "    other : INT;" + //
-				"};\n");
+				+ "    other : INT;" //
+				+ "};\n";
+		DocumentMock document = new DocumentMock(actual);
 
-		List<DMDLToken> list = parser.parse(document).getBody();
+		ModelList models = parser.parse(document);
+		List<DMDLToken> list = models.getBody();
 
 		assertEquals(2, list.size());
 
@@ -283,17 +309,20 @@ public class DMDLSimpleParserTest {
 						word("}")), word(";"));
 		assertEqualsToken(expected0, list.get(0));
 		assertEqualsToken(expected1, list.get(1));
+
+		assertEnd(actual, models);
 	}
 
 	@Test
 	public void parse_projective2() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
-		DocumentMock document = new DocumentMock(
-				"projective super_proj = { a : INT; };\n"
-						+ "projective sub_proj = super_proj + { b : INT; };\n"
-						+ "record = sub_proj;\n");
+		String actual = "projective super_proj = { a : INT; };\n"
+				+ "projective sub_proj = super_proj + { b : INT; };\n"
+				+ "record = sub_proj;\n";
+		DocumentMock document = new DocumentMock(actual);
 
-		List<DMDLToken> list = parser.parse(document).getBody();
+		ModelList models = parser.parse(document);
+		List<DMDLToken> list = models.getBody();
 
 		assertEquals(3, list.size());
 
@@ -318,12 +347,14 @@ public class DMDLSimpleParserTest {
 		assertEqualsToken(expected0, list.get(0));
 		assertEqualsToken(expected1, list.get(1));
 		assertEqualsToken(expected2, list.get(2));
+
+		assertEnd(actual, models);
 	}
 
 	@Test
 	public void parse_comment() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
-		DocumentMock document = new DocumentMock("item = {\n"
+		String actual = "item = {\n"
 				+ "    code : LONG; -- XYZコード体系で表現される商品コード\n"
 				+ "    id : TEXT;\n" //
 				+ "//  name : TEXT;\n" //
@@ -335,9 +366,11 @@ public class DMDLSimpleParserTest {
 				+ "    item_id : TEXT;\n" //
 				+ "    name : TEXT;\n" //
 				+ "};\n" //
-				+ "*/\n");
+				+ "*/\n";
+		DocumentMock document = new DocumentMock(actual);
 
-		List<DMDLToken> list = parser.parse(document).getBody();
+		ModelList models = parser.parse(document);
+		List<DMDLToken> list = models.getBody();
 
 		assertEquals(2, list.size());
 
@@ -358,7 +391,11 @@ public class DMDLSimpleParserTest {
 				+ "*/"));
 		assertEqualsToken(expected0, list.get(0));
 		assertEqualsToken(expected1, list.get(1));
+
+		assertEnd(actual, models);
 	}
+
+	// assertion
 
 	public static void assertEqualsToken(DMDLToken expected, DMDLToken actual) {
 		assertEquals("expected=" + expected + "\nactual=" + actual,
@@ -392,6 +429,27 @@ public class DMDLSimpleParserTest {
 			assertEqualsToken(e, a);
 		}
 	}
+
+	public static void assertEnd(String expected, DMDLToken token) {
+		assertTrue(token.getEnd() <= expected.length());
+
+		if (token instanceof DMDLBodyToken) {
+			List<DMDLToken> list = ((DMDLBodyToken) token).getBody();
+
+			int end = token.getStart();
+			for (DMDLToken t : list) {
+				assertTrue(end <= t.getStart());
+				end = t.getEnd();
+			}
+
+			DMDLToken last = list.get(list.size() - 1);
+			assertTrue("last=" + last, last.getEnd() <= token.getEnd());
+
+			assertEnd(expected, last);
+		}
+	}
+
+	// create expected token
 
 	public CommentToken comm(String s) {
 		return new CommentToken(0, 0, s, false);

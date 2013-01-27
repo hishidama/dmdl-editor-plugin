@@ -44,11 +44,11 @@ public abstract class DMDLToken {
 	}
 
 	/**
-	 * 参照先Token取得.
+	 * 参照先WordToken取得.
 	 *
-	 * @return 参照先Token（無い場合はnull）
+	 * @return 参照先Word（無い場合はnull）
 	 */
-	public DMDLToken getReference() {
+	public WordToken getReferenceWord() {
 		return null;
 	}
 

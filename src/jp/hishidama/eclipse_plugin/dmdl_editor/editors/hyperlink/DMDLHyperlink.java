@@ -2,6 +2,7 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.editors.hyperlink;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLEditor;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.WordToken;
 
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Region;
@@ -35,7 +36,7 @@ public class DMDLHyperlink implements IHyperlink {
 
 	@Override
 	public void open() {
-		DMDLToken target = token.getReference();
+		WordToken target = token.getReferenceWord();
 		if (target != null) {
 			int offset = target.getStart();
 			int length = target.getLength();

@@ -10,7 +10,12 @@ public class ModelList extends DMDLBodyToken {
 		super(start, end, bodyList);
 	}
 
-	public List<ModelToken> getModelList() {
+	/**
+	 * 名前の定義されているモデル一覧を返す.
+	 *
+	 * @return モデル一覧
+	 */
+	public List<ModelToken> getNamedModelList() {
 		if (list == null) {
 			list = new ArrayList<ModelToken>();
 			for (DMDLToken token : getBody()) {

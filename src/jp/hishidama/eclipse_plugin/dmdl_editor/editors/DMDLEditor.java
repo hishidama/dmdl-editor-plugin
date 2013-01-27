@@ -5,7 +5,6 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.editors.folding.FoldingManager;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.hyperlink.DMDLHyperlinkDetector;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.outline.OutlinePage;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.ColorManager;
-import jp.hishidama.eclipse_plugin.dmdl_editor.parser.DMDLSimpleParser;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelList;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -138,10 +137,9 @@ public class DMDLEditor extends TextEditor implements IPropertyChangeListener {
 	}
 
 	private void update() {
-		IDocument document = getDocumentProvider()
-				.getDocument(getEditorInput());
-		DMDLSimpleParser parser = new DMDLSimpleParser();
-		ModelList models = parser.parse(document);
+		DMDLDocument document = getDocument();
+		ModelList models = document.getModelList();
+		// models = new DMDLSimpleParser().parse(document);
 
 		// フォールディング範囲を最新状態に更新する
 		foldingManager.updateFolding(document, models);
@@ -150,5 +148,11 @@ public class DMDLEditor extends TextEditor implements IPropertyChangeListener {
 		if (outlinePage != null) {
 			outlinePage.refresh(models);
 		}
+	}
+
+	public DMDLDocument getDocument() {
+		IDocument document = getDocumentProvider()
+				.getDocument(getEditorInput());
+		return (DMDLDocument) document;
 	}
 }

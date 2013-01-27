@@ -25,7 +25,6 @@ public class DocumentScanner {
 			return c;
 		}
 
-		offset++;
 		return EOF;
 	}
 

@@ -17,7 +17,7 @@ public class DMDLContentProvider implements ITreeContentProvider {
 			return new Object[] {};
 		}
 
-		return root.element.getModelList().toArray();
+		return root.element.getNamedModelList().toArray();
 	}
 
 	@Override

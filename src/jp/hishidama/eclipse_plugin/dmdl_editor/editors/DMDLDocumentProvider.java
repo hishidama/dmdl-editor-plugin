@@ -22,4 +22,9 @@ public class DMDLDocumentProvider extends FileDocumentProvider {
 		}
 		return document;
 	}
+
+	@Override
+	protected IDocument createEmptyDocument() {
+		return new DMDLDocument();
+	}
 }

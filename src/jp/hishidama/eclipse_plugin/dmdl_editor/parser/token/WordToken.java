@@ -57,7 +57,7 @@ public class WordToken extends DMDLTextToken {
 	}
 
 	@Override
-	public DMDLToken getReference() {
+	public WordToken getReferenceWord() {
 		switch (getWordType()) {
 		case REF_MODEL_NAME: {
 			ModelToken refModel = findModel(getBody());
@@ -66,7 +66,6 @@ public class WordToken extends DMDLTextToken {
 				if (refName != null) {
 					return refName;
 				}
-				return refModel;
 			}
 			return null;
 		}
@@ -81,9 +80,7 @@ public class WordToken extends DMDLTextToken {
 						if (refName != null) {
 							return refName;
 						}
-						return refProp;
 					}
-					return refModel;
 				}
 			}
 			return null;

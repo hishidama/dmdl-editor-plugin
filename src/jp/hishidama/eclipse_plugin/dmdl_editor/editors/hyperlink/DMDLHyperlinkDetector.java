@@ -1,12 +1,11 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.hyperlink;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLDocument;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLEditor;
-import jp.hishidama.eclipse_plugin.dmdl_editor.parser.DMDLSimpleParser;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelList;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.WordToken;
 
-import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
@@ -22,10 +21,11 @@ public class DMDLHyperlinkDetector implements IHyperlinkDetector {
 	@Override
 	public IHyperlink[] detectHyperlinks(ITextViewer textViewer,
 			IRegion region, boolean canShowMultipleHyperlinks) {
-		// TODO 毎回パースするのは無駄なので、なんとかしたい
-		IDocument document = textViewer.getDocument();
-		DMDLSimpleParser parser = new DMDLSimpleParser();
-		ModelList models = parser.parse(document);
+		DMDLDocument document = (DMDLDocument) textViewer.getDocument();
+		ModelList models = document.getModelList();
+		// if (models == null) {
+		// models = new DMDLSimpleParser().parse(document);
+		// }
 
 		DMDLToken token = models.getTokenByOffset(region.getOffset());
 		if (token != null && token instanceof WordToken) {

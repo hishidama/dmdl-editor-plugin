@@ -7,6 +7,7 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.WordToken.WordType;
 
 public class ModelToken extends DMDLBodyToken {
 	private WordToken nameToken;
+	private WordToken modelTypeToken;
 
 	public ModelToken(int start, int end, List<DMDLToken> bodyList) {
 		super(start, end, bodyList);
@@ -26,6 +27,7 @@ public class ModelToken extends DMDLBodyToken {
 				case DEF:
 					if (prevWord != null && nameToken == null) {
 						setNameToken(prevWord);
+						parseModelType(prevWord);
 					}
 					typeOfNext = WordType.REF_MODEL_NAME;
 					prevWord = null;
@@ -84,10 +86,36 @@ public class ModelToken extends DMDLBodyToken {
 		}
 	}
 
+	protected void parseModelType(WordToken nameToken) {
+		for (DMDLToken token : bodyList) {
+			if (token == nameToken) {
+				break;
+			}
+			if (token instanceof WordToken) {
+				setModelTypeToken((WordToken) token);
+				return;
+			}
+		}
+		setModelTypeToken(null);
+	}
+
 	public void setNameToken(WordToken token) {
+		if (nameToken != null) {
+			nameToken.setWordType(WordType.UNKNOWN);
+		}
 		nameToken = token;
 		if (token != null) {
 			token.setWordType(WordType.MODEL_NAME);
+		}
+	}
+
+	public void setModelTypeToken(WordToken token) {
+		if (modelTypeToken != null) {
+			modelTypeToken.setWordType(WordType.UNKNOWN);
+		}
+		modelTypeToken = token;
+		if (token != null) {
+			token.setWordType(WordType.MODEL_TYPE);
 		}
 	}
 
@@ -102,6 +130,18 @@ public class ModelToken extends DMDLBodyToken {
 
 	public String getModelName() {
 		WordToken token = getModelNameToken();
+		if (token != null) {
+			return token.getBody();
+		}
+		return null;
+	}
+
+	public WordToken getModelTypeToken() {
+		return modelTypeToken;
+	}
+
+	public String getModelType() {
+		WordToken token = getModelTypeToken();
 		if (token != null) {
 			return token.getBody();
 		}

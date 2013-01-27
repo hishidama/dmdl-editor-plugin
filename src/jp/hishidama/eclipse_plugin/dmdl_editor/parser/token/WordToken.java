@@ -119,16 +119,29 @@ public class WordToken extends DMDLTextToken {
 			return null;
 		}
 		case REF_PROPERTY_NAME: {
-			WordToken refModelName = findRefModelNameToken();
-			if (refModelName != null) {
-				ModelToken refModel = findModel(refModelName.getBody());
-				if (refModel != null) {
-					PropertyToken refProp = refModel.findProperty(getBody());
-					if (refProp != null) {
-						WordToken refName = refProp.getNameToken();
-						if (refName != null) {
-							return refName;
+			DMDLToken refToken = findRefModelToken();
+			if (refToken instanceof WordToken) {
+				WordToken refModelName = (WordToken) refToken;
+				if (refModelName != null) {
+					ModelToken refModel = findModel(refModelName.getBody());
+					if (refModel != null) {
+						PropertyToken refProp = refModel
+								.findProperty(getBody());
+						if (refProp != null) {
+							WordToken refName = refProp.getNameToken();
+							if (refName != null) {
+								return refName;
+							}
 						}
+					}
+				}
+			} else if (refToken instanceof BlockToken) {
+				BlockToken refBlock = (BlockToken) refToken;
+				PropertyToken refProp = refBlock.findProperty(getBody());
+				if (refProp != null) {
+					WordToken refName = refProp.getNameToken();
+					if (refName != null) {
+						return refName;
 					}
 				}
 			}

@@ -1,6 +1,5 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.parser.token;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.WordToken.WordType;
@@ -17,8 +16,9 @@ public class ModelToken extends DMDLBodyToken {
 	protected void parse() {
 		WordToken prevWord = null;
 		WordType typeOfNext = null;
-		WordToken refModel = null;
-		for (DMDLToken token : bodyList) {
+		DMDLToken refModel = null;
+		for (int i = 0; i < bodyList.size(); i++) {
+			DMDLToken token = bodyList.get(i);
 			if (token instanceof WordToken) {
 				WordToken word = (WordToken) token;
 				switch (word.getWordType()) {
@@ -41,9 +41,19 @@ public class ModelToken extends DMDLBodyToken {
 					prevWord = null;
 					continue;
 				case PERCENT:
-					if (prevWord != null) {
-						prevWord.setWordType(WordType.REF_MODEL_NAME);
-						refModel = word;
+					if (i > 0) {
+						for (int j = i - 1; j >= 0; j--) {
+							DMDLToken t = bodyList.get(j);
+							if (t instanceof WordToken) {
+								WordToken w = (WordToken) t;
+								w.setWordType(WordType.REF_MODEL_NAME);
+								refModel = word;
+								break;
+							} else if (t instanceof BlockToken) {
+								refModel = t;
+								break;
+							}
+						}
 					}
 					prevWord = null;
 					typeOfNext = WordType.REF_PROPERTY_NAME;
@@ -62,7 +72,7 @@ public class ModelToken extends DMDLBodyToken {
 						typeOfNext = null;
 						break;
 					case REF_PROPERTY_NAME:
-						word.setRefModelName(refModel);
+						word.setRefModelToken(refModel);
 						break;
 					}
 					prevWord = null;
@@ -79,7 +89,7 @@ public class ModelToken extends DMDLBodyToken {
 				continue;
 			}
 			if (token instanceof BlockToken) {
-				token.setRefModelName(refModel);
+				token.setRefModelToken(refModel);
 			}
 			prevWord = null;
 			typeOfNext = null;
@@ -155,38 +165,6 @@ public class ModelToken extends DMDLBodyToken {
 		WordToken token = getModelTypeToken();
 		if (token != null) {
 			return token.getBody();
-		}
-		return null;
-	}
-
-	private List<PropertyToken> propList;
-
-	public List<PropertyToken> getPropertyList() {
-		if (propList == null) {
-			propList = new ArrayList<PropertyToken>();
-			addProperty(propList, this);
-		}
-		return propList;
-	}
-
-	private void addProperty(List<PropertyToken> list, DMDLToken token) {
-		if (token instanceof PropertyToken) {
-			PropertyToken prop = (PropertyToken) token;
-			if (prop.getPropertyNameToken() != null) {
-				list.add(prop);
-			}
-		} else if (token instanceof DMDLBodyToken) {
-			for (DMDLToken t : ((DMDLBodyToken) token).getBody()) {
-				addProperty(list, t);
-			}
-		}
-	}
-
-	public PropertyToken findProperty(String name) {
-		for (PropertyToken prop : getPropertyList()) {
-			if (name.equals(prop.getName())) {
-				return prop;
-			}
 		}
 		return null;
 	}

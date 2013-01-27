@@ -7,7 +7,7 @@ public abstract class DMDLToken {
 	protected int start;
 	protected int end;
 	protected DMDLToken parentToken;
-	protected WordToken refModelName;
+	protected DMDLToken refModelToken;
 
 	public DMDLToken(int start, int end) {
 		this.start = start;
@@ -85,17 +85,17 @@ public abstract class DMDLToken {
 		return null;
 	}
 
-	public void setRefModelName(WordToken token) {
-		refModelName = token;
+	public void setRefModelToken(DMDLToken token) {
+		refModelToken = token;
 	}
 
-	public WordToken getRefModelNameToken() {
-		return refModelName;
+	public DMDLToken getRefModelToken() {
+		return refModelToken;
 	}
 
-	public WordToken findRefModelNameToken() {
+	public DMDLToken findRefModelToken() {
 		for (DMDLToken token = this; token != null; token = token.getParent()) {
-			WordToken t = token.getRefModelNameToken();
+			DMDLToken t = token.getRefModelToken();
 			if (t != null) {
 				return t;
 			}

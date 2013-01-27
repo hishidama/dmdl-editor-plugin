@@ -116,6 +116,17 @@ public class ModelToken extends DMDLBodyToken {
 		modelTypeToken = token;
 		if (token != null) {
 			token.setWordType(WordType.MODEL_TYPE);
+			if (token.getBody().equals("summarized")) {
+				parseSummarized();
+			}
+		}
+	}
+
+	protected void parseSummarized() {
+		for (DMDLToken token : bodyList) {
+			if (token instanceof BlockToken) {
+				((BlockToken) token).parseSummarized();
+			}
 		}
 	}
 

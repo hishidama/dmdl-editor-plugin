@@ -41,7 +41,7 @@ public class WordToken extends DMDLTextToken {
 	static {
 		String[] ss = { "any", "sum", "max", "min", "count" };
 		for (String s : ss) {
-			MODEL_TYPE.add(s);
+			SUMMARIZED_TYPE.add(s);
 		}
 	}
 	protected WordType type = WordType.UNKNOWN;
@@ -94,6 +94,11 @@ public class WordToken extends DMDLTextToken {
 		case DATA_TYPE:
 			if (DMDL_PROPERTY_TYPE.contains(s)) {
 				return AttrType.DATA_TYPE;
+			}
+			break;
+		case SUMMARIZED_TYPE:
+			if (SUMMARIZED_TYPE.contains(s)) {
+				return AttrType.SUM_TYPE;
 			}
 			break;
 		}

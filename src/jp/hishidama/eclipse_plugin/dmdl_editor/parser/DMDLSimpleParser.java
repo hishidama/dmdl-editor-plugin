@@ -72,7 +72,9 @@ public class DMDLSimpleParser {
 				break;
 			case '/': {
 				char d = scanner.read();
-				scanner.unread();
+				if (d != DocumentScanner.EOF) {
+					scanner.unread();
+				}
 				switch (d) {
 				case '/':
 					parseLineComment(list, scanner, start, true);
@@ -88,7 +90,9 @@ public class DMDLSimpleParser {
 			}
 			case '-': {
 				char d = scanner.read();
-				scanner.unread();
+				if (d != DocumentScanner.EOF) {
+					scanner.unread();
+				}
 				switch (d) {
 				case '-':
 					parseLineComment(list, scanner, start, true);
@@ -164,7 +168,9 @@ public class DMDLSimpleParser {
 				break;
 			case '/': {
 				char d = scanner.read();
-				scanner.unread();
+				if (d != DocumentScanner.EOF) {
+					scanner.unread();
+				}
 				switch (d) {
 				case '/':
 					parseLineComment(list, scanner, start, false);
@@ -180,7 +186,9 @@ public class DMDLSimpleParser {
 			}
 			case '-': {
 				char d = scanner.read();
-				scanner.unread();
+				if (d != DocumentScanner.EOF) {
+					scanner.unread();
+				}
 				switch (d) {
 				case '-':
 					parseLineComment(list, scanner, start, true);
@@ -229,7 +237,9 @@ public class DMDLSimpleParser {
 							scanner.getOffset(), true, top);
 					return;
 				} else {
-					scanner.unread();
+					if (d != DocumentScanner.EOF) {
+						scanner.unread();
+					}
 				}
 				break;
 			default:
@@ -246,7 +256,9 @@ public class DMDLSimpleParser {
 			case '\r':
 				char d = scanner.read();
 				if (d != '\n') {
-					scanner.unread();
+					if (d != DocumentScanner.EOF) {
+						scanner.unread();
+					}
 				}
 				acceptComment(list, scanner, commentStart, scanner.getOffset(),
 						false, top);
@@ -276,7 +288,9 @@ public class DMDLSimpleParser {
 			case '\r':
 				char d = scanner.read();
 				if (d != '\n') {
-					scanner.unread();
+					if (d != DocumentScanner.EOF) {
+						scanner.unread();
+					}
 				}
 				acceptDescription(list, scanner, descStart, scanner.getOffset());
 				return;
@@ -367,7 +381,9 @@ public class DMDLSimpleParser {
 				return;
 			case '/': {
 				char d = scanner.read();
-				scanner.unread();
+				if (d != DocumentScanner.EOF) {
+					scanner.unread();
+				}
 				switch (d) {
 				case '/':
 					parseLineComment(argList, scanner, start, false);
@@ -383,7 +399,9 @@ public class DMDLSimpleParser {
 			}
 			case '-': {
 				char d = scanner.read();
-				scanner.unread();
+				if (d != DocumentScanner.EOF) {
+					scanner.unread();
+				}
 				switch (d) {
 				case '-':
 					parseLineComment(argList, scanner, start, true);
@@ -456,7 +474,9 @@ public class DMDLSimpleParser {
 				acceptWord(list, scanner, start, scanner.getOffset());
 				return;
 			}
-			scanner.unread();
+			if (d != DocumentScanner.EOF) {
+				scanner.unread();
+			}
 			break;
 		default:
 			break;

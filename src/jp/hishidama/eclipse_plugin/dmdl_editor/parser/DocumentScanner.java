@@ -16,10 +16,11 @@ public class DocumentScanner {
 
 	public char read() {
 		if (offset < document.getLength()) {
-			char c = EOF;
+			char c;
 			try {
 				c = document.getChar(offset);
 			} catch (BadLocationException e) {
+				throw new IllegalStateException(e);
 			}
 			offset++;
 			return c;

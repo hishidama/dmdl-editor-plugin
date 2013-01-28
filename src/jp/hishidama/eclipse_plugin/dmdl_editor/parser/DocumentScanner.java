@@ -7,11 +7,11 @@ public class DocumentScanner {
 	public static final char EOF = (char) -1;
 
 	protected IDocument document;
-	protected int offset;
+	protected int offset = 0;
+	protected int eof = 0;
 
 	public DocumentScanner(IDocument document) {
 		this.document = document;
-		offset = 0;
 	}
 
 	public char read() {
@@ -26,11 +26,16 @@ public class DocumentScanner {
 			return c;
 		}
 
+		eof++;
 		return EOF;
 	}
 
 	public void unread() {
-		offset--;
+		if (eof > 0) {
+			eof--;
+		} else {
+			offset--;
+		}
 	}
 
 	public int getOffset() {

@@ -23,7 +23,7 @@ public class BlockToken extends DMDLBodyToken {
 					if (t instanceof WordToken) {
 						WordToken word = (WordToken) t;
 						if (word.getWordType() == WordType.UNKNOWN) {
-							word.setWordType(WordType.SUMMARIZED_TYPE);
+							prop.setSumTypeToken(word);
 						}
 						break;
 					}

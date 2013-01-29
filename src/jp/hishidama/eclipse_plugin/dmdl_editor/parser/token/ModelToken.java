@@ -125,9 +125,14 @@ public class ModelToken extends DMDLBodyToken {
 		}
 		modelTypeToken = token;
 		if (token != null) {
-			token.setWordType(WordType.MODEL_TYPE);
-			if (token.getBody().equals("summarized")) {
+			String text = token.getBody();
+			if (text.equals("summarized")) {
+				token.setWordType(WordType.SUMMARIZED_MODEL);
 				parseSummarized();
+			} else if (text.equals("joined")) {
+				token.setWordType(WordType.JOIN_MODEL);
+			} else if (text.equals("projective")) {
+				token.setWordType(WordType.PROJECTIVE_MODEL);
 			}
 		}
 	}

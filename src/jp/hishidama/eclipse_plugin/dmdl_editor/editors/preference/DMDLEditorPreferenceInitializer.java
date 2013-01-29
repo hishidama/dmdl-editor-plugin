@@ -19,11 +19,12 @@ public class DMDLEditorPreferenceInitializer extends
 		String red = StringConverter.asString(new RGB(192, 0, 0));
 		String green = StringConverter.asString(new RGB(0, 192, 0));
 		String blue = StringConverter.asString(new RGB(0, 0, 192));
+		String purple = StringConverter.asString(new RGB(128, 0, 128));
 
 		store.setDefault(COLOR_COMMENT, green);
 		store.setDefault(STYLE_COMMENT, SWT.NORMAL);
 
-		store.setDefault(COLOR_ANNOTATION, red);
+		store.setDefault(COLOR_ANNOTATION, purple);
 		store.setDefault(STYLE_ANNOTATION, SWT.BOLD);
 
 		store.setDefault(COLOR_DESCRIPTION, blue);

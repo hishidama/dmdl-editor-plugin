@@ -3,6 +3,12 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.editors.assist;
 import java.util.ArrayList;
 import java.util.List;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLDocument;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ArgumentToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLBodyToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelList;
+
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
@@ -18,7 +24,7 @@ public class DMDLContentAssistProcessor implements IContentAssistProcessor {
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer,
 			int offset) {
 
-		IDocument document = viewer.getDocument();
+		DMDLDocument document = (DMDLDocument) viewer.getDocument();
 		List<ICompletionProposal> list = computeDataType(document, offset);
 		if (list != null && !list.isEmpty()) {
 			return list.toArray(new ICompletionProposal[list.size()]);
@@ -29,8 +35,11 @@ public class DMDLContentAssistProcessor implements IContentAssistProcessor {
 	protected static final String[] TYPE_ASSIST = { "INT", "LONG", "FLOAT",
 			"DOUBLE", "TEXT", "DECIMAL", "DATE", "DATETIME", "BOOLEAN", "BYTE",
 			"SHORT" };
+	protected static final String[] VALUE_ASSIST = { "TRUE", "FALSE", "\"\"",
+			"\"yyyy-MM-dd HH:mm:ss\"" };
+	protected static final String[] BLOCK_ASSIST = { String.format("{%n};") };
 
-	protected List<ICompletionProposal> computeDataType(IDocument document,
+	protected List<ICompletionProposal> computeDataType(DMDLDocument document,
 			int offset) {
 		// 単語の先頭を探す
 		int n = offset - 1;
@@ -56,30 +65,48 @@ public class DMDLContentAssistProcessor implements IContentAssistProcessor {
 			} catch (BadLocationException e) {
 				break;
 			}
-			if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
+			switch (c) {
+			case ' ':
+			case '\t':
+			case '\r':
+			case '\n':
 				continue;
-			} else if (c == ':') {
-				int start = n + 1;
-				int len = offset - start;
-				String text;
-				try {
-					text = document.get(start, len).toUpperCase();
-				} catch (BadLocationException e) {
-					return null;
+			case ':':
+				return getAssist(document, offset, n, TYPE_ASSIST);
+			case '=':
+				ModelList models = document.getModelList();
+				DMDLToken token = models.getTokenByOffset(n);
+				while (token != null && !(token instanceof DMDLBodyToken)) {
+					token = token.getParent();
 				}
-				List<ICompletionProposal> list = new ArrayList<ICompletionProposal>();
-				for (String s : TYPE_ASSIST) {
-					if (s.startsWith(text)) {
-						list.add(new CompletionProposal(s, start, len, s
-								.length()));
-					}
+				if (token instanceof ArgumentToken) {
+					return getAssist(document, offset, n, VALUE_ASSIST);
 				}
-				return list;
-			} else {
+				return getAssist(document, offset, n, BLOCK_ASSIST);
+			default:
 				break;
 			}
 		}
 		return null;
+	}
+
+	protected List<ICompletionProposal> getAssist(IDocument document,
+			int offset, int n, String[] candidate) {
+		int start = n + 1;
+		int len = offset - start;
+		String text;
+		try {
+			text = document.get(start, len).toUpperCase();
+		} catch (BadLocationException e) {
+			return null;
+		}
+		List<ICompletionProposal> list = new ArrayList<ICompletionProposal>();
+		for (String s : candidate) {
+			if (s.startsWith(text)) {
+				list.add(new CompletionProposal(s, start, len, s.length()));
+			}
+		}
+		return list;
 	}
 
 	@Override

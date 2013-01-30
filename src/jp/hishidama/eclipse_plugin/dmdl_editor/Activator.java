@@ -2,8 +2,13 @@ package jp.hishidama.eclipse_plugin.dmdl_editor;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLImages;
 
+import org.eclipse.jdt.ui.ISharedImages;
+import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.viewers.DecorationOverlayIcon;
+import org.eclipse.jface.viewers.IDecoration;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -50,8 +55,21 @@ public class Activator extends AbstractUIPlugin {
 
 	@Override
 	protected void initializeImageRegistry(ImageRegistry reg) {
-		reg.put(DMDLImages.MODEL_IMAGE,
-				getImageDescriptor("/icons/hishidama16.gif"));
+		reg.put(DMDLImages.MODEL_SUM_IMAGE,
+				createModelImage("/icons/model_sum.gif"));
+		reg.put(DMDLImages.MODEL_JOIN_IMAGE,
+				createModelImage("/icons/model_join.gif"));
+		reg.put(DMDLImages.MODEL_PROJ_IMAGE,
+				createModelImage("/icons/model_proj.gif"));
+	}
+
+	protected Image createModelImage(String path) {
+		Image baseImage = JavaUI.getSharedImages().getImage(
+				ISharedImages.IMG_OBJS_CLASS);
+		ImageDescriptor decorateDescriptor = getImageDescriptor(path);
+		ImageDescriptor descriptor = new DecorationOverlayIcon(baseImage,
+				decorateDescriptor, IDecoration.BOTTOM_RIGHT);
+		return descriptor.createImage();
 	}
 
 	/**

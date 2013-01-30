@@ -5,6 +5,8 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLImages;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.PropertyToken;
 
+import org.eclipse.jdt.ui.ISharedImages;
+import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
@@ -34,9 +36,20 @@ public class DMDLLabelProvider extends StyledCellLabelProvider {
 		cell.setText(styledString.toString());
 		cell.setStyleRanges(styledString.getStyleRanges());
 
-		ImageRegistry registry = Activator.getDefault().getImageRegistry();
-		Image image = registry.get(DMDLImages.MODEL_IMAGE);
+		String modelType = model.getModelType();
+		Image image = getModelImage(modelType);
 		cell.setImage(image);
+	}
+
+	protected Image getModelImage(String modelType) {
+		if ("summarized".equals(modelType) || "joined".equals(modelType)
+				|| "projective".equals(modelType)) {
+			ImageRegistry registry = Activator.getDefault().getImageRegistry();
+			return registry.get(DMDLImages.MODEL_IMAGE + modelType);
+		} else {
+			return JavaUI.getSharedImages().getImage(
+					ISharedImages.IMG_OBJS_CLASS);
+		}
 	}
 
 	protected void update(ViewerCell cell, PropertyToken prop) {

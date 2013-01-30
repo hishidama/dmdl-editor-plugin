@@ -92,18 +92,27 @@ public class PropertyToken extends DMDLBodyToken {
 	}
 
 	public String getDataType() {
-		String dataType = getDataType(new HashSet<PropertyToken>());
-		if (sumTypeToken != null) {
-			String sumType = sumTypeToken.getBody();
-			if ("sum".equals(sumType)) {
-				if ("INT".equals(dataType)) {
-					return "LONG";
-				}
-			} else if ("count".equals(sumType)) {
-				return "INT";
-			}
+		String sumType = (sumTypeToken != null) ? sumTypeToken.getBody() : null;
+		if ("count".equals(sumType)) {
+			return "LONG";
 		}
-		return dataType;
+		String dataType = getDataType(new HashSet<PropertyToken>());
+		if ("sum".equals(sumType)) {
+			if ("BYTE".equals(dataType) || "SHORT".equals(dataType)
+					|| "INT".equals(dataType) || "LONG".equals(dataType)) {
+				return "LONG";
+			} else if ("FLOAT".equals(dataType) || "DOUBLE".equals(dataType)) {
+				return "DOUBLE";
+			} else if ("DECIMAL".equals(dataType)) {
+				return "DECIMAL";
+			}
+			return null;
+		}
+		if ("any".equals(sumType) || "min".equals(sumType)
+				|| "max".equals(sumType)) {
+			return dataType;
+		}
+		return null;
 	}
 
 	private String getDataType(Set<PropertyToken> set) {

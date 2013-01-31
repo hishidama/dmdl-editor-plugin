@@ -1,7 +1,9 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.parser.token;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.WordToken.WordType;
 
@@ -84,22 +86,72 @@ public class DMDLBodyToken extends DMDLToken {
 	public List<PropertyToken> getPropertyList() {
 		if (propList == null) {
 			propList = new ArrayList<PropertyToken>();
-			addProperty(propList, this);
+			addProperty(propList, this, new HashSet<DMDLToken>());
 		}
 		return propList;
 	}
 
-	private void addProperty(List<PropertyToken> list, DMDLToken token) {
+	private void addProperty(List<PropertyToken> list, DMDLToken token,
+			Set<DMDLToken> set) {
+		if (token == null) {
+			return;
+		}
+		if (set.contains(token)) {
+			return;
+		}
+		set.add(token);
+
 		if (token instanceof PropertyToken) {
 			PropertyToken prop = (PropertyToken) token;
 			if (prop.getPropertyNameToken() != null) {
 				list.add(prop);
 			}
+		} else if (token instanceof ModelToken) {
+			List<DMDLToken> l = ((ModelToken) token).getBody();
+			for (int i = 0; i < l.size(); i++) {
+				DMDLToken t = l.get(i);
+				if (t instanceof WordToken) {
+					WordToken word = (WordToken) t;
+					if (word.getWordType() == WordType.REF_MODEL_NAME) {
+						if (!nextIs(l, i + 1, "=>", "->")) {
+							ModelToken refModel = findModel(word.getBody());
+							addProperty(list, refModel, set);
+						}
+					}
+				} else {
+					addProperty(list, t, set);
+				}
+			}
 		} else if (token instanceof DMDLBodyToken) {
 			for (DMDLToken t : ((DMDLBodyToken) token).getBody()) {
-				addProperty(list, t);
+				addProperty(list, t, set);
 			}
 		}
+	}
+
+	private boolean nextIs(List<DMDLToken> list, int n, String text1,
+			String text2) {
+		DMDLToken token = getNextToken(list, n);
+		if (token == null) {
+			return false;
+		}
+		if (token instanceof WordToken) {
+			String word = ((WordToken) token).getBody();
+			return word.equals(text1) || word.equals(text2);
+		}
+		return false;
+	}
+
+	private DMDLToken getNextToken(List<DMDLToken> list, int n) {
+		for (; n < list.size(); n++) {
+			DMDLToken token = list.get(n);
+			if (token instanceof CommentToken
+					|| token instanceof DescriptionToken) {
+				continue;
+			}
+			return token;
+		}
+		return null;
 	}
 
 	public PropertyToken findProperty(String name) {

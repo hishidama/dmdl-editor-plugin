@@ -97,6 +97,9 @@ public class PropertyToken extends DMDLBodyToken {
 			return "LONG";
 		}
 		String dataType = getDataType(new HashSet<PropertyToken>());
+		if (sumType == null) {
+			return dataType;
+		}
 		if ("sum".equals(sumType)) {
 			if ("BYTE".equals(dataType) || "SHORT".equals(dataType)
 					|| "INT".equals(dataType) || "LONG".equals(dataType)) {

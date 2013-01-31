@@ -102,4 +102,11 @@ public abstract class DMDLToken {
 		}
 		return null;
 	}
+
+	public String getModelType() {
+		if (parentToken != null) {
+			return parentToken.getModelType();
+		}
+		return null;
+	}
 }

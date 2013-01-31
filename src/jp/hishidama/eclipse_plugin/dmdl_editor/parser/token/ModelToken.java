@@ -166,6 +166,7 @@ public class ModelToken extends DMDLBodyToken {
 		return modelTypeToken;
 	}
 
+	@Override
 	public String getModelType() {
 		WordToken token = getModelTypeToken();
 		if (token != null) {

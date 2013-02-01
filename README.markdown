@@ -16,6 +16,6 @@ Eclipse 3.4以降＋Java6で動くと思います。
 インストール方法
 ----------------
 
-Eclipseの「新規ソフトウェアのインストール」で更新サイトに「[http://hishidama.github.com/dmdl-editor-site/](http://hishidama.github.com/dmdl-editor-site/)」を指定して下さい。
+Eclipseの「新規ソフトウェアのインストール」で更新サイトに「[http://hishidama.github.com/dmdl-editor-plugin/site/](http://hishidama.github.com/dmdl-editor-plugin/site/)」を指定して下さい。
 
 ※「カテゴリー化された項目がありません」というメッセージが出て先に進めない場合は、「項目をカテゴリー別にグループ化(G)」のチェックを外して下さい。

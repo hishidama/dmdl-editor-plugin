@@ -87,6 +87,21 @@ public class DMDLBodyToken extends DMDLToken {
 		if (propList == null) {
 			propList = new ArrayList<PropertyToken>();
 			addProperty(propList, this, new HashSet<DMDLToken>());
+
+			String modelType = getModelType();
+			if ("joined".equals(modelType)) {
+				List<PropertyToken> list = new ArrayList<PropertyToken>(
+						propList.size());
+				Set<String> set = new HashSet<String>();
+				for (PropertyToken prop : propList) {
+					String name = prop.getName();
+					if (!set.contains(name)) {
+						set.add(name);
+						list.add(prop);
+					}
+				}
+				propList = list;
+			}
 		}
 		return propList;
 	}

@@ -214,6 +214,52 @@ public class GetPropertyListTest {
 		assertProperties(models, expected1, expected2, expected3);
 	}
 
+	@Test
+	public void join1() {
+		String actual1 = "simple1={\n" + "  v1 : INT;\n" + "  v2 : TEXT;\n"
+				+ "  v3 : LONG;\n" + "};";
+		String actual2 = "simple2={\n" + "  v1 : INT;\n" + "  a2 : BOOLEAN;\n"
+				+ "  a3 : TEXT;\n" + "};";
+		String actual3 = "joined join1 = simple1  % v1 + simple2 % v1;";
+		String actual = actual1 + "\n" + actual2 + "\n" + actual3;
+		DocumentMock document = new DocumentMock(actual);
+
+		DMDLSimpleParser parser = new DMDLSimpleParser();
+		ModelList models = parser.parse(document);
+
+		List<Property> expected1 = Arrays.asList(prop("v1", "INT"),
+				prop("v2", "TEXT"), prop("v3", "LONG"));
+		List<Property> expected2 = Arrays.asList(prop("v1", "INT"),
+				prop("a2", "BOOLEAN"), prop("a3", "TEXT"));
+		List<Property> expected3 = Arrays.asList(prop("v1", "INT"),
+				prop("v2", "TEXT"), prop("v3", "LONG"), prop("a2", "BOOLEAN"),
+				prop("a3", "TEXT"));
+		assertProperties(models, expected1, expected2, expected3);
+	}
+
+	@Test
+	public void join2() {
+		String actual1 = "simple1={\n" + "  v1 : INT;\n" + "  v2 : TEXT;\n"
+				+ "  v3 : LONG;\n" + "};";
+		String actual2 = "simple2={\n" + "  a1 : INT;\n" + "  a2 : BOOLEAN;\n"
+				+ "  a3 : TEXT;\n" + "};";
+		String actual3 = "joined join1 = simple1 -> { v1->key; v2->v2; }  % key\n"
+				+ "+ simple2 -> { a1->key; a3->a3; }% key;";
+		String actual = actual1 + "\n" + actual2 + "\n" + actual3;
+		DocumentMock document = new DocumentMock(actual);
+
+		DMDLSimpleParser parser = new DMDLSimpleParser();
+		ModelList models = parser.parse(document);
+
+		List<Property> expected1 = Arrays.asList(prop("v1", "INT"),
+				prop("v2", "TEXT"), prop("v3", "LONG"));
+		List<Property> expected2 = Arrays.asList(prop("a1", "INT"),
+				prop("a2", "BOOLEAN"), prop("a3", "TEXT"));
+		List<Property> expected3 = Arrays.asList(prop("key", "INT"),
+				prop("v2", "TEXT"), prop("a3", "TEXT"));
+		assertProperties(models, expected1, expected2, expected3);
+	}
+
 	// assertion
 
 	protected void assertProperties(ModelList actual,

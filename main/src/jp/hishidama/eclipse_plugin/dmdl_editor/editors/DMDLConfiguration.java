@@ -105,6 +105,8 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 		DMDLContentAssistProcessor processor = new DMDLContentAssistProcessor();
 		assistant.setContentAssistProcessor(processor,
 				DMDLPartitionScanner.DMDL_BLOCK);
+		assistant.setContentAssistProcessor(processor,
+				IDocument.DEFAULT_CONTENT_TYPE);
 		assistant.install(sourceViewer);
 
 		return assistant;

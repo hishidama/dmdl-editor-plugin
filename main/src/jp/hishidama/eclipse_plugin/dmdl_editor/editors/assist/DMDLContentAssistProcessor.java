@@ -34,7 +34,6 @@ public class DMDLContentAssistProcessor implements IContentAssistProcessor {
 
 	protected List<ICompletionProposal> computeDataType(DMDLDocument document,
 			int offset) {
-		offset--;
 		ModelList models = document.getModelList();
 		ModelToken model = models.getModelByOffset(offset);
 		if (model == null) {

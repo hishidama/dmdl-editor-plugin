@@ -76,7 +76,29 @@ public class PropertyAssist extends Assist {
 
 	protected List<ICompletionProposal> getSummarizedAssist(IDocument document,
 			int offset, PropertyToken token) {
-		// TODO
+		List<WordToken> list = getWordList(token, offset);
+		if (list.isEmpty()) {
+			return createAssist(offset, SUM_ASSIST);
+		}
+		if (list.size() == 1) {
+			return createAssist(document, offset, list.get(0).getStart(),
+					SUM_ASSIST);
+		}
+
+		WordToken lastToken = list.get(list.size() - 1);
+		String last = getWordString(lastToken);
+		if ("->".equals(last)) {
+			return createAssist(offset, list.get(list.size() - 2).getBody());
+		}
+
+		if (list.size() >= 3) {
+			String prev = getWordString(list.get(list.size() - 2));
+			if ("->".equals(prev)) {
+				return createAssist(document, offset, lastToken.getStart(),
+						list.get(list.size() - 3).getBody());
+			}
+		}
+
 		return null;
 	}
 

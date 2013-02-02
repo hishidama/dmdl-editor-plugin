@@ -13,6 +13,15 @@ import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 
 public class Assist {
+	protected static final String[] SUM_ASSIST = { "any", "sum", "count",
+			"min", "max" };
+
+	protected String getWordString(DMDLToken token) {
+		if (token instanceof WordToken) {
+			return ((WordToken) token).getBody();
+		}
+		return null;
+	}
 
 	protected List<WordToken> getWordList(DMDLBodyToken token, int offset) {
 		List<WordToken> list = new ArrayList<WordToken>();

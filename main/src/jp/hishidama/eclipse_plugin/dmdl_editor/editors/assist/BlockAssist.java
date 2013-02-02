@@ -30,8 +30,10 @@ public class BlockAssist extends Assist {
 	protected List<ICompletionProposal> getRefAssist(IDocument document,
 			int offset, BlockToken token, WordToken refModelName) {
 		List<WordToken> list = getWordList(token, offset);
-		if (list.isEmpty()) {
-			return null;
+		if (list.size() <= 1) {
+			if ("summarized".equals(token.getModelType())) {
+				return createAssist(offset, SUM_ASSIST);
+			}
 		}
 
 		ModelToken refModel = token.findModel(refModelName.getBody());

@@ -9,7 +9,6 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLBodyToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DescriptionToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
-import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.WordToken;
 
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 
@@ -62,12 +61,5 @@ public class ModelAssist extends Assist {
 			list.add(t);
 		}
 		return list;
-	}
-
-	protected String getWordString(DMDLToken token) {
-		if (token instanceof WordToken) {
-			return ((WordToken) token).getBody();
-		}
-		return null;
 	}
 }

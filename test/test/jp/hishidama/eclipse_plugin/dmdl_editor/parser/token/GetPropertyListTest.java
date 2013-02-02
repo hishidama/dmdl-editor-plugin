@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.DMDLSimpleParser;
-import jp.hishidama.eclipse_plugin.dmdl_editor.parser.DocumentMock;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.StringScanner;
 
 import org.junit.Test;
 
@@ -25,10 +25,9 @@ public class GetPropertyListTest {
 	@Test
 	public void simple() {
 		String actual = "simple={\n" + "  v1:INT;\n" + "};";
-		DocumentMock document = new DocumentMock(actual);
 
 		DMDLSimpleParser parser = new DMDLSimpleParser();
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 
 		List<Property> expected = Arrays.asList(prop("v1", "INT"));
 		assertProperties(models, expected);
@@ -46,10 +45,9 @@ public class GetPropertyListTest {
 		}
 		sb.append("};");
 		String actual = sb.toString();
-		DocumentMock document = new DocumentMock(actual);
 
 		DMDLSimpleParser parser = new DMDLSimpleParser();
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 
 		assertProperties(models, expected);
 	}
@@ -91,10 +89,9 @@ public class GetPropertyListTest {
 		sb2.append("};");
 
 		String actual = sb1 + "\n" + sb2;
-		DocumentMock document = new DocumentMock(actual);
 
 		DMDLSimpleParser parser = new DMDLSimpleParser();
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 
 		assertProperties(models, expected1, expected2);
 	}
@@ -104,10 +101,9 @@ public class GetPropertyListTest {
 		String actual1 = "simple={\n" + "  v1:INT;\n" + "  v2 : TEXT" + "};";
 		String actual2 = "ref1 = simple;";
 		String actual = actual1 + "\n" + actual2;
-		DocumentMock document = new DocumentMock(actual);
 
 		DMDLSimpleParser parser = new DMDLSimpleParser();
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 
 		List<Property> expected1 = Arrays.asList(prop("v1", "INT"),
 				prop("v2", "TEXT"));
@@ -121,10 +117,9 @@ public class GetPropertyListTest {
 				+ "};";
 		String actual3 = "ref1 = simple1 + simple2;";
 		String actual = actual1 + "\n" + actual2 + "\n" + actual3;
-		DocumentMock document = new DocumentMock(actual);
 
 		DMDLSimpleParser parser = new DMDLSimpleParser();
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 
 		List<Property> expected1 = Arrays.asList(prop("v1", "INT"),
 				prop("v2", "TEXT"));
@@ -140,10 +135,9 @@ public class GetPropertyListTest {
 		String actual1 = "simple={\n" + "  v1:INT;\n" + "  v2 : TEXT" + "};";
 		String actual2 = "ref1 = simple -> { v1 -> v3; };";
 		String actual = actual1 + "\n" + actual2;
-		DocumentMock document = new DocumentMock(actual);
 
 		DMDLSimpleParser parser = new DMDLSimpleParser();
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 
 		List<Property> expected1 = Arrays.asList(prop("v1", "INT"),
 				prop("v2", "TEXT"));
@@ -158,10 +152,9 @@ public class GetPropertyListTest {
 				+ "};";
 		String actual3 = "ref1 = simple1 -> { v1->v6; } + simple2;";
 		String actual = actual1 + "\n" + actual2 + "\n" + actual3;
-		DocumentMock document = new DocumentMock(actual);
 
 		DMDLSimpleParser parser = new DMDLSimpleParser();
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 
 		List<Property> expected1 = Arrays.asList(prop("v1", "INT"),
 				prop("v2", "TEXT"));
@@ -179,10 +172,9 @@ public class GetPropertyListTest {
 				+ "};";
 		String actual3 = "ref1 = simple1 + simple2 -> { v4->v6; };";
 		String actual = actual1 + "\n" + actual2 + "\n" + actual3;
-		DocumentMock document = new DocumentMock(actual);
 
 		DMDLSimpleParser parser = new DMDLSimpleParser();
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 
 		List<Property> expected1 = Arrays.asList(prop("v1", "INT"),
 				prop("v2", "TEXT"));
@@ -200,10 +192,9 @@ public class GetPropertyListTest {
 				+ "};";
 		String actual3 = "ref1 = simple1->{v1->v6;} + simple2 -> { v3 -> v7 ; };";
 		String actual = actual1 + "\n" + actual2 + "\n" + actual3;
-		DocumentMock document = new DocumentMock(actual);
 
 		DMDLSimpleParser parser = new DMDLSimpleParser();
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 
 		List<Property> expected1 = Arrays.asList(prop("v1", "INT"),
 				prop("v2", "TEXT"));
@@ -222,10 +213,9 @@ public class GetPropertyListTest {
 				+ "  a3 : TEXT;\n" + "};";
 		String actual3 = "joined join1 = simple1  % v1 + simple2 % v1;";
 		String actual = actual1 + "\n" + actual2 + "\n" + actual3;
-		DocumentMock document = new DocumentMock(actual);
 
 		DMDLSimpleParser parser = new DMDLSimpleParser();
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 
 		List<Property> expected1 = Arrays.asList(prop("v1", "INT"),
 				prop("v2", "TEXT"), prop("v3", "LONG"));
@@ -246,10 +236,9 @@ public class GetPropertyListTest {
 		String actual3 = "joined join1 = simple1 -> { v1->key; v2->v2; }  % key\n"
 				+ "+ simple2 -> { a1->key; a3->a3; }% key;";
 		String actual = actual1 + "\n" + actual2 + "\n" + actual3;
-		DocumentMock document = new DocumentMock(actual);
 
 		DMDLSimpleParser parser = new DMDLSimpleParser();
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 
 		List<Property> expected1 = Arrays.asList(prop("v1", "INT"),
 				prop("v2", "TEXT"), prop("v3", "LONG"));

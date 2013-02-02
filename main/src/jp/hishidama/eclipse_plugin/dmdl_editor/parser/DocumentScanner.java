@@ -3,7 +3,7 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.parser;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 
-public class DocumentScanner {
+public class DocumentScanner implements DMDLSimpleScanner {
 	public static final char EOF = (char) -1;
 
 	protected IDocument document;
@@ -14,6 +14,12 @@ public class DocumentScanner {
 		this.document = document;
 	}
 
+	@Override
+	public int getLength() {
+		return document.getLength();
+	}
+
+	@Override
 	public char read() {
 		if (offset < document.getLength()) {
 			char c;
@@ -30,6 +36,7 @@ public class DocumentScanner {
 		return EOF;
 	}
 
+	@Override
 	public void unread() {
 		if (eof > 0) {
 			eof--;
@@ -38,10 +45,12 @@ public class DocumentScanner {
 		}
 	}
 
+	@Override
 	public int getOffset() {
 		return offset;
 	}
 
+	@Override
 	public String getString(int start, int end) {
 		int length = end - start;
 		try {
@@ -57,23 +66,6 @@ public class DocumentScanner {
 				}
 			}
 			return sb.toString();
-		}
-	}
-
-	public int getLine(int offset) {
-		try {
-			return document.getLineOfOffset(offset);
-		} catch (BadLocationException e) {
-			return 0;
-		}
-	}
-
-	public int getColumn(int offset) {
-		int line = getLine(offset);
-		try {
-			return offset - document.getLineOffset(line);
-		} catch (BadLocationException e) {
-			return 0;
 		}
 	}
 }

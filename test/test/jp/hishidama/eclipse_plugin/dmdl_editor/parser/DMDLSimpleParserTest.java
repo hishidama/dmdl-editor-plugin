@@ -15,9 +15,8 @@ public class DMDLSimpleParserTest extends DMDLSimpleParserTestCase {
 	public void parse1() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		String actual = "test = { aaa: TEXT; };";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
@@ -50,9 +49,8 @@ public class DMDLSimpleParserTest extends DMDLSimpleParserTestCase {
 				+ "\"desc2\"\n" //
 				+ "  prop2: LONG;\n" //
 				+ "};";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
@@ -89,9 +87,8 @@ public class DMDLSimpleParserTest extends DMDLSimpleParserTestCase {
 				+ "@line2(name = \"abc\",value=TRUE)\n" //
 				+ "  prop2: LONG;\n" //
 				+ "};";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
@@ -125,9 +122,8 @@ public class DMDLSimpleParserTest extends DMDLSimpleParserTestCase {
 	public void parse_join1() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		String actual = "joined item_order = item % code, id + order % item_code, item_id;";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
@@ -154,9 +150,8 @@ public class DMDLSimpleParserTest extends DMDLSimpleParserTestCase {
 				+ "} % code + order -> {\n"
 				+ "    item_code -> code;\n"
 				+ "    amount -> total;\n" + "} % code;\n";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
@@ -199,9 +194,8 @@ public class DMDLSimpleParserTest extends DMDLSimpleParserTestCase {
 				+ "  any   word  -> word;\n"
 				+ "  count count -> count;\n"
 				+ "};";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
@@ -234,9 +228,8 @@ public class DMDLSimpleParserTest extends DMDLSimpleParserTestCase {
 		String actual = "summarized order_summary = order => {\n"
 				+ "    any item_code -> code;\n" + "    sum price -> total;\n"
 				+ "    count item_code -> count;\n" + "} % code;\n";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
@@ -273,9 +266,8 @@ public class DMDLSimpleParserTest extends DMDLSimpleParserTestCase {
 				+ "conc_model = proj_model + {" //
 				+ "    other : INT;" //
 				+ "};\n";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(2, list.size());
@@ -307,9 +299,8 @@ public class DMDLSimpleParserTest extends DMDLSimpleParserTestCase {
 		String actual = "projective super_proj = { a : INT; };\n"
 				+ "projective sub_proj = super_proj + { b : INT; };\n"
 				+ "record = sub_proj;\n";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(3, list.size());
@@ -355,9 +346,8 @@ public class DMDLSimpleParserTest extends DMDLSimpleParserTestCase {
 				+ "    name : TEXT;\n" //
 				+ "};\n" //
 				+ "*/\n";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(2, list.size());

@@ -4,6 +4,8 @@ import java.util.Iterator;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLDocument;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.DMDLSimpleParser;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.DMDLSimpleScanner;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.DocumentScanner;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelList;
 
@@ -37,7 +39,8 @@ public class DMDLPartitionScanner implements IPartitionTokenScanner {
 	public void setPartialRange(IDocument document, int offset, int length,
 			String contentType, int partitionOffset) {
 		DMDLDocument doc = (DMDLDocument) document;
-		ModelList models = parser.parse(document);
+		DMDLSimpleScanner scanner = new DocumentScanner(doc);
+		ModelList models = parser.parse(scanner);
 		// TODO 毎回計算しなおすのはやめたい
 		if (partitionOffset >= 0) {
 			// models = parser.parse(document, models, partitionOffset);
@@ -56,7 +59,6 @@ public class DMDLPartitionScanner implements IPartitionTokenScanner {
 
 	@Override
 	public IToken nextToken() {
-
 
 		for (;;) {
 			DMDLToken t = getNextToken();

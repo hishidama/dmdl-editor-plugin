@@ -15,9 +15,8 @@ public class DMDLSimpleParserEofTest extends DMDLSimpleParserTestCase {
 	public void parse_eof_slash() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		String actual = "/";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
@@ -32,9 +31,8 @@ public class DMDLSimpleParserEofTest extends DMDLSimpleParserTestCase {
 	public void parse_eof_hyphen() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		String actual = "-";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
@@ -49,9 +47,8 @@ public class DMDLSimpleParserEofTest extends DMDLSimpleParserTestCase {
 	public void parse_eof_block_slash() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		String actual = "{/";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
@@ -66,9 +63,8 @@ public class DMDLSimpleParserEofTest extends DMDLSimpleParserTestCase {
 	public void parse_eof_block_hyphen() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		String actual = "{-";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
@@ -83,9 +79,8 @@ public class DMDLSimpleParserEofTest extends DMDLSimpleParserTestCase {
 	public void parse_eof_comment_aster() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		String actual = "/*aaa*";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
@@ -100,9 +95,8 @@ public class DMDLSimpleParserEofTest extends DMDLSimpleParserTestCase {
 	public void parse_eof_lineComment_n() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		String actual = "//aaa\n";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
@@ -117,9 +111,8 @@ public class DMDLSimpleParserEofTest extends DMDLSimpleParserTestCase {
 	public void parse_eof_lineComment_r() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		String actual = "//aaa\r";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
@@ -134,9 +127,8 @@ public class DMDLSimpleParserEofTest extends DMDLSimpleParserTestCase {
 	public void parse_eof_lineComment_rn() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		String actual = "//aaa\r\n";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
@@ -151,9 +143,8 @@ public class DMDLSimpleParserEofTest extends DMDLSimpleParserTestCase {
 	public void parse_eof_desc_n() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		String actual = "\"aaa\n";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
@@ -168,9 +159,8 @@ public class DMDLSimpleParserEofTest extends DMDLSimpleParserTestCase {
 	public void parse_eof_desc_r() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		String actual = "\"aaa\r";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
@@ -185,9 +175,8 @@ public class DMDLSimpleParserEofTest extends DMDLSimpleParserTestCase {
 	public void parse_eof_desc_rn() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		String actual = "\"aaa\r\n";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
@@ -202,9 +191,8 @@ public class DMDLSimpleParserEofTest extends DMDLSimpleParserTestCase {
 	public void parse_eof_args_minus() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		String actual = "(item -";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
@@ -219,9 +207,8 @@ public class DMDLSimpleParserEofTest extends DMDLSimpleParserTestCase {
 	public void parse_eof_args_slash() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		String actual = "(item /";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
@@ -236,9 +223,8 @@ public class DMDLSimpleParserEofTest extends DMDLSimpleParserTestCase {
 	public void parse_eof_symbol_eq() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		String actual = "item =";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());
@@ -253,9 +239,8 @@ public class DMDLSimpleParserEofTest extends DMDLSimpleParserTestCase {
 	public void parse_eof_symbol_hyphen() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		String actual = "item -";
-		DocumentMock document = new DocumentMock(actual);
 
-		ModelList models = parser.parse(document);
+		ModelList models = parser.parse(new StringScanner(actual));
 		List<DMDLToken> list = models.getBody();
 
 		assertEquals(1, list.size());

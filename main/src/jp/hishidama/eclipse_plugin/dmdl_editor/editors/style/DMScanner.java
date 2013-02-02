@@ -1,6 +1,7 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.style;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLDocument;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLTextTokenIterator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelList;
 

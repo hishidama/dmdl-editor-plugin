@@ -1,18 +1,18 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.assist;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLDocument;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ArgumentToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.BlockToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLBodyToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelList;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.PropertyToken;
 
-import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
@@ -32,81 +32,87 @@ public class DMDLContentAssistProcessor implements IContentAssistProcessor {
 		return null;
 	}
 
-	protected static final String[] TYPE_ASSIST = { "INT", "LONG", "FLOAT",
-			"DOUBLE", "TEXT", "DECIMAL", "DATE", "DATETIME", "BOOLEAN", "BYTE",
-			"SHORT" };
-	protected static final String[] VALUE_ASSIST = { "TRUE", "FALSE", "\"\"",
-			"\"yyyy-MM-dd HH:mm:ss\"" };
-	protected static final String[] BLOCK_ASSIST = { String.format("{%n};") };
-
 	protected List<ICompletionProposal> computeDataType(DMDLDocument document,
 			int offset) {
-		// 単語の先頭を探す
-		int n = offset - 1;
-		for (; n >= 0; n--) {
-			char c;
-			try {
-				c = document.getChar(n);
-			} catch (BadLocationException e) {
-				break;
-			}
-			if ('A' <= c && c <= 'Z' || 'a' <= c && c <= 'z') {
-				continue;
-			} else {
-				break;
-			}
+		offset--;
+		ModelList models = document.getModelList();
+		ModelToken model = models.getModelByOffset(offset);
+		if (model == null) {
+			return getModelAssist(offset);
 		}
 
-		// 「:」を探す
-		for (int i = n; i >= 0; i--) {
-			char c;
-			try {
-				c = document.getChar(i);
-			} catch (BadLocationException e) {
+		DMDLToken token = model.getTokenByOffset(offset);
+		for (;;) {
+			if (token == null) {
+				return getModelAssist(offset);
+			}
+			if (token instanceof DMDLBodyToken) {
 				break;
 			}
-			switch (c) {
-			case ' ':
-			case '\t':
-			case '\r':
-			case '\n':
-				continue;
-			case ':':
-				return getAssist(document, offset, n, TYPE_ASSIST);
-			case '=':
-				ModelList models = document.getModelList();
-				DMDLToken token = models.getTokenByOffset(n);
-				while (token != null && !(token instanceof DMDLBodyToken)) {
-					token = token.getParent();
-				}
-				if (token instanceof ArgumentToken) {
-					return getAssist(document, offset, n, VALUE_ASSIST);
-				}
-				return getAssist(document, offset, n, BLOCK_ASSIST);
-			default:
-				break;
-			}
+			token = token.getParent();
 		}
+
+		if (token instanceof ArgumentToken) {
+			return getArgumentAssist(document, offset, (ArgumentToken) token);
+		}
+		if (token instanceof PropertyToken) {
+			return getPropertyAssist(document, offset, (PropertyToken) token);
+		}
+		if (token instanceof BlockToken) {
+			return getBlockAssist(document, offset, (BlockToken) token);
+		}
+		if (token instanceof ModelToken) {
+			return getModelAssist(document, offset, (ModelToken) token);
+		}
+
 		return null;
 	}
 
-	protected List<ICompletionProposal> getAssist(IDocument document,
-			int offset, int n, String[] candidate) {
-		int start = n + 1;
-		int len = offset - start;
-		String text;
-		try {
-			text = document.get(start, len).toUpperCase();
-		} catch (BadLocationException e) {
-			return null;
+	protected ModelAssist model;
+
+	protected List<ICompletionProposal> getModelAssist(int offset) {
+		if (model == null) {
+			model = new ModelAssist();
 		}
-		List<ICompletionProposal> list = new ArrayList<ICompletionProposal>();
-		for (String s : candidate) {
-			if (s.startsWith(text)) {
-				list.add(new CompletionProposal(s, start, len, s.length()));
-			}
+		return model.getModelAssist(offset);
+	}
+
+	protected List<ICompletionProposal> getModelAssist(DMDLDocument document,
+			int offset, ModelToken token) {
+		if (model == null) {
+			model = new ModelAssist();
 		}
-		return list;
+		return model.getModelAssist(document, offset, token);
+	}
+
+	protected BlockAssist block;
+
+	protected List<ICompletionProposal> getBlockAssist(DMDLDocument document,
+			int offset, BlockToken token) {
+		if (block == null) {
+			block = new BlockAssist();
+		}
+		return block.getBlockAssist(document, offset, token);
+	}
+
+	protected ArgumentAssist argument;
+
+	protected List<ICompletionProposal> getArgumentAssist(IDocument document,
+			int offset, ArgumentToken token) {
+		if (argument == null) {
+			argument = new ArgumentAssist();
+		}
+		return argument.getArgumentAssist(document, offset, token);
+	}
+
+	protected PropertyAssist property;
+
+	protected List<ICompletionProposal> getPropertyAssist(IDocument document,
+			int offset, PropertyToken token) {
+		if (property == null) {
+			property = new PropertyAssist();
+		}
+		return property.getPropertyAssist(document, offset, token);
 	}
 
 	@Override

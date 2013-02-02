@@ -27,4 +27,13 @@ public class ModelList extends DMDLBodyToken {
 		}
 		return list;
 	}
+
+	public ModelToken getModelByOffset(int offset) {
+		for (DMDLToken model : bodyList) {
+			if (model.getStart() <= offset && offset < model.getEnd()) {
+				return (ModelToken) model;
+			}
+		}
+		return null;
+	}
 }

@@ -37,13 +37,18 @@ public class DMDLContentAssistProcessor implements IContentAssistProcessor {
 		ModelList models = document.getModelList();
 		ModelToken model = models.getModelByOffset(offset);
 		if (model == null) {
-			return getModelAssist(offset);
+			List<DMDLToken> list = models.getBody();
+			if (!list.isEmpty()) {
+				model = (ModelToken) list.get(list.size() - 1);
+			} else {
+				return getModelAssist(offset);
+			}
 		}
 
 		DMDLToken token = model.getTokenByOffset(offset);
 		for (;;) {
 			if (token == null) {
-				return getModelAssist(offset);
+				return getModelAssist(document, offset, model);
 			}
 			if (token instanceof DMDLBodyToken) {
 				break;

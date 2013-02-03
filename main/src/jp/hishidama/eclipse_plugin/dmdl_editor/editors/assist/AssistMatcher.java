@@ -58,8 +58,7 @@ public class AssistMatcher {
 		return matched;
 	}
 
-	public int matchLast(String expected) {
-		matched = 0;
+	public int matchLast(String... expected) {
 		cursorToken = null;
 		int n = list.size() - 1;
 		if (n >= 0) {
@@ -69,25 +68,51 @@ public class AssistMatcher {
 				n--;
 			}
 		}
-		if (n >= 0) {
-			if (expected == ANY) {
-				matched++;
-			} else {
-				DMDLToken t = list.get(n);
-				if (t instanceof WordToken) {
-					String word = ((WordToken) t).getBody();
-					if (expected.equals(word)) {
-						matched++;
+		for (int i = expected.length - 1; i >= 0; i--) {
+			if (n < i) {
+				continue;
+			}
+			matched = 0;
+			for (int j = 0; j <= i; j++) {
+				if (n <= j) {
+					break;
+				}
+				if (expected[j] == ANY) {
+					matched++;
+				} else {
+					DMDLToken t = list.get(n - i + j);
+					if (t instanceof WordToken) {
+						String word = ((WordToken) t).getBody();
+						if (expected[j].equals(word)) {
+							matched++;
+						}
 					}
 				}
 			}
+			if (matched == i + 1) {
+				return matched;
+			}
 		}
 
+		matched = 0;
 		return matched;
 	}
 
+	/**
+	 * トークン取得.
+	 *
+	 * @param n
+	 *            インデックス（マイナスの場合、リストの末尾からのインデックスを意味する（-1が一番末尾））
+	 * @return トークン（範囲外の場合はnull）
+	 */
 	public DMDLToken getToken(int n) {
-		return (n < list.size()) ? list.get(n) : null;
+		if (n < 0) {
+			if (cursorToken != null) {
+				n--;
+			}
+			n += list.size();
+		}
+		return (0 <= n && n < list.size()) ? list.get(n) : null;
 	}
 
 	public String getWord(int n) {
@@ -96,6 +121,19 @@ public class AssistMatcher {
 			return ((DMDLTextToken) token).getBody();
 		}
 		return null;
+	}
+
+	public int lastIndexOf(String find) {
+		int n = list.size() - 1;
+		if (cursorToken != null) {
+			n--;
+		}
+		for (; n >= 0; n--) {
+			if (find.equals(getWord(n))) {
+				return n;
+			}
+		}
+		return -1; // not found
 	}
 
 	public List<ICompletionProposal> createAssist(IDocument document,

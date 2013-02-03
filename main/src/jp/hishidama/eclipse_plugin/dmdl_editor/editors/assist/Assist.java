@@ -5,6 +5,7 @@ import java.util.List;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.AnnotationToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ArgumentsToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.BlockToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.CommentToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLBodyToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
@@ -48,6 +49,26 @@ public class Assist {
 			}
 		}
 		return list.toArray(new String[list.size()]);
+	}
+
+	protected String[] getProperties(DMDLToken token) {
+		if (token == null) {
+			return new String[] {};
+		}
+		if (token instanceof WordToken) {
+			WordToken refModelName = (WordToken) token;
+			return getRefProperties(refModelName);
+		} else if (token instanceof BlockToken) {
+			BlockToken block = (BlockToken) token;
+			List<String> alist = new ArrayList<String>();
+			for (PropertyToken p : block.getPropertyList()) {
+				if (p.getName() != null) {
+					alist.add(p.getName());
+				}
+			}
+			return alist.toArray(new String[alist.size()]);
+		}
+		return new String[] {};
 	}
 
 	protected String[] getRefProperties(WordToken refModelName) {

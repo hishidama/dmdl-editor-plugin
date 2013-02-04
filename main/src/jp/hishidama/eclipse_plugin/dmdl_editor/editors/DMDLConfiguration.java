@@ -9,11 +9,14 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.ColorManager;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.DMScanner;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.NonRuleBasedDamagerRepairer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.PartitionDamagerRepairer;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.format.DMDLFormattingStrategy;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.partition.DMDLPartitionScanner;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
+import org.eclipse.jface.text.formatter.ContentFormatter;
+import org.eclipse.jface.text.formatter.IContentFormatter;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
@@ -110,5 +113,13 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 		assistant.install(sourceViewer);
 
 		return assistant;
+	}
+
+	@Override
+	public IContentFormatter getContentFormatter(ISourceViewer sourceViewer) {
+		ContentFormatter formatter = new ContentFormatter();
+		formatter.setFormattingStrategy(new DMDLFormattingStrategy(),
+				DMDLPartitionScanner.DMDL_BLOCK);
+		return formatter;
 	}
 }

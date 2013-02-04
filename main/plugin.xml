@@ -25,5 +25,33 @@
             name="dmdl-editor preference-page">
       </page>
    </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            id="dmdl-editor-plugin.category"
+            name="category-name">
+      </category>
+      <command
+            categoryId="dmdl-editor-plugin.category"
+            id="dmdl-editor-plugin.formatting-command"
+            name="formatting-command-name">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.format.FormattingHandler"
+            commandId="dmdl-editor-plugin.formatting-command">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="dmdl-editor-plugin.formatting-command"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+F">
+      </key>
+   </extension>
 
 </plugin>

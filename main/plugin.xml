@@ -40,7 +40,7 @@
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.format.FormattingHandler"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.format.FormattingHandler"
             commandId="dmdl-editor-plugin.formatting-command">
       </handler>
    </extension>

@@ -48,6 +48,10 @@ public class DMDLContentFormatter implements IContentFormatter {
 		prevText = null;
 		defaultFormatter.format(models);
 
+		if (prevText != null && ";".equals(prevText.getBody())) {
+			append(prevText.getStart(), LF);
+		}
+
 		String text = sb.toString();
 		try {
 			document.replace(start, length, text); // TODO start,length
@@ -134,6 +138,12 @@ public class DMDLContentFormatter implements IContentFormatter {
 		}
 
 		protected void formatText(DMDLTextToken token, boolean firstToken) {
+			if (firstToken) {
+				DMDLToken parent = token.getParent();
+				shrinkLf(parent.getStart(), token.getStart(), token);
+			} else if (prevText != null) {
+				shrinkLf(prevText.getEnd(), token.getStart(), token);
+			}
 			appendIfNotLf(token.getStart(), " ");
 			append(token.getStart(), token.getBody());
 		}
@@ -191,15 +201,6 @@ public class DMDLContentFormatter implements IContentFormatter {
 				shrinkLf(prevText.getEnd(), token.getStart(), token);
 			}
 		}
-
-		@Override
-		protected void formatText(DMDLTextToken token, boolean firstToken) {
-			if (firstToken) {
-				ModelToken model = (ModelToken) token.getParent();
-				shrinkLf(model.getStart(), token.getStart(), token);
-			}
-			super.formatText(token, firstToken);
-		}
 	};
 
 	protected int shrinkLf(int start, int end, DMDLToken token) {
@@ -249,15 +250,6 @@ public class DMDLContentFormatter implements IContentFormatter {
 				appendIfNotLf(token.getStart(), " ");
 			}
 			append(token.getStart(), word);
-
-			if ("(".equals(word)) {
-				ArgumentsToken parent = (ArgumentsToken) token.getParent();
-				if (parent.getBody().size() > 3) {
-					appendIfNotLf(token.getEnd(), LF);
-				}
-			} else if (")".equals(word) || ",".equals(word)) {
-				append(token.getEnd(), LF);
-			}
 		}
 	};
 
@@ -291,15 +283,11 @@ public class DMDLContentFormatter implements IContentFormatter {
 		protected void formatWord(WordToken token, boolean firstToken,
 				String word, boolean firstWord) {
 			if ("}".equals(word)) {
-				// 何も入れない
+				appendIfNotLf(token.getStart(), LF);
 			} else {
 				appendIfNotLf(token.getStart(), " ");
 			}
 			append(token.getStart(), word);
-
-			if ("{".equals(word)) {
-				append(token.getEnd(), LF);
-			}
 		}
 	};
 	protected TokenFormatter<PropertyToken> propertyFormatter = new TokenFormatter<PropertyToken>() {
@@ -315,10 +303,6 @@ public class DMDLContentFormatter implements IContentFormatter {
 				append(token.getStart(), " ");
 			}
 			append(token.getStart(), word);
-
-			if (";".equals(word)) {
-				append(token.getEnd(), LF);
-			}
 		}
 
 		@Override

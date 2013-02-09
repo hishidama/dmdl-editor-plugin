@@ -20,9 +20,15 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.preference.DMDLEditorPreferencePage"
+            id="dmdl-editor.preference-page"
+            name="dmdl-editor">
+      </page>
+      <page
+            category="dmdl-editor.preference-page"
             class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.preference.DMDLEditorColorPreferencePage"
-            id="dmdl-editor-plugin.preference-page"
-            name="dmdl-editor preference-page">
+            id="dmdl-editor.color-preference-page"
+            name="color">
       </page>
    </extension>
    <extension

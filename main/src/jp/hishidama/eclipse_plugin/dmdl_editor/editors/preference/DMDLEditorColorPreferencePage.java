@@ -29,7 +29,7 @@ public class DMDLEditorColorPreferencePage extends PreferencePage implements
 	protected List<Field> list = new ArrayList<Field>();
 
 	public DMDLEditorColorPreferencePage() {
-		super("color preference");
+		super("DMDLEditorColorPreferencePage");
 		setPreferenceStore(Activator.getDefault().getPreferenceStore());
 	}
 
@@ -39,6 +39,7 @@ public class DMDLEditorColorPreferencePage extends PreferencePage implements
 
 	@Override
 	protected Control createContents(Composite parent) {
+		setTitle("dmdl-editor color preference");
 		IPreferenceStore store = getPreferenceStore();
 
 		Composite composite = new Composite(parent, SWT.NONE);

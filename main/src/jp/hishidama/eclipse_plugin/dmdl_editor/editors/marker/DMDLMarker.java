@@ -114,8 +114,8 @@ public class DMDLMarker {
 					parser_parse = parser.getClass().getMethod("parse",
 							Reader.class, URI.class);
 				}
-				StringReader reader = new StringReader(document.get());
 				URI uri = file.getFullPath().toFile().toURI();
+				StringReader reader = new StringReader(document.get());
 				try {
 					return parser_parse.invoke(parser, reader, uri);
 				} catch (InvocationTargetException e) {

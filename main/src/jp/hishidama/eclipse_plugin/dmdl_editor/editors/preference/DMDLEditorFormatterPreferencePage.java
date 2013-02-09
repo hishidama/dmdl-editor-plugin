@@ -81,8 +81,11 @@ public class DMDLEditorFormatterPreferencePage extends
 			DMDLSimpleParser parser = new DMDLSimpleParser();
 			ModelList models = parser.parse(new DocumentScanner(document));
 			document.setModelList(models);
+
 			DMDLContentFormatter formatter = new DMDLContentFormatter();
-			formatter.initSimlattion(indentArgument.getIntValue(),
+			formatter.setSimulate(PreferenceConst.FORMAT_INDENT_ARGUMENT,
+					indentArgument.getIntValue());
+			formatter.setSimulate(PreferenceConst.FORMAT_INDENT_PROPERTY,
 					indentProperty.getIntValue());
 
 			Region region = new Region(0, document.getLength());
@@ -93,7 +96,7 @@ public class DMDLEditorFormatterPreferencePage extends
 
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
-		super.propertyChange(event);
+		super.propertyChange(event); // checkState()が呼ばれるので、isValid()が使えるようになる
 		initText();
 	}
 }

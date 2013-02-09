@@ -1,6 +1,8 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.format;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLDocument;
@@ -39,19 +41,6 @@ public class DMDLContentFormatter implements IContentFormatter {
 	protected String INDENT_ARGUMENT = "  ";
 	protected String INDENT_PROPERTY = "    ";
 
-	protected static class Parameter {
-		public int indentArgument;
-		public int indentProperty;
-	}
-
-	protected Parameter parameter = null;
-
-	public void initSimlattion(int indentArgument, int indentProperty) {
-		parameter = new Parameter();
-		parameter.indentArgument = indentArgument;
-		parameter.indentProperty = indentProperty;
-	}
-
 	@Override
 	public void format(IDocument document, IRegion region) {
 		init();
@@ -83,19 +72,32 @@ public class DMDLContentFormatter implements IContentFormatter {
 		}
 	}
 
-	private void init() {
-		if (parameter == null) {
-			IPreferenceStore store = Activator.getDefault()
-					.getPreferenceStore();
-			parameter = new Parameter();
-			parameter.indentArgument = store
-					.getInt(PreferenceConst.FORMAT_INDENT_ARGUMENT);
-			parameter.indentProperty = store
-					.getInt(PreferenceConst.FORMAT_INDENT_PROPERTY);
-		}
+	protected Map<String, Object> simulate = null;
 
-		INDENT_ARGUMENT = space(parameter.indentArgument);
-		INDENT_PROPERTY = space(parameter.indentProperty);
+	public void setSimulate(String key, Object value) {
+		if (simulate == null) {
+			simulate = new HashMap<String, Object>();
+		}
+		simulate.put(key, value);
+	}
+
+	private void init() {
+		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+
+		INDENT_ARGUMENT = space(getInt(store,
+				PreferenceConst.FORMAT_INDENT_ARGUMENT));
+		INDENT_PROPERTY = space(getInt(store,
+				PreferenceConst.FORMAT_INDENT_PROPERTY));
+	}
+
+	private int getInt(IPreferenceStore store, String key) {
+		if (simulate != null) {
+			Integer value = (Integer) simulate.get(key);
+			if (value != null) {
+				return value;
+			}
+		}
+		return store.getInt(key);
 	}
 
 	private String space(int n) {

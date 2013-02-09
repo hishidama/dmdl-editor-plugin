@@ -32,6 +32,8 @@ public class DMDLContentFormatter implements IContentFormatter {
 	protected StringBuilder sb;
 	protected DMDLTextToken prevText;
 	protected String LF = "\r\n";
+	protected String INDENT_ARGUMENT = "  ";
+	protected String INDENT_PROPERTY = "    ";
 
 	@Override
 	public void format(IDocument document, IRegion region) {
@@ -245,6 +247,9 @@ public class DMDLContentFormatter implements IContentFormatter {
 				ArgumentsToken parent = (ArgumentsToken) token.getParent();
 				if (parent.getBody().size() > 3) {
 					appendIfNotLf(token.getEnd(), LF);
+					if (inBlock(parent.getParent())) {
+						append(token.getStart(), INDENT_PROPERTY);
+					}
 				}
 			} else {
 				appendIfNotLf(token.getStart(), " ");
@@ -262,7 +267,9 @@ public class DMDLContentFormatter implements IContentFormatter {
 				ArgumentsToken args = (ArgumentsToken) parent.getParent();
 				if (args.getBody().size() > 3) {
 					appendIfNotLf(token.getStart(), LF);
-					append(token.getStart(), "  ");
+					String indent = inBlock(args.getParent()) ? INDENT_PROPERTY
+							+ INDENT_ARGUMENT : INDENT_ARGUMENT;
+					append(token.getStart(), indent);
 				}
 			} else {
 				appendIfNotLf(token.getStart(), " ");
@@ -277,6 +284,16 @@ public class DMDLContentFormatter implements IContentFormatter {
 			append(token.getStart(), token.getBody());
 		}
 	};
+
+	private boolean inBlock(DMDLToken token) {
+		while (token != null) {
+			if (token instanceof BlockToken) {
+				return true;
+			}
+			token = token.getParent();
+		}
+		return false;
+	}
 
 	protected TokenFormatter<BlockToken> blockFormatter = new TokenFormatter<BlockToken>() {
 		@Override
@@ -296,7 +313,7 @@ public class DMDLContentFormatter implements IContentFormatter {
 				String word, boolean firstWord) {
 			if (firstWord) {
 				appendIfNotLf(token.getStart(), LF);
-				append(token.getStart(), "    ");
+				append(token.getStart(), INDENT_PROPERTY);
 			} else if (";".equals(word)) {
 				// 何も入れない
 			} else {
@@ -312,7 +329,7 @@ public class DMDLContentFormatter implements IContentFormatter {
 			if (firstToken) {
 				append(token.getStart(), LF);
 			}
-			append(token.getStart(), "    ");
+			append(token.getStart(), INDENT_PROPERTY);
 			append(token.getStart(), token.getBody());
 		}
 
@@ -323,7 +340,7 @@ public class DMDLContentFormatter implements IContentFormatter {
 			if (firstToken) {
 				append(token.getStart(), LF);
 			}
-			append(token.getStart(), "    ");
+			append(token.getStart(), INDENT_PROPERTY);
 			append(token.getStart(), token.getBody());
 		}
 	};

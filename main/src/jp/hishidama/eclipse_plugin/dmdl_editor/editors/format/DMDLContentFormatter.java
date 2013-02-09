@@ -1,7 +1,10 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.format;
 
+import java.util.Arrays;
+
 import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLDocument;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.preference.PreferenceConst;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.AnnotationToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ArgumentToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ArgumentsToken;
@@ -18,6 +21,7 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.WordToken;
 
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -37,6 +41,8 @@ public class DMDLContentFormatter implements IContentFormatter {
 
 	@Override
 	public void format(IDocument document, IRegion region) {
+		init();
+
 		DMDLDocument doc = (DMDLDocument) document;
 		this.document = doc;
 		ModelList models = doc.getModelList();
@@ -62,6 +68,21 @@ public class DMDLContentFormatter implements IContentFormatter {
 			log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,
 					"DMDLContentFormatter bad location.", e));
 		}
+	}
+
+	private void init() {
+		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+
+		INDENT_ARGUMENT = space(store
+				.getInt(PreferenceConst.FORMAT_INDENT_ARGUMENT));
+		INDENT_PROPERTY = space(store
+				.getInt(PreferenceConst.FORMAT_INDENT_PROPERTY));
+	}
+
+	private String space(int n) {
+		char[] buf = new char[n];
+		Arrays.fill(buf, ' ');
+		return new String(buf);
 	}
 
 	protected TokenFormatter<DMDLBodyToken> defaultFormatter = new TokenFormatter<DMDLBodyToken>();

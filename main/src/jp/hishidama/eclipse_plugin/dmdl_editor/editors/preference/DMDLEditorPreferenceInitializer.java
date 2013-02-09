@@ -16,6 +16,7 @@ public class DMDLEditorPreferenceInitializer extends
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 
+		// Color
 		String red = StringConverter.asString(new RGB(192, 0, 0));
 		String green = StringConverter.asString(new RGB(0, 192, 0));
 		String blue = StringConverter.asString(new RGB(0, 0, 192));
@@ -38,5 +39,9 @@ public class DMDLEditorPreferenceInitializer extends
 
 		store.setDefault(COLOR_SUM_TYPE, red);
 		store.setDefault(STYLE_SUM_TYPE, SWT.NORMAL);
+
+		// Formatter
+		store.setDefault(FORMAT_INDENT_ARGUMENT, 2);
+		store.setDefault(FORMAT_INDENT_PROPERTY, 4);
 	}
 }

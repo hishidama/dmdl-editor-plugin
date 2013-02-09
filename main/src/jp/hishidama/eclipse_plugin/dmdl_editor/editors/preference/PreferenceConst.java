@@ -1,7 +1,7 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.preference;
 
 public interface PreferenceConst {
-
+	// Color
 	public static final String COLOR_COMMENT = "DMDLEditor.Color.Comment";
 	public static final String STYLE_COMMENT = "DMDLEditor.Style.Comment";
 
@@ -19,4 +19,8 @@ public interface PreferenceConst {
 
 	public static final String COLOR_SUM_TYPE = "DMDLEditor.Color.SummarizeType";
 	public static final String STYLE_SUM_TYPE = "DMDLEditor.Style.SummarizeType";
+
+	// Formatter
+	public static final String FORMAT_INDENT_ARGUMENT = "DMDLEditor.Formatter.indentArgument";
+	public static final String FORMAT_INDENT_PROPERTY = "DMDLEditor.Formatter.indentProperty";
 }

@@ -30,6 +30,12 @@
             id="dmdl-editor.color-preference-page"
             name="color">
       </page>
+      <page
+            category="dmdl-editor.preference-page"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.preference.DMDLEditorFormatterPreferencePage"
+            id="dmdl-editor.formatter-preference-page"
+            name="formatter">
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.commands">

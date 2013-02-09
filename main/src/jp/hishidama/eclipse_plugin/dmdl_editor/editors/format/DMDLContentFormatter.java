@@ -39,6 +39,19 @@ public class DMDLContentFormatter implements IContentFormatter {
 	protected String INDENT_ARGUMENT = "  ";
 	protected String INDENT_PROPERTY = "    ";
 
+	protected static class Parameter {
+		public int indentArgument;
+		public int indentProperty;
+	}
+
+	protected Parameter parameter = null;
+
+	public void initSimlattion(int indentArgument, int indentProperty) {
+		parameter = new Parameter();
+		parameter.indentArgument = indentArgument;
+		parameter.indentProperty = indentProperty;
+	}
+
 	@Override
 	public void format(IDocument document, IRegion region) {
 		init();
@@ -71,12 +84,18 @@ public class DMDLContentFormatter implements IContentFormatter {
 	}
 
 	private void init() {
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		if (parameter == null) {
+			IPreferenceStore store = Activator.getDefault()
+					.getPreferenceStore();
+			parameter = new Parameter();
+			parameter.indentArgument = store
+					.getInt(PreferenceConst.FORMAT_INDENT_ARGUMENT);
+			parameter.indentProperty = store
+					.getInt(PreferenceConst.FORMAT_INDENT_PROPERTY);
+		}
 
-		INDENT_ARGUMENT = space(store
-				.getInt(PreferenceConst.FORMAT_INDENT_ARGUMENT));
-		INDENT_PROPERTY = space(store
-				.getInt(PreferenceConst.FORMAT_INDENT_PROPERTY));
+		INDENT_ARGUMENT = space(parameter.indentArgument);
+		INDENT_PROPERTY = space(parameter.indentProperty);
 	}
 
 	private String space(int n) {

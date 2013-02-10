@@ -4,11 +4,15 @@ import java.util.List;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLDocument;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLEditor;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelList;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.PropertyToken;
 
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
@@ -60,5 +64,19 @@ public class OutlinePage extends ContentOutlinePage {
 	public void refresh(ModelList models) {
 		root.element = models;
 		getTreeViewer().refresh();
+	}
+
+	public void selectToken(DMDLToken token) {
+		TreeViewer viewer = getTreeViewer();
+		if (token instanceof PropertyToken) {
+			for (DMDLToken t = token.getParent(); t != null; t = t.getParent()) {
+				if (t instanceof ModelToken) {
+					viewer.expandToLevel(t, TreeViewer.ALL_LEVELS);
+					break;
+				}
+			}
+		}
+		StructuredSelection selection = new StructuredSelection(token);
+		viewer.setSelection(selection, true);
 	}
 }

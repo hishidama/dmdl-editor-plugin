@@ -154,8 +154,7 @@ public class DMDLMarker {
 						+ beginColumn - 1;
 				int endOffset = document.getLineOffset(endLine - 1) + endColumn;
 
-				IMarker marker = file
-						.createMarker("org.eclipse.core.resources.problemmarker");
+				IMarker marker = file.createMarker(IMarker.PROBLEM);
 				marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
 				marker.setAttribute(IMarker.MESSAGE, cause.getMessage());
 				// marker.setAttribute(IMarker.LINE_NUMBER, beginLine - 1);

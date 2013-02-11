@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="Shift_JIS"?>
+<project name="make_jar" default="jar" basedir="..">
+	<target name="jar">
+		<jar jarfile="../main/resource/dmdlparser-caller.jar">
+			<fileset dir="classes" />
+			<fileset dir="src" />
+	</jar>
+</target>
+</project>

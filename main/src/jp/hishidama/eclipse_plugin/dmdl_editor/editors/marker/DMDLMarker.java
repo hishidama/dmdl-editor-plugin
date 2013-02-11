@@ -1,5 +1,9 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -73,8 +77,7 @@ public class DMDLMarker {
 			findClassPath(parserClassList, project, "org.slf4j.LoggerFactory");
 			findClassPath(parserClassList, project,
 					"com.asakusafw.utils.collections.Lists");
-			findMyClassPath(parserClassList,
-					"jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker.DmdlParserCaller");
+			findMyClassPath(parserClassList, "resource/dmdlparser-caller.jar");
 			parserLoader = URLClassLoader.newInstance(parserClassList
 					.toArray(new URL[parserClassList.size()]));
 		}
@@ -89,9 +92,9 @@ public class DMDLMarker {
 					list.add(url);
 					return url;
 				} else {
-					ILog log = Activator.getDefault().getLog();
-					log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,
-							"DMDLMarker#findClassPath(" + className + ")"));
+					// ILog log = Activator.getDefault().getLog();
+					// log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,
+					// "DMDLMarker#findClassPath(" + className + ")"));
 				}
 				return null;
 			} catch (Exception e) {
@@ -102,31 +105,42 @@ public class DMDLMarker {
 			}
 		}
 
-		protected URL findMyClassPath(List<URL> list, String className) {
+		protected URL findMyClassPath(List<URL> list, String jarName) {
 			try {
-				URL url = null;
-
-				String path = className.replace('.', '/');
-				URL bundleUrl = getClass().getResource("/" + path + ".class");
-				URL resolveUrl = FileLocator.resolve(bundleUrl);
-				String s = resolveUrl.toExternalForm();
+				URL bundleUrl = getClass().getClassLoader()
+						.getResource(jarName);
+				URL url = FileLocator.resolve(bundleUrl);
+				String s = url.toExternalForm();
 				if (s.startsWith("jar:")) {
-					int n = s.lastIndexOf("!/jp/hishidama");
-					if (n >= 0) {
-						s = s.substring(4, n);
+					File tempFile = File.createTempFile("dmdlparser-caller",
+							".jar");
+					tempFile.deleteOnExit();
+					InputStream is = url.openStream();
+					try {
+						OutputStream os = new FileOutputStream(tempFile);
+						try {
+							byte[] buf = new byte[8192];
+							for (;;) {
+								int len = is.read(buf);
+								if (len > 0) {
+									os.write(buf, 0, len);
+								} else {
+									break;
+								}
+							}
+						} finally {
+							os.close();
+						}
+					} finally {
+						is.close();
 					}
-				} else if (s.startsWith("file:")) {
-					int n = s.lastIndexOf("/jp/hishidama");
-					if (n >= 0) {
-						s = s.substring(0, n) + "/";
-					}
-				} else {
-					ILog log = Activator.getDefault().getLog();
-					log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,
-							"DMDLMarker#findMyClassPath() unsupported URL: "
-									+ s));
+					url = tempFile.toURI().toURL();
 				}
-				url = new URL(s);
+
+				ILog log = Activator.getDefault().getLog();
+				log.log(new Status(Status.INFO, Activator.PLUGIN_ID,
+						"DMDLMarker#findMyClassPath(" + jarName + ")-> " + url));
+
 				list.add(url);
 				return url;
 			} catch (Exception e) {

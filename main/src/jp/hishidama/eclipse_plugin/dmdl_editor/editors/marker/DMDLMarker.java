@@ -10,6 +10,8 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLDocument;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaProject;
@@ -32,6 +34,11 @@ public class DMDLMarker {
 			map.put(project, wrapper);
 		}
 		if (wrapper.isValid()) {
+			try {
+				file.deleteMarkers(IMarker.PROBLEM, true,
+						IResource.DEPTH_INFINITE);
+			} catch (CoreException e) {
+			}
 			List<ParseError> list = wrapper.parse(file, document);
 			if (list != null) {
 				for (ParseError pe : list) {

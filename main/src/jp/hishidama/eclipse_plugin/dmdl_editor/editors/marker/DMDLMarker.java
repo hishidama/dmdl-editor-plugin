@@ -112,9 +112,9 @@ public class DMDLMarker {
 				URL url = FileLocator.resolve(bundleUrl);
 				String s = url.toExternalForm();
 				if (s.startsWith("jar:")) {
-					File tempFile = File.createTempFile("dmdlparser-caller",
-							".jar");
-					tempFile.deleteOnExit();
+					File dir = Activator.getDefault().getStateLocation()
+							.toFile();
+					File tempFile = new File(dir, "dmdlparser-caller.jar");
 					InputStream is = url.openStream();
 					try {
 						OutputStream os = new FileOutputStream(tempFile);

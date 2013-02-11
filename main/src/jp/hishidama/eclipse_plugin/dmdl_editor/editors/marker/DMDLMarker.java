@@ -77,7 +77,14 @@ public class DMDLMarker {
 			findClassPath(parserClassList, project, "org.slf4j.LoggerFactory");
 			findClassPath(parserClassList, project,
 					"com.asakusafw.utils.collections.Lists");
+			findClassPath(parserClassList, project,
+					"com.asakusafw.utils.graph.Graphs");
 			findMyClassPath(parserClassList, "resource/dmdlparser-caller.jar");
+
+			ILog log = Activator.getDefault().getLog();
+			log.log(new Status(Status.INFO, Activator.PLUGIN_ID,
+					"DMDLMarker classpath=" + parserClassList));
+
 			parserLoader = URLClassLoader.newInstance(parserClassList
 					.toArray(new URL[parserClassList.size()]));
 		}
@@ -167,13 +174,14 @@ public class DMDLMarker {
 				List<Object[]> list = (List<Object[]>) method.invoke(caller,
 						uri, document.get());
 				for (Object[] r : list) {
-					String message = (String) r[0];
-					int beginLine = (Integer) r[1];
-					int beginColumn = (Integer) r[2];
-					int endLine = (Integer) r[3];
-					int endColumn = (Integer) r[4];
-					createErrorMarker(file, document, message, beginLine,
-							beginColumn, endLine, endColumn);
+					int level = (Integer) r[0];
+					String message = (String) r[1];
+					int beginLine = (Integer) r[2];
+					int beginColumn = (Integer) r[3];
+					int endLine = (Integer) r[4];
+					int endColumn = (Integer) r[5];
+					createErrorMarker(file, document, level, message,
+							beginLine, beginColumn, endLine, endColumn);
 				}
 			} catch (Exception e) {
 				ILog log = Activator.getDefault().getLog();
@@ -187,8 +195,8 @@ public class DMDLMarker {
 		}
 
 		protected void createErrorMarker(IFile file, IDocument document,
-				String message, int beginLine, int beginColumn, int endLine,
-				int endColumn) {
+				int level, String message, int beginLine, int beginColumn,
+				int endLine, int endColumn) {
 			try {
 
 				int beginOffset = document.getLineOffset(beginLine - 1)
@@ -196,7 +204,7 @@ public class DMDLMarker {
 				int endOffset = document.getLineOffset(endLine - 1) + endColumn;
 
 				IMarker marker = file.createMarker(IMarker.PROBLEM);
-				marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+				marker.setAttribute(IMarker.SEVERITY, level); // IMarker.SEVERITY_ERROR
 				marker.setAttribute(IMarker.MESSAGE, message);
 				// marker.setAttribute(IMarker.LINE_NUMBER, beginLine - 1);
 				marker.setAttribute(IMarker.CHAR_START, beginOffset);

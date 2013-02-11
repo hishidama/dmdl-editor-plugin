@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLDocument;
@@ -24,9 +26,11 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IClassFile;
+import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.text.IDocument;
 
 public class DMDLMarker {
@@ -79,6 +83,10 @@ public class DMDLMarker {
 					"com.asakusafw.utils.collections.Lists");
 			findClassPath(parserClassList, project,
 					"com.asakusafw.utils.graph.Graphs");
+
+			// Direct I/O, WindGate, etc
+			findDmdlService(parserClassList, project);
+
 			findMyClassPath(parserClassList, "resource/dmdlparser-caller.jar");
 
 			ILog log = Activator.getDefault().getLog();
@@ -109,6 +117,39 @@ public class DMDLMarker {
 				log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,
 						"DMDLMarker#findClassPath(" + className + ")", e));
 				return null;
+			}
+		}
+
+		protected void findDmdlService(List<URL> list, IJavaProject project) {
+			IClasspathEntry[] entries;
+			try {
+				entries = project.getRawClasspath();
+			} catch (JavaModelException e) {
+				return;
+			}
+			for (IClasspathEntry ce : entries) {
+				try {
+					File file = JavaCore.getResolvedClasspathEntry(ce)
+							.getPath().toFile();
+					if (!file.getName().endsWith(".jar")) {
+						continue;
+					}
+					JarFile jf = new JarFile(file);
+					try {
+						ZipEntry driver = jf
+								.getEntry("META-INF/services/com.asakusafw.dmdl.spi.AttributeDriver");
+						if (driver == null) {
+							driver = jf
+									.getEntry("META-INF/services/com.asakusafw.dmdl.spi.TypeDriver");
+						}
+						if (driver != null) {
+							list.add(file.toURI().toURL());
+						}
+					} finally {
+						jf.close();
+					}
+				} catch (Exception e) {
+				}
 			}
 		}
 

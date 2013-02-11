@@ -6,7 +6,10 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.editors.hyperlink.DMDLHyperlinkDe
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker.DMDLMarker;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.outline.OutlinePage;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.ColorManager;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelList;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.PropertyToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.WordToken;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -18,6 +21,7 @@ import org.eclipse.jface.text.source.MatchingCharacterPainter;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
@@ -110,6 +114,61 @@ public class DMDLEditor extends TextEditor implements IPropertyChangeListener {
 		}
 
 		return super.getAdapter(adapter);
+	}
+
+	@Override
+	protected void handleCursorPositionChanged() {
+		super.handleCursorPositionChanged();
+
+		jumpOutline();
+	}
+
+	private boolean inSelect = false;
+
+	protected void jumpOutline() {
+		if (outlinePage == null) {
+			return;
+		}
+		DMDLDocument document = getDocument();
+		if (document == null) {
+			return;
+		}
+		ModelList models = document.getModelList();
+
+		ISourceViewer sourceViewer = getSourceViewer();
+		StyledText styledText = sourceViewer.getTextWidget();
+		int caret = widgetOffset2ModelOffset(sourceViewer,
+				styledText.getCaretOffset());
+		DMDLToken token = models.getTokenByOffset(caret);
+		if (token instanceof WordToken) {
+			WordToken word = (WordToken) token;
+			switch (word.getWordType()) {
+			case MODEL_NAME:
+				inSelect = true;
+				try {
+					DMDLToken model = token.getParent();
+					outlinePage.selectToken(model);
+				} finally {
+					inSelect = false;
+				}
+				break;
+			default:
+				DMDLToken parent = token.getParent();
+				if (parent instanceof PropertyToken) {
+					inSelect = true;
+					try {
+						outlinePage.selectToken(parent);
+					} finally {
+						inSelect = false;
+					}
+				}
+				break;
+			}
+		}
+	}
+
+	public boolean inSelect() {
+		return inSelect;
 	}
 
 	/**

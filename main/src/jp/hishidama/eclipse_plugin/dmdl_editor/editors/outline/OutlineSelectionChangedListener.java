@@ -19,6 +19,10 @@ public class OutlineSelectionChangedListener implements
 
 	@Override
 	public void selectionChanged(SelectionChangedEvent event) {
+		if (editor.inSelect()) {
+			return;
+		}
+
 		IStructuredSelection sel = (IStructuredSelection) event.getSelection();
 		Object element = sel.getFirstElement();
 		DMDLToken token;

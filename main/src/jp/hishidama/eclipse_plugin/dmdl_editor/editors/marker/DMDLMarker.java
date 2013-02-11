@@ -62,6 +62,7 @@ public class DMDLMarker {
 			marker.setAttribute(IMarker.CHAR_END, endOffset);
 			marker.setAttribute(IMarker.LOCATION, String.format("%d:%d-%d:%d",
 					pe.beginLine, pe.beginColumn, pe.endLine, pe.endColumn));
+			marker.setAttribute(IMarker.TRANSIENT, true);
 		} catch (Exception e) {
 			ILog log = Activator.getDefault().getLog();
 			log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,

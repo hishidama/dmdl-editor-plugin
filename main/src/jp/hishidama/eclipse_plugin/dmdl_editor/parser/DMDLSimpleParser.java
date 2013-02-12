@@ -8,6 +8,7 @@ import java.util.Set;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.AnnotationToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ArgumentToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ArgumentsToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ArrayToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.BlockToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.CommentToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
@@ -395,6 +396,9 @@ public class DMDLSimpleParser {
 			case '\"':
 				parseDescription(argList, scanner, start);
 				break;
+			case '{':
+				parseArray(argList, scanner, start);
+				break;
 			default:
 				parseWord(argList, scanner, start);
 				break;
@@ -410,6 +414,77 @@ public class DMDLSimpleParser {
 	protected void acceptArg(List<DMDLToken> list, DMDLSimpleScanner scanner,
 			int start, int end, List<DMDLToken> bodyList) {
 		list.add(new ArgumentToken(start, end, bodyList));
+	}
+
+	protected void parseArray(List<DMDLToken> argList,
+			DMDLSimpleScanner scanner, int arrayStart) {
+		List<DMDLToken> list = new ArrayList<DMDLToken>();
+		acceptWord(list, scanner, arrayStart, arrayStart + 1);
+
+		for (;;) {
+			int start = scanner.getOffset();
+			char c = scanner.read();
+			switch (c) {
+			case ' ':
+			case '\t':
+			case '\r':
+			case '\n':
+				break;
+			case ',':
+				acceptWord(list, scanner, start, start + 1);
+				break;
+			case DMDLSimpleScanner.EOF:
+				acceptArray(argList, scanner, arrayStart, scanner.getOffset(),
+						list);
+				return;
+			case '}': {
+				acceptWord(list, scanner, start, start + 1);
+				acceptArray(argList, scanner, arrayStart, scanner.getOffset(),
+						list);
+				return;
+			}
+			case '/': {
+				char d = scanner.read();
+				scanner.unread();
+				switch (d) {
+				case '/':
+					parseLineComment(list, scanner, start, false);
+					break;
+				case '*':
+					parseBlockComment(list, scanner, start, false);
+					break;
+				default:
+					parseWord(list, scanner, start);
+					break;
+				}
+				break;
+			}
+			case '-': {
+				char d = scanner.read();
+				scanner.unread();
+				switch (d) {
+				case '-':
+					parseLineComment(list, scanner, start, true);
+					break;
+				default:
+					parseWord(list, scanner, start);
+					break;
+				}
+				break;
+			}
+			case '\"':
+				parseDescription(list, scanner, start);
+				break;
+			default:
+				parseWord(list, scanner, start);
+				break;
+			}
+		}
+	}
+
+	protected void acceptArray(List<DMDLToken> list, DMDLSimpleScanner scanner,
+			int start, int end, List<DMDLToken> bodyList) {
+		list.add(new ArrayToken(start, end, bodyList));
 	}
 
 	protected void parseWord(List<DMDLToken> list, DMDLSimpleScanner scanner,

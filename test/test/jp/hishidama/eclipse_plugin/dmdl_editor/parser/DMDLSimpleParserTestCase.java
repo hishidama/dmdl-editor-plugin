@@ -8,6 +8,7 @@ import java.util.List;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.AnnotationToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ArgumentToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ArgumentsToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ArrayToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.BlockToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.CommentToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLBodyToken;
@@ -142,20 +143,20 @@ public class DMDLSimpleParserTestCase {
 		return new ArgumentsToken(0, 0, list);
 	}
 
-	public ArgumentToken arg(String name, String value) {
-		List<DMDLToken> list = new ArrayList<DMDLToken>(3);
+	public ArgumentToken arg(String name, DMDLToken value) {
+		List<DMDLToken> list = new ArrayList<DMDLToken>();
 		list.add(new WordToken(0, 0, name));
 		list.add(new WordToken(0, 0, "="));
-		list.add(new WordToken(0, 0, value));
+		list.add(value);
 		return new ArgumentToken(0, 0, list);
 	}
 
+	public ArgumentToken arg(String name, String value) {
+		return arg(name, new WordToken(0, 0, value));
+	}
+
 	public ArgumentToken argq(String name, String value) {
-		List<DMDLToken> list = new ArrayList<DMDLToken>(3);
-		list.add(new WordToken(0, 0, name));
-		list.add(new WordToken(0, 0, "="));
-		list.add(new DescriptionToken(0, 0, "\"" + value + "\""));
-		return new ArgumentToken(0, 0, list);
+		return arg(name, new DescriptionToken(0, 0, "\"" + value + "\""));
 	}
 
 	public ArgumentToken arg(DMDLToken... ts) {
@@ -164,6 +165,32 @@ public class DMDLSimpleParserTestCase {
 			list.add(t);
 		}
 		return new ArgumentToken(0, 0, list);
+	}
+
+	public ArrayToken arr(String... value) {
+		return arr(true, value);
+	}
+
+	public ArrayToken arr(boolean close, String... value) {
+		List<DMDLToken> list = new ArrayList<DMDLToken>(value.length * 2 + 2);
+		list.add(new WordToken(0, 0, "{"));
+		boolean first = true;
+		for (String s : value) {
+			if (first) {
+				first = false;
+			} else {
+				list.add(new WordToken(0, 0, ","));
+			}
+			if (s.startsWith("\"")) {
+				list.add(new DescriptionToken(0, 0, s));
+			} else {
+				list.add(new WordToken(0, 0, s));
+			}
+		}
+		if (close) {
+			list.add(new WordToken(0, 0, "}"));
+		}
+		return new ArrayToken(0, 0, list);
 	}
 
 	public WordToken word(String s) {

@@ -10,6 +10,7 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.editors.preference.PreferenceCons
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.AnnotationToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ArgumentToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ArgumentsToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ArrayToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.BlockToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.CommentToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLBodyToken;
@@ -155,6 +156,8 @@ public class DMDLContentFormatter implements IContentFormatter {
 						blockFormatter.format((BlockToken) t);
 					} else if (t instanceof PropertyToken) {
 						propertyFormatter.format((PropertyToken) t);
+					} else if (t instanceof ArrayToken) {
+						arrayFormatter.format((ArrayToken) t);
 					} else {
 						defaultFormatter.format(t);
 					}
@@ -384,6 +387,19 @@ public class DMDLContentFormatter implements IContentFormatter {
 			}
 			append(token.getStart(), INDENT_PROPERTY);
 			append(token.getStart(), token.getBody());
+		}
+	};
+
+	protected TokenFormatter<ArrayToken> arrayFormatter = new TokenFormatter<ArrayToken>() {
+		@Override
+		protected void formatWord(WordToken token, boolean firstToken,
+				String word, boolean firstWord) {
+			if (",".equals(word)) {
+				// 何も入れない
+			} else {
+				append(token.getStart(), " ");
+			}
+			append(token.getStart(), word);
 		}
 	};
 

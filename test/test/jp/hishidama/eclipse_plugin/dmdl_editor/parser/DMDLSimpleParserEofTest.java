@@ -220,6 +220,23 @@ public class DMDLSimpleParserEofTest extends DMDLSimpleParserTestCase {
 	}
 
 	@Test
+	public void parse_eof_array() {
+		DMDLSimpleParser parser = new DMDLSimpleParser();
+		String actual = "(value ={ abc";
+
+		ModelList models = parser.parse(new StringScanner(actual));
+		List<DMDLToken> list = models.getBody();
+
+		assertEquals(1, list.size());
+
+		DMDLToken expected = model(args(false,
+				arg(word("value"), word("="), arr(false, "abc"))));
+		assertEqualsToken(expected, list.get(0));
+
+		assertEnd(actual, models);
+	}
+
+	@Test
 	public void parse_eof_symbol_eq() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		String actual = "item =";

@@ -86,6 +86,8 @@ public class DMDLSimpleParserTest extends DMDLSimpleParserTestCase {
 				+ "  prop1: TEXT;\n" //
 				+ "@line2(name = \"abc\",value=TRUE)\n" //
 				+ "  prop2: LONG;\n" //
+				+ "@line3(value = { 123, 456, \"abc\" })" //
+				+ "  prop3: INT;" //
 				+ "};";
 
 		ModelList models = parser.parse(new StringScanner(actual));
@@ -110,7 +112,14 @@ public class DMDLSimpleParserTest extends DMDLSimpleParserTestCase {
 						prop(ann("@line2"),
 								args(argq("name", "abc"), arg("value", "TRUE")),
 								word("prop2"), word(":"), word("LONG"),
-								word(";")), word("}")), word(";"));
+								word(";")),
+						prop(ann("@line3"),
+								args(arg("value", arr("123", "456", "\"abc\""))),
+								word("prop3"), word(":"), word("INT"),
+								word(";")),
+						//
+						word("}")), //
+				word(";"));
 		// System.out.println("expected=" + expected);
 		// System.out.println("actual  =" + token);
 		assertEqualsToken(expected, token);

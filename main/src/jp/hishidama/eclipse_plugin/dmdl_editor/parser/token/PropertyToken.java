@@ -91,6 +91,7 @@ public class PropertyToken extends DMDLBodyToken {
 		return typeToken;
 	}
 
+	@Override
 	public String getDataType() {
 		String dataType = getDataType(new HashSet<PropertyToken>());
 		if (!"summarized".equals(getModelType())) {

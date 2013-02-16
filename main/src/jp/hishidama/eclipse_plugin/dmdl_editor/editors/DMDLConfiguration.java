@@ -5,6 +5,7 @@ import java.util.Arrays;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.assist.DMDLContentAssistProcessor;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.format.DMDLContentFormatter;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.hyperlink.DMDLHyperlinkDetector;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker.DMDLTextHover;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.AttributeManager;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.ColorManager;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.DMScanner;
@@ -12,7 +13,6 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.NonRuleBasedDamager
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.PartitionDamagerRepairer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.partition.DMDLPartitionScanner;
 
-import org.eclipse.jface.text.DefaultTextHover;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
@@ -21,12 +21,10 @@ import org.eclipse.jface.text.formatter.IContentFormatter;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
-import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.DefaultAnnotationHover;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
-import org.eclipse.ui.texteditor.MarkerAnnotation;
 
 public class DMDLConfiguration extends SourceViewerConfiguration {
 	private AttributeManager attrManager;
@@ -133,14 +131,6 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 	@Override
 	public ITextHover getTextHover(ISourceViewer sourceViewer,
 			String contentType) {
-		return new DefaultTextHover(sourceViewer) {
-			@Override
-			protected boolean isIncluded(Annotation annotation) {
-				if (annotation instanceof MarkerAnnotation) {
-					return true;
-				}
-				return false;
-			}
-		};
+		return new DMDLTextHover(sourceViewer);
 	}
 }

@@ -109,4 +109,11 @@ public abstract class DMDLToken {
 		}
 		return null;
 	}
+
+	public String getDataType() {
+		if (parentToken != null) {
+			return parentToken.getDataType();
+		}
+		return null;
+	}
 }

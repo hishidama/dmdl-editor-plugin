@@ -19,8 +19,8 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-public class DMDLMarkHandler extends AbstractHandler {
-	protected DMDLMarker marker = new DMDLMarker();
+public class DMDLErrorCheckHandler extends AbstractHandler {
+	protected DMDLErrorMarkerCreator marker = new DMDLErrorMarkerCreator();
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {

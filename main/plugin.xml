@@ -50,8 +50,8 @@
       </command>
       <command
             categoryId="dmdl-editor-plugin.category"
-            id="dmdl-editor-plugin.marker-command"
-            name="marker-command">
+            id="dmdl-editor-plugin.errorcheck-command"
+            name="errorcheck-command">
       </command>
    </extension>
    <extension
@@ -61,8 +61,8 @@
             commandId="dmdl-editor-plugin.formatting-command">
       </handler>
       <handler
-            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker.DMDLMarkHandler"
-            commandId="dmdl-editor-plugin.marker-command">
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker.DMDLErrorCheckHandler"
+            commandId="dmdl-editor-plugin.errorcheck-command">
       </handler>
    </extension>
    <extension
@@ -81,7 +81,7 @@
          <menu
                label="DMDL editor">
             <command
-                  commandId="dmdl-editor-plugin.marker-command"
+                  commandId="dmdl-editor-plugin.errorcheck-command"
                   label="error check">
             </command>
          </menu>
@@ -91,7 +91,7 @@
          <toolbar
                id="dmdl-editor-plugin.toolbar">
             <command
-                  commandId="dmdl-editor-plugin.marker-command"
+                  commandId="dmdl-editor-plugin.errorcheck-command"
                   icon="icons/hishidama16.gif"
                   style="push"
                   tooltip="error check">

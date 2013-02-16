@@ -20,7 +20,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.ui.editors.text.FileDocumentProvider;
 import org.eclipse.ui.part.FileEditorInput;
 
-public class DMDLMarker {
+public class DMDLErrorMarkerCreator {
 
 	protected Map<IJavaProject, DmdlParserWrapper> map = new HashMap<IJavaProject, DmdlParserWrapper>();
 

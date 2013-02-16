@@ -21,10 +21,12 @@ import org.eclipse.jface.text.formatter.IContentFormatter;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
+import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.DefaultAnnotationHover;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
+import org.eclipse.ui.texteditor.MarkerAnnotation;
 
 public class DMDLConfiguration extends SourceViewerConfiguration {
 	private AttributeManager attrManager;
@@ -131,6 +133,14 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 	@Override
 	public ITextHover getTextHover(ISourceViewer sourceViewer,
 			String contentType) {
-		return new DefaultTextHover(sourceViewer);
+		return new DefaultTextHover(sourceViewer) {
+			@Override
+			protected boolean isIncluded(Annotation annotation) {
+				if (annotation instanceof MarkerAnnotation) {
+					return true;
+				}
+				return false;
+			}
+		};
 	}
 }

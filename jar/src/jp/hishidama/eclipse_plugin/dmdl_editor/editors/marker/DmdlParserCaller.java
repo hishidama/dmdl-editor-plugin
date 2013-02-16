@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker.DmdlSourceUri.Info;
+
 import com.asakusafw.dmdl.Diagnostic;
 import com.asakusafw.dmdl.Region;
 import com.asakusafw.dmdl.analyzer.DmdlAnalyzer;
@@ -22,13 +24,22 @@ import com.asakusafw.dmdl.spi.TypeDriver;
 
 public class DmdlParserCaller {
 
-	public List<Object[]> parse(URI name, String text) throws IOException {
-		List<Object[]> list = new ArrayList<Object[]>();
+	public List<Object[]> parse(List<Object[]> files) throws IOException {
+		List<Object[]> result = new ArrayList<Object[]>();
+		analyze(files, result);
+		return result;
+	}
 
+	protected void analyze(List<Object[]> files, List<Object[]> result)
+			throws IOException {
+		List<Info> list = new ArrayList<Info>(files.size());
+		for (Object[] arr : files) {
+			list.add(new Info((URI) arr[0], (String) arr[1]));
+		}
+		DmdlSourceRepository repository = new DmdlSourceUri(list);
+		DmdlAnalyzer analyzer = parse(repository, result);
 		try {
-			analyze(name, text);
-		} catch (DmdlSyntaxException e) {
-			list.add(createResult(2, e.getMessage(), e.getRegion()));
+			analyzer.resolve();
 		} catch (DmdlSemanticException e) {
 			for (Diagnostic diagnostic : e.getDiagnostics()) {
 				int level;
@@ -43,29 +54,15 @@ public class DmdlParserCaller {
 					level = 2; // IMarker.SEVERITY_ERROR
 					break;
 				}
-				list.add(createResult(level, diagnostic.message,
+				result.add(createResult(level, diagnostic.message,
 						diagnostic.region));
 			}
 		}
-
-		return list;
-	}
-
-	protected Object[] createResult(int level, String message, Region region) {
-		return new Object[] { level, message, region.beginLine,
-				region.beginColumn, region.endLine, region.endColumn };
-	}
-
-	protected void analyze(URI name, String text) throws IOException,
-			DmdlSyntaxException, DmdlSemanticException {
-		DmdlSourceRepository repository = new DmdlSourceString(name, text);
-		DmdlAnalyzer analyzer = parse(repository);
-		analyzer.resolve();
 	}
 
 	// see com.asakusafw.dmdl.util.AnalyzeTask
-	protected DmdlAnalyzer parse(DmdlSourceRepository source)
-			throws IOException, DmdlSyntaxException {
+	protected DmdlAnalyzer parse(DmdlSourceRepository source,
+			List<Object[]> result) throws IOException {
 		DmdlParser parser = new DmdlParser();
 
 		ClassLoader loader = getClass().getClassLoader();
@@ -82,6 +79,8 @@ public class DmdlParserCaller {
 					for (AstModelDefinition<?> model : script.models) {
 						analyzer.addModel(model);
 					}
+				} catch (DmdlSyntaxException e) {
+					result.add(createResult(2, e.getMessage(), e.getRegion()));
 				} finally {
 					resource.close();
 				}
@@ -90,5 +89,11 @@ public class DmdlParserCaller {
 			cursor.close();
 		}
 		return analyzer;
+	}
+
+	protected Object[] createResult(int level, String message, Region region) {
+		return new Object[] { region.sourceFile, level, message,
+				region.beginLine, region.beginColumn, region.endLine,
+				region.endColumn };
 	}
 }

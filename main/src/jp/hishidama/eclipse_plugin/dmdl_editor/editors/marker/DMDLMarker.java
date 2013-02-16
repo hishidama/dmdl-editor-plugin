@@ -1,11 +1,11 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLDocument;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -17,13 +17,15 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.ui.editors.text.FileDocumentProvider;
+import org.eclipse.ui.part.FileEditorInput;
 
 public class DMDLMarker {
 
 	protected Map<IJavaProject, DmdlParserWrapper> map = new HashMap<IJavaProject, DmdlParserWrapper>();
 
-	public void parse(IFile file, DMDLDocument document) {
-		IJavaProject project = getJavaProject(file);
+	public void parse(List<IFile> files) {
+		IJavaProject project = getJavaProject(files.get(0));
 		if (project == null) {
 			return;
 		}
@@ -34,14 +36,27 @@ public class DMDLMarker {
 			map.put(project, wrapper);
 		}
 		if (wrapper.isValid()) {
-			try {
-				file.deleteMarkers(IMarker.PROBLEM, true,
-						IResource.DEPTH_INFINITE);
-			} catch (CoreException e) {
+			Map<URI, IFile> fileMap = new HashMap<URI, IFile>();
+			for (IFile file : files) {
+				try {
+					file.deleteMarkers(IMarker.PROBLEM, true,
+							IResource.DEPTH_INFINITE);
+					fileMap.put(file.getLocationURI(), file);
+				} catch (Exception e) {
+				}
 			}
-			List<ParseError> list = wrapper.parse(file, document);
+			List<ParseError> list = wrapper.parse(files);
 			if (list != null) {
+				FileDocumentProvider provider = new FileDocumentProvider();
 				for (ParseError pe : list) {
+					IFile file = fileMap.get(pe.file);
+					FileEditorInput input = new FileEditorInput(file);
+					try {
+						provider.connect(input);
+					} catch (CoreException e) {
+						throw new RuntimeException(e);
+					}
+					IDocument document = provider.getDocument(input);
 					createErrorMarker(file, document, pe);
 				}
 			}
@@ -69,7 +84,7 @@ public class DMDLMarker {
 			marker.setAttribute(IMarker.CHAR_END, endOffset);
 			marker.setAttribute(IMarker.LOCATION, String.format("%d:%d-%d:%d",
 					pe.beginLine, pe.beginColumn, pe.endLine, pe.endColumn));
-			marker.setAttribute(IMarker.TRANSIENT, true);
+			marker.setAttribute(IMarker.TRANSIENT, false);
 		} catch (Exception e) {
 			ILog log = Activator.getDefault().getLog();
 			log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,

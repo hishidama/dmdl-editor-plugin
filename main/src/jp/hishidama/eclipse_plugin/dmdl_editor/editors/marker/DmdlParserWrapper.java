@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -26,7 +25,6 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jface.text.IDocument;
 
 public class DmdlParserWrapper {
 	public DmdlParserWrapper(IJavaProject project) {
@@ -167,31 +165,36 @@ public class DmdlParserWrapper {
 		}
 	}
 
-	public List<ParseError> parse(IFile file, IDocument document) {
-		URI uri;
-		try {
-			uri = new URI("file:" + file.getFullPath().toFile().getName());
-		} catch (URISyntaxException e1) {
-			uri = null;
+	public List<ParseError> parse(List<IFile> ifiles) {
+		List<Object[]> files = new ArrayList<Object[]>(ifiles.size());
+		for (IFile f : ifiles) {
+			try {
+				Object[] arr = { f.getLocationURI(), f.getCharset() };
+				files.add(arr);
+			} catch (Exception e) {
+				ILog log = Activator.getDefault().getLog();
+				log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,
+						"DMDLMarker#parse(" + f + ") error.", e));
+			}
 		}
 		try {
 			Class<?> c = parserLoader
 					.loadClass("jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker.DmdlParserCaller");
 			Object caller = c.newInstance();
-			Method method = c.getMethod("parse", URI.class, String.class);
+			Method method = c.getMethod("parse", List.class);
 			@SuppressWarnings("unchecked")
-			List<Object[]> list = (List<Object[]>) method.invoke(caller, uri,
-					document.get());
+			List<Object[]> list = (List<Object[]>) method.invoke(caller, files);
 
 			List<ParseError> result = new ArrayList<ParseError>(list.size());
 			for (Object[] r : list) {
 				ParseError pe = new ParseError();
-				pe.level = (Integer) r[0];
-				pe.message = (String) r[1];
-				pe.beginLine = (Integer) r[2];
-				pe.beginColumn = (Integer) r[3];
-				pe.endLine = (Integer) r[4];
-				pe.endColumn = (Integer) r[5];
+				pe.file = (URI) r[0];
+				pe.level = (Integer) r[1];
+				pe.message = (String) r[2];
+				pe.beginLine = (Integer) r[3];
+				pe.beginColumn = (Integer) r[4];
+				pe.endLine = (Integer) r[5];
+				pe.endColumn = (Integer) r[6];
 				result.add(pe);
 			}
 			return result;

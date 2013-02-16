@@ -46,7 +46,12 @@
       <command
             categoryId="dmdl-editor-plugin.category"
             id="dmdl-editor-plugin.formatting-command"
-            name="formatting-command-name">
+            name="formatting-command">
+      </command>
+      <command
+            categoryId="dmdl-editor-plugin.category"
+            id="dmdl-editor-plugin.marker-command"
+            name="marker-command">
       </command>
    </extension>
    <extension
@@ -54,6 +59,10 @@
       <handler
             class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.format.FormattingHandler"
             commandId="dmdl-editor-plugin.formatting-command">
+      </handler>
+      <handler
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker.DMDLMarkHandler"
+            commandId="dmdl-editor-plugin.marker-command">
       </handler>
    </extension>
    <extension
@@ -64,6 +73,31 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M2+F">
       </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+         <menu
+               label="DMDL editor">
+            <command
+                  commandId="dmdl-editor-plugin.marker-command"
+                  label="error check">
+            </command>
+         </menu>
+      </menuContribution>
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="dmdl-editor-plugin.toolbar">
+            <command
+                  commandId="dmdl-editor-plugin.marker-command"
+                  icon="icons/hishidama16.gif"
+                  style="push"
+                  tooltip="error check">
+            </command>
+         </toolbar>
+      </menuContribution>
    </extension>
 
 </plugin>

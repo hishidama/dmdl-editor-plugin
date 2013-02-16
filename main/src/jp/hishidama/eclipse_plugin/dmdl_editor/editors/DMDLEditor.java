@@ -3,7 +3,6 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.editors;
 import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.folding.FoldingManager;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.hyperlink.DMDLHyperlinkDetector;
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker.DMDLMarker;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.outline.OutlinePage;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.ColorManager;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
@@ -26,7 +25,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
@@ -36,7 +34,6 @@ public class DMDLEditor extends TextEditor implements IPropertyChangeListener {
 
 	protected FoldingManager foldingManager = new FoldingManager();
 	protected OutlinePage outlinePage;
-	protected DMDLMarker marker = new DMDLMarker();
 
 	/**
 	 * コンストラクター.
@@ -210,9 +207,6 @@ public class DMDLEditor extends TextEditor implements IPropertyChangeListener {
 		if (outlinePage != null) {
 			outlinePage.refresh(models);
 		}
-
-		IFileEditorInput input = (IFileEditorInput) getEditorInput();
-		marker.parse(input.getFile(), document);
 	}
 
 	public DMDLDocument getDocument() {

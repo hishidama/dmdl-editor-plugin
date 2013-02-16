@@ -141,4 +141,15 @@ public class PropertyToken extends DMDLBodyToken {
 		}
 		return null;
 	}
+
+	@Override
+	public String getPropertyDescription() {
+		for (DMDLToken token : bodyList) {
+			if (token instanceof DescriptionToken) {
+				DescriptionToken desc = (DescriptionToken) token;
+				return desc.getBody();
+			}
+		}
+		return null;
+	}
 }

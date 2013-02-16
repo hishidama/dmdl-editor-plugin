@@ -116,4 +116,11 @@ public abstract class DMDLToken {
 		}
 		return null;
 	}
+
+	public String getPropertyDescription() {
+		if (parentToken != null) {
+			return parentToken.getPropertyDescription();
+		}
+		return null;
+	}
 }

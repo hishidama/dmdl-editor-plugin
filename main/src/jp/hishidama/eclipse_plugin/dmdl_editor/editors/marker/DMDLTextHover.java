@@ -69,28 +69,17 @@ public class DMDLTextHover extends DefaultTextHover implements
 					}
 				}
 				case REF_PROPERTY_NAME: {
-					String name = word.getBody();
-					String type = null;
 					WordToken ref = word.getReferenceWord();
 					if (ref != null) {
-						type = ref.getDataType();
-					}
-					if (type != null) {
-						return name + " : " + type;
-					} else {
-						return name;
+						PropertyToken prop = (PropertyToken) ref.getParent();
+						return getPropertyMessage(prop);
 					}
 				}
+					return null;
 				}
 			} else if (token instanceof PropertyToken) {
 				PropertyToken prop = (PropertyToken) token;
-				String name = prop.getName();
-				String type = prop.getDataType();
-				if (type != null) {
-					return name + " : " + type;
-				} else {
-					return name;
-				}
+				return getPropertyMessage(prop);
 			} else if (token instanceof ModelToken) {
 				ModelToken model = (ModelToken) token;
 				String name = model.getModelName();
@@ -106,5 +95,22 @@ public class DMDLTextHover extends DefaultTextHover implements
 			token = token.getParent();
 		}
 		return null;
+	}
+
+	private String getPropertyMessage(PropertyToken prop) {
+		StringBuilder sb = new StringBuilder();
+		String desc = prop.getPropertyDescription();
+		if (desc != null) {
+			sb.append(desc);
+			sb.append(" ");
+		}
+		String name = prop.getName();
+		sb.append(name);
+		String type = prop.getDataType();
+		if (type != null) {
+			sb.append(" : ");
+			sb.append(type);
+		}
+		return sb.toString();
 	}
 }

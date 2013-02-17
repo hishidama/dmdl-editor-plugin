@@ -38,20 +38,33 @@
       </page>
    </extension>
    <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            id="dmdl-editor-plugin.context"
+            name="DMDL Editor context"
+            parentId="org.eclipse.ui.contexts.window">
+      </context>
+   </extension>
+   <extension
          point="org.eclipse.ui.commands">
       <category
             id="dmdl-editor-plugin.category"
-            name="category-name">
+            name="DMDL Editor">
       </category>
       <command
             categoryId="dmdl-editor-plugin.category"
             id="dmdl-editor-plugin.formatting-command"
-            name="formatting-command">
+            name="DMDL source formatting">
       </command>
       <command
             categoryId="dmdl-editor-plugin.category"
             id="dmdl-editor-plugin.errorcheck-command"
-            name="errorcheck-command">
+            name="DMDL error check">
+      </command>
+      <command
+            categoryId="dmdl-editor-plugin.category"
+            id="dmdl-editor-plugin.jumplink-command"
+            name="DMDL open declaration">
       </command>
    </extension>
    <extension
@@ -64,6 +77,10 @@
             class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker.DMDLErrorCheckHandler"
             commandId="dmdl-editor-plugin.errorcheck-command">
       </handler>
+      <handler
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.hyperlink.DMDLHyperlinkHandler"
+            commandId="dmdl-editor-plugin.jumplink-command">
+      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
@@ -72,6 +89,12 @@
             contextId="org.eclipse.ui.contexts.window"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M2+F">
+      </key>
+      <key
+            commandId="dmdl-editor-plugin.jumplink-command"
+            contextId="dmdl-editor-plugin.context"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="F3">
       </key>
    </extension>
    <extension

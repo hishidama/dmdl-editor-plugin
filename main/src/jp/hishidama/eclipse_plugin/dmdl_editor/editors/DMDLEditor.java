@@ -121,6 +121,12 @@ public class DMDLEditor extends TextEditor implements IPropertyChangeListener {
 	}
 
 	@Override
+	protected void initializeKeyBindingScopes() {
+		super.initializeKeyBindingScopes();
+		setKeyBindingScopes(new String[] { "dmdl-editor-plugin.context" }); //$NON-NLS-1$
+	}
+
+	@Override
 	public void dispose() {
 		// Preferenceの更新リスナーを削除
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();

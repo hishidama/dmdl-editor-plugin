@@ -23,8 +23,13 @@ public class OutlineSelectionChangedListener implements
 			return;
 		}
 
-		IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-		Object element = sel.getFirstElement();
+		IStructuredSelection selection = (IStructuredSelection) event
+				.getSelection();
+		Object element = selection.getFirstElement();
+		selectByEditor(element);
+	}
+
+	protected void selectByEditor(Object element) {
 		DMDLToken token;
 		if (element instanceof ModelToken) {
 			ModelToken model = (ModelToken) element;

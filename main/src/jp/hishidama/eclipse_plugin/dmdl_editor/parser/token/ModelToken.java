@@ -150,6 +150,11 @@ public class ModelToken extends DMDLBodyToken {
 		return toString("ModelToken", "  ");
 	}
 
+	@Override
+	public ModelToken getModelToken() {
+		return this;
+	}
+
 	public WordToken getModelNameToken() {
 		return nameToken;
 	}
@@ -173,5 +178,36 @@ public class ModelToken extends DMDLBodyToken {
 			return token.getBody();
 		}
 		return null;
+	}
+
+	public String getDescription() {
+		for (DMDLToken token : bodyList) {
+			if (token instanceof DescriptionToken) {
+				DescriptionToken desc = (DescriptionToken) token;
+				return desc.getBody();
+			}
+		}
+		return null;
+	}
+
+	public String getQualifiedName() {
+		StringBuilder sb = new StringBuilder(64);
+
+		String desc = getDescription();
+		if (desc != null) {
+			sb.append(desc);
+			sb.append(" ");
+		}
+
+		String type = getModelType();
+		if (type != null) {
+			sb.append(type);
+			sb.append(" ");
+		}
+
+		String name = getModelName();
+		sb.append(name);
+
+		return sb.toString();
 	}
 }

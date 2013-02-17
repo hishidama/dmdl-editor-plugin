@@ -6,6 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.DMDLSimpleParser;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.DocumentScanner;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.IndexContainer;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.ModelIndex;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelList;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.PropertyToken;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -22,18 +29,55 @@ import org.eclipse.ui.part.FileEditorInput;
 
 public class DMDLErrorMarkerCreator {
 
-	protected Map<IJavaProject, DmdlParserWrapper> map = new HashMap<IJavaProject, DmdlParserWrapper>();
+	protected Map<String, DmdlParserWrapper> map = new HashMap<String, DmdlParserWrapper>();
 
 	public void parse(List<IFile> files) {
+		// 全ファイルが同一プロジェクトである想定
+		FileDocumentProvider provider = new FileDocumentProvider();
+		createIndex(files, provider);
+		checkMark(files, provider);
+	}
+
+	protected final IJavaProject getJavaProject(IFile file) {
+		IProject project = file.getProject();
+		return JavaCore.create(project);
+	}
+
+	protected void createIndex(List<IFile> files, FileDocumentProvider provider) {
+		IProject project = files.get(0).getProject();
+		IndexContainer ic = IndexContainer.createContainer(project);
+
+		DMDLSimpleParser parser = new DMDLSimpleParser();
+		for (IFile file : files) {
+			IDocument document = getDocument(provider, file);
+			DocumentScanner scanner = new DocumentScanner(document);
+			ModelList models = parser.parse(scanner);
+			for (ModelToken model : models.getNamedModelList()) {
+				String modelName = model.getModelName();
+				if (modelName != null) {
+					ModelIndex mi = ic.createModel(modelName, file, model);
+					for (PropertyToken prop : model.getPropertyList()) {
+						String propName = prop.getName();
+						if (propName != null) {
+							mi.addProperty(propName, prop);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	protected void checkMark(List<IFile> files, FileDocumentProvider provider) {
 		IJavaProject project = getJavaProject(files.get(0));
 		if (project == null) {
 			return;
 		}
 
-		DmdlParserWrapper wrapper = map.get(project);
+		String projectName = project.getProject().getName();
+		DmdlParserWrapper wrapper = map.get(projectName);
 		if (wrapper == null) {
 			wrapper = new DmdlParserWrapper(project);
-			map.put(project, wrapper);
+			map.put(projectName, wrapper);
 		}
 		if (wrapper.isValid()) {
 			Map<URI, IFile> fileMap = new HashMap<URI, IFile>();
@@ -47,25 +91,23 @@ public class DMDLErrorMarkerCreator {
 			}
 			List<ParseError> list = wrapper.parse(files);
 			if (list != null) {
-				FileDocumentProvider provider = new FileDocumentProvider();
 				for (ParseError pe : list) {
 					IFile file = fileMap.get(pe.file);
-					FileEditorInput input = new FileEditorInput(file);
-					try {
-						provider.connect(input);
-					} catch (CoreException e) {
-						throw new RuntimeException(e);
-					}
-					IDocument document = provider.getDocument(input);
+					IDocument document = getDocument(provider, file);
 					createErrorMarker(file, document, pe);
 				}
 			}
 		}
 	}
 
-	protected final IJavaProject getJavaProject(IFile file) {
-		IProject project = file.getProject();
-		return JavaCore.create(project);
+	protected IDocument getDocument(FileDocumentProvider provider, IFile file) {
+		FileEditorInput input = new FileEditorInput(file);
+		try {
+			provider.connect(input);
+		} catch (CoreException e) {
+			throw new RuntimeException(e);
+		}
+		return provider.getDocument(input);
 	}
 
 	protected void createErrorMarker(IFile file, IDocument document,

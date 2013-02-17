@@ -31,7 +31,7 @@ public class OutlinePage extends ContentOutlinePage {
 
 		TreeViewer viewer = getTreeViewer();
 		viewer.setContentProvider(new DMDLContentProvider());
-		viewer.setLabelProvider(new DMDLLabelProvider());
+		viewer.setLabelProvider(new DMDLLabelProvider(editor));
 		viewer.addSelectionChangedListener(new OutlineSelectionChangedListener(
 				editor));
 		viewer.addDoubleClickListener(new IDoubleClickListener() {

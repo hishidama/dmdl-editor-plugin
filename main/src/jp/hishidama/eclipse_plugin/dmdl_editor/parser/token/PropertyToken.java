@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.IndexContainer;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.PropertyIndex;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.WordToken.WordType;
 
 public class PropertyToken extends DMDLBodyToken {
@@ -63,6 +65,10 @@ public class PropertyToken extends DMDLBodyToken {
 		}
 	}
 
+	public WordToken getRefNameToken() {
+		return refNameToken;
+	}
+
 	public void setSumTypeToken(WordToken token) {
 		sumTypeToken = token;
 		if (token != null) {
@@ -92,8 +98,17 @@ public class PropertyToken extends DMDLBodyToken {
 	}
 
 	@Override
-	public String getDataType() {
-		String dataType = getDataType(new HashSet<PropertyToken>());
+	public String getDataType(IndexContainer ic) {
+		return getDataType(ic, new HashSet<PropertyToken>());
+	}
+
+	private String getDataType(IndexContainer ic, Set<PropertyToken> set) {
+		if (set.contains(this)) {
+			return null;
+		}
+		set.add(this);
+
+		String dataType = getDataTypeFirst(ic, set);
 		if (!"summarized".equals(getModelType())) {
 			return dataType;
 		}
@@ -120,10 +135,7 @@ public class PropertyToken extends DMDLBodyToken {
 		return null;
 	}
 
-	private String getDataType(Set<PropertyToken> set) {
-		if (set.contains(this)) {
-			return null;
-		}
+	private String getDataTypeFirst(IndexContainer ic, Set<PropertyToken> set) {
 		WordToken token = getDataTypeToken();
 		if (token != null) {
 			return token.getBody();
@@ -134,9 +146,26 @@ public class PropertyToken extends DMDLBodyToken {
 				DMDLToken parent = target.getParent();
 				if (parent instanceof PropertyToken) {
 					PropertyToken prop = (PropertyToken) parent;
-					set.add(this);
-					return prop.getDataType(set);
+					return prop.getDataType(ic, set);
 				}
+			} else {
+				return getDataTypeFrom(ic, refNameToken.getBody());
+			}
+		}
+		return null;
+	}
+
+	private String getDataTypeFrom(IndexContainer ic, String name) {
+		if (ic == null) {
+			return null;
+		}
+		DMDLToken ref = findRefModelToken();
+		if (ref instanceof WordToken) {
+			String modelName = ((WordToken) ref).getBody();
+			PropertyIndex index = ic.findProperty(modelName, name);
+			if (index != null) {
+				PropertyToken token = index.getToken();
+				return token.getDataType(ic);
 			}
 		}
 		return null;
@@ -151,5 +180,26 @@ public class PropertyToken extends DMDLBodyToken {
 			}
 		}
 		return null;
+	}
+
+	public String getQualifiedName(IndexContainer ic) {
+		StringBuilder sb = new StringBuilder(64);
+
+		String desc = getPropertyDescription();
+		if (desc != null) {
+			sb.append(desc);
+			sb.append(" ");
+		}
+
+		String name = getName();
+		sb.append(name);
+
+		String type = getDataType(ic);
+		if (type != null) {
+			sb.append(" : ");
+			sb.append(type);
+		}
+
+		return sb.toString();
 	}
 }

@@ -27,14 +27,17 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 
 public class DMDLConfiguration extends SourceViewerConfiguration {
+	private DMDLEditor editor;
 	private AttributeManager attrManager;
 
 	/**
 	 * コンストラクター.
 	 *
+	 * @param editor
 	 * @param colorManager
 	 */
-	public DMDLConfiguration(ColorManager colorManager) {
+	public DMDLConfiguration(DMDLEditor editor, ColorManager colorManager) {
+		this.editor = editor;
 		attrManager = new AttributeManager(colorManager);
 	}
 
@@ -131,6 +134,6 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 	@Override
 	public ITextHover getTextHover(ISourceViewer sourceViewer,
 			String contentType) {
-		return new DMDLTextHover(sourceViewer);
+		return new DMDLTextHover(editor, sourceViewer);
 	}
 }

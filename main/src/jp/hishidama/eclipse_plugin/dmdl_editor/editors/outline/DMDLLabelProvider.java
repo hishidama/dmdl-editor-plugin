@@ -1,7 +1,9 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.outline;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLEditor;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLImages;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.IndexContainer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.PropertyToken;
 
@@ -14,6 +16,12 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.graphics.Image;
 
 public class DMDLLabelProvider extends StyledCellLabelProvider {
+
+	private DMDLEditor editor;
+
+	public DMDLLabelProvider(DMDLEditor editor) {
+		this.editor = editor;
+	}
 
 	@Override
 	public void update(ViewerCell cell) {
@@ -55,7 +63,8 @@ public class DMDLLabelProvider extends StyledCellLabelProvider {
 	protected void update(ViewerCell cell, PropertyToken prop) {
 		StyledString styledString = new StyledString(prop.getPropertyName());
 
-		String type = prop.getDataType();
+		IndexContainer ic = IndexContainer.getContainer(editor.getProject());
+		String type = prop.getDataType(ic);
 		if (type != null) {
 			styledString.append(" : " + type, StyledString.DECORATIONS_STYLER);
 		}

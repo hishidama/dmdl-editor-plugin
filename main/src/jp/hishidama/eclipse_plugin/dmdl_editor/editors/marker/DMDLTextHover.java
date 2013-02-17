@@ -1,6 +1,10 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLDocument;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLEditor;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.IndexContainer;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.ModelIndex;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.PropertyIndex;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.CommentToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelList;
@@ -19,8 +23,11 @@ import org.eclipse.ui.texteditor.MarkerAnnotation;
 public class DMDLTextHover extends DefaultTextHover implements
 		ITextHoverExtension2 {
 
-	public DMDLTextHover(ISourceViewer sourceViewer) {
+	private DMDLEditor editor;
+
+	public DMDLTextHover(DMDLEditor editor, ISourceViewer sourceViewer) {
 		super(sourceViewer);
+		this.editor = editor;
 	}
 
 	@Override
@@ -57,60 +64,71 @@ public class DMDLTextHover extends DefaultTextHover implements
 				switch (word.getWordType()) {
 				case REF_MODEL_NAME: {
 					String name = word.getBody();
-					String type = null;
 					WordToken ref = word.getReferenceWord();
 					if (ref != null) {
-						type = ref.getModelType();
-					}
-					if (type != null) {
-						return name + " (" + type + ")";
-					} else {
+						ModelToken model = ref.getModelToken();
+						if (model != null) {
+							return model.getQualifiedName();
+						}
 						return name;
+					} else {
+						IndexContainer ic = IndexContainer.getContainer(editor
+								.getProject());
+						if (ic != null) {
+							ModelIndex index = ic.findModel(name);
+							if (index != null) {
+								ModelToken model = index.getToken();
+								String file = index.getFile().getFullPath()
+										.lastSegment();
+								return model.getQualifiedName() + " in " + file;
+							}
+						}
+						return null;
 					}
 				}
 				case REF_PROPERTY_NAME: {
 					WordToken ref = word.getReferenceWord();
 					if (ref != null) {
+						IndexContainer ic = IndexContainer.getContainer(editor
+								.getProject());
 						PropertyToken prop = (PropertyToken) ref.getParent();
-						return getPropertyMessage(prop);
+						return prop.getQualifiedName(ic);
+					} else {
+						DMDLToken model = word.findRefModelToken();
+						if (model instanceof WordToken) {
+							IndexContainer ic = IndexContainer
+									.getContainer(editor.getProject());
+							if (ic != null) {
+								String modelName = ((WordToken) model)
+										.getBody();
+								PropertyIndex index = ic.findProperty(
+										modelName, word.getBody());
+								if (index != null) {
+									PropertyToken p = index.getToken();
+									String file = index.getFile().getFullPath()
+											.lastSegment();
+									return p.getQualifiedName(ic) + " in "
+											+ file;
+								}
+							}
+						}
 					}
 				}
 					return null;
 				}
 			} else if (token instanceof PropertyToken) {
+				IndexContainer ic = IndexContainer.getContainer(editor
+						.getProject());
 				PropertyToken prop = (PropertyToken) token;
-				return getPropertyMessage(prop);
+				return prop.getQualifiedName(ic);
 			} else if (token instanceof ModelToken) {
 				ModelToken model = (ModelToken) token;
-				String name = model.getModelName();
-				String type = model.getModelType();
-				if (type != null) {
-					return name + " (" + type + ")";
-				} else {
-					return name;
-				}
+				return model.getQualifiedName();
 			} else if (token instanceof CommentToken) {
 				return null;
 			}
 			token = token.getParent();
 		}
 		return null;
-	}
-
-	private String getPropertyMessage(PropertyToken prop) {
-		StringBuilder sb = new StringBuilder();
-		String desc = prop.getPropertyDescription();
-		if (desc != null) {
-			sb.append(desc);
-			sb.append(" ");
-		}
-		String name = prop.getName();
-		sb.append(name);
-		String type = prop.getDataType();
-		if (type != null) {
-			sb.append(" : ");
-			sb.append(type);
-		}
-		return sb.toString();
 	}
 }

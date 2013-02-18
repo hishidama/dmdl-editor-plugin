@@ -117,7 +117,7 @@
                   commandId="dmdl-editor-plugin.errorcheck-command"
                   icon="icons/hishidama16.gif"
                   style="push"
-                  tooltip="error check">
+                  tooltip="DMDL error check">
             </command>
          </toolbar>
       </menuContribution>

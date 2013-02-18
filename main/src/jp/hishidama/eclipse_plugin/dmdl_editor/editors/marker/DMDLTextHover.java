@@ -80,7 +80,8 @@ public class DMDLTextHover extends DefaultTextHover implements
 								ModelToken model = index.getToken();
 								String file = index.getFile().getFullPath()
 										.lastSegment();
-								return model.getQualifiedName() + " in " + file;
+								return model.getQualifiedName() + " (" + file
+										+ ")";
 							}
 						}
 						return null;
@@ -107,8 +108,8 @@ public class DMDLTextHover extends DefaultTextHover implements
 									PropertyToken p = index.getToken();
 									String file = index.getFile().getFullPath()
 											.lastSegment();
-									return p.getQualifiedName(ic) + " in "
-											+ file;
+									return p.getQualifiedName(ic) + " (" + file
+											+ ")";
 								}
 							}
 						}

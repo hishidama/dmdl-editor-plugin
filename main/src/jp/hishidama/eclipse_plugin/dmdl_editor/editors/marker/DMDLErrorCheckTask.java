@@ -77,6 +77,7 @@ public class DMDLErrorCheckTask implements IRunnableWithProgress {
 		monitor.beginTask("DMDL error check", totalWork);
 		try {
 			for (List<IFile> list : projects.values()) {
+				cancelCheck(monitor);
 				parse(monitor, list);
 			}
 		} finally {
@@ -84,7 +85,8 @@ public class DMDLErrorCheckTask implements IRunnableWithProgress {
 		}
 	}
 
-	protected void parse(IProgressMonitor monitor, List<IFile> files) {
+	protected void parse(IProgressMonitor monitor, List<IFile> files)
+			throws InterruptedException {
 		FileDocumentProvider provider = new FileDocumentProvider();
 		createIndex(monitor, files, provider);
 		checkMark(monitor, files, provider);
@@ -96,20 +98,26 @@ public class DMDLErrorCheckTask implements IRunnableWithProgress {
 	}
 
 	protected void createIndex(IProgressMonitor monitor, List<IFile> files,
-			FileDocumentProvider provider) {
+			FileDocumentProvider provider) throws InterruptedException {
+		cancelCheck(monitor);
 		IProject project = files.get(0).getProject();
 		IndexContainer ic = IndexContainer.createContainer(project);
 
+		cancelCheck(monitor);
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		for (IFile file : files) {
+			monitor.subTask(file.getName());
+			cancelCheck(monitor);
 			IDocument document = getDocument(provider, file);
 			DocumentScanner scanner = new DocumentScanner(document);
 			ModelList models = parser.parse(scanner);
 			for (ModelToken model : models.getNamedModelList()) {
+				cancelCheck(monitor);
 				String modelName = model.getModelName();
 				if (modelName != null) {
 					ModelIndex mi = ic.createModel(modelName, file, model);
 					for (PropertyToken prop : model.getPropertyList()) {
+						cancelCheck(monitor);
 						String propName = prop.getName();
 						if (propName != null) {
 							mi.addProperty(propName, prop);
@@ -122,13 +130,15 @@ public class DMDLErrorCheckTask implements IRunnableWithProgress {
 	}
 
 	protected void checkMark(IProgressMonitor monitor, List<IFile> files,
-			FileDocumentProvider provider) {
+			FileDocumentProvider provider) throws InterruptedException {
+		cancelCheck(monitor);
 		IJavaProject project = getJavaProject(files.get(0));
 		if (project == null) {
 			monitor.worked(files.size() + 1);
 			return;
 		}
 
+		cancelCheck(monitor);
 		DmdlParserWrapper wrapper = null;
 		try {
 			wrapper = (DmdlParserWrapper) project.getProject()
@@ -143,8 +153,11 @@ public class DMDLErrorCheckTask implements IRunnableWithProgress {
 			}
 		}
 		if (wrapper.isValid()) {
+			cancelCheck(monitor);
 			Map<URI, IFile> fileMap = new HashMap<URI, IFile>();
 			for (IFile file : files) {
+				monitor.subTask(file.getName());
+				cancelCheck(monitor);
 				try {
 					file.deleteMarkers(IMarker.PROBLEM, true,
 							IResource.DEPTH_INFINITE);
@@ -155,7 +168,9 @@ public class DMDLErrorCheckTask implements IRunnableWithProgress {
 			}
 			List<ParseErrorInfo> list = wrapper.parse(files);
 			if (list != null) {
+				cancelCheck(monitor);
 				for (ParseErrorInfo pe : list) {
+					cancelCheck(monitor);
 					IFile file = fileMap.get(pe.file);
 					IDocument document = getDocument(provider, file);
 					createErrorMarker(file, document, pe);
@@ -198,6 +213,13 @@ public class DMDLErrorCheckTask implements IRunnableWithProgress {
 			ILog log = Activator.getDefault().getLog();
 			log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,
 					"DMDLMarker#createErrorMarker() error.", e));
+		}
+	}
+
+	protected void cancelCheck(IProgressMonitor monitor)
+			throws InterruptedException {
+		if (monitor.isCanceled()) {
+			throw new InterruptedException();
 		}
 	}
 }

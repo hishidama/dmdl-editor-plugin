@@ -2,7 +2,7 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker;
 
 import java.net.URI;
 
-public class ParseError {
+public class ParseErrorInfo {
 
 	public URI file;
 	public int level;

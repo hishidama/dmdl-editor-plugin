@@ -1,12 +1,10 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.InvocationTargetException;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLEditor;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker.DMDLErrorCheckTask.FileList;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -17,15 +15,20 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 public class DMDLErrorCheckHandler extends AbstractHandler {
-	protected DMDLErrorMarkerCreator marker = new DMDLErrorMarkerCreator();
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -61,12 +64,6 @@ public class DMDLErrorCheckHandler extends AbstractHandler {
 		execute(list);
 	}
 
-	private void execute(FileList projects) {
-		for (List<IFile> list : projects.values()) {
-			marker.parse(list);
-		}
-	}
-
 	private void search(FileList list, IFile file) {
 		IPath path = file.getFullPath();
 		IPath parent = path.removeLastSegments(1);
@@ -94,21 +91,20 @@ public class DMDLErrorCheckHandler extends AbstractHandler {
 		}
 	}
 
-	static class FileList {
-		private Map<String, List<IFile>> map = new HashMap<String, List<IFile>>();
-
-		public void add(IFile file) {
-			String name = file.getProject().getName();
-			List<IFile> list = map.get(name);
-			if (list == null) {
-				list = new ArrayList<IFile>();
-				map.put(name, list);
-			}
-			list.add(file);
-		}
-
-		public Collection<List<IFile>> values() {
-			return map.values();
+	private void execute(FileList projects) {
+		DMDLErrorCheckTask task = new DMDLErrorCheckTask(projects);
+		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+				.getShell();
+		ProgressMonitorDialog dialog = new ProgressMonitorDialog(shell);
+		try {
+			dialog.run(true, true, task);
+		} catch (InvocationTargetException e) {
+			ILog log = Activator.getDefault().getLog();
+			log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,
+					"DMDL error check error.", e));
+		} catch (InterruptedException e) {
+			MessageDialog.openInformation(shell, "DMDL error check",
+					"canceled.");
 		}
 	}
 }

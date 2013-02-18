@@ -1,6 +1,9 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,22 +23,71 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ILog;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.ui.editors.text.FileDocumentProvider;
 import org.eclipse.ui.part.FileEditorInput;
 
-public class DMDLErrorMarkerCreator {
+public class DMDLErrorCheckTask implements IRunnableWithProgress {
 
-	protected Map<String, DmdlParserWrapper> map = new HashMap<String, DmdlParserWrapper>();
+	public static class FileList {
+		private Map<String, List<IFile>> map = new HashMap<String, List<IFile>>();
 
-	public void parse(List<IFile> files) {
-		// 全ファイルが同一プロジェクトである想定
+		public void add(IFile file) {
+			String name = file.getProject().getName();
+			List<IFile> list = map.get(name);
+			if (list == null) {
+				list = new ArrayList<IFile>();
+				map.put(name, list);
+			}
+			list.add(file);
+		}
+
+		public Collection<List<IFile>> values() {
+			return map.values();
+		}
+
+		public int getCount(int project, int file) {
+			int n = 0;
+			for (List<IFile> list : map.values()) {
+				n += list.size();
+			}
+			return map.size() * project + n * file;
+		}
+	}
+
+	private static final QualifiedName KEY = new QualifiedName(
+			DMDLErrorCheckTask.class.getName(), "parser");
+
+	private FileList projects;
+
+	public DMDLErrorCheckTask(FileList projects) {
+		this.projects = projects;
+	}
+
+	@Override
+	public void run(IProgressMonitor monitor) throws InvocationTargetException,
+			InterruptedException {
+		int totalWork = projects.getCount(1, 2);
+		monitor.beginTask("DMDL error check", totalWork);
+		try {
+			for (List<IFile> list : projects.values()) {
+				parse(monitor, list);
+			}
+		} finally {
+			monitor.done();
+		}
+	}
+
+	protected void parse(IProgressMonitor monitor, List<IFile> files) {
 		FileDocumentProvider provider = new FileDocumentProvider();
-		createIndex(files, provider);
-		checkMark(files, provider);
+		createIndex(monitor, files, provider);
+		checkMark(monitor, files, provider);
 	}
 
 	protected final IJavaProject getJavaProject(IFile file) {
@@ -43,7 +95,8 @@ public class DMDLErrorMarkerCreator {
 		return JavaCore.create(project);
 	}
 
-	protected void createIndex(List<IFile> files, FileDocumentProvider provider) {
+	protected void createIndex(IProgressMonitor monitor, List<IFile> files,
+			FileDocumentProvider provider) {
 		IProject project = files.get(0).getProject();
 		IndexContainer ic = IndexContainer.createContainer(project);
 
@@ -64,20 +117,30 @@ public class DMDLErrorMarkerCreator {
 					}
 				}
 			}
+			monitor.worked(1);
 		}
 	}
 
-	protected void checkMark(List<IFile> files, FileDocumentProvider provider) {
+	protected void checkMark(IProgressMonitor monitor, List<IFile> files,
+			FileDocumentProvider provider) {
 		IJavaProject project = getJavaProject(files.get(0));
 		if (project == null) {
+			monitor.worked(files.size() + 1);
 			return;
 		}
 
-		String projectName = project.getProject().getName();
-		DmdlParserWrapper wrapper = map.get(projectName);
-		if (wrapper == null) {
-			wrapper = new DmdlParserWrapper(project);
-			map.put(projectName, wrapper);
+		DmdlParserWrapper wrapper = null;
+		try {
+			wrapper = (DmdlParserWrapper) project.getProject()
+					.getSessionProperty(KEY);
+			if (wrapper == null) {
+				wrapper = new DmdlParserWrapper(project);
+				project.getProject().setSessionProperty(KEY, wrapper);
+			}
+		} catch (CoreException e) {
+			if (wrapper == null) {
+				wrapper = new DmdlParserWrapper(project);
+			}
 		}
 		if (wrapper.isValid()) {
 			Map<URI, IFile> fileMap = new HashMap<URI, IFile>();
@@ -88,15 +151,19 @@ public class DMDLErrorMarkerCreator {
 					fileMap.put(file.getLocationURI(), file);
 				} catch (Exception e) {
 				}
+				monitor.worked(1);
 			}
-			List<ParseError> list = wrapper.parse(files);
+			List<ParseErrorInfo> list = wrapper.parse(files);
 			if (list != null) {
-				for (ParseError pe : list) {
+				for (ParseErrorInfo pe : list) {
 					IFile file = fileMap.get(pe.file);
 					IDocument document = getDocument(provider, file);
 					createErrorMarker(file, document, pe);
 				}
 			}
+			monitor.worked(1);
+		} else {
+			monitor.worked(files.size() + 1);
 		}
 	}
 
@@ -111,7 +178,7 @@ public class DMDLErrorMarkerCreator {
 	}
 
 	protected void createErrorMarker(IFile file, IDocument document,
-			ParseError pe) {
+			ParseErrorInfo pe) {
 		try {
 			int beginOffset = document.getLineOffset(pe.beginLine - 1)
 					+ pe.beginColumn - 1;

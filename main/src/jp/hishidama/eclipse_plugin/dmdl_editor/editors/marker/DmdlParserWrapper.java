@@ -165,7 +165,7 @@ public class DmdlParserWrapper {
 		}
 	}
 
-	public List<ParseError> parse(List<IFile> ifiles) {
+	public List<ParseErrorInfo> parse(List<IFile> ifiles) {
 		List<Object[]> files = new ArrayList<Object[]>(ifiles.size());
 		for (IFile f : ifiles) {
 			try {
@@ -185,9 +185,9 @@ public class DmdlParserWrapper {
 			@SuppressWarnings("unchecked")
 			List<Object[]> list = (List<Object[]>) method.invoke(caller, files);
 
-			List<ParseError> result = new ArrayList<ParseError>(list.size());
+			List<ParseErrorInfo> result = new ArrayList<ParseErrorInfo>(list.size());
 			for (Object[] r : list) {
-				ParseError pe = new ParseError();
+				ParseErrorInfo pe = new ParseErrorInfo();
 				pe.file = (URI) r[0];
 				pe.level = (Integer) r[1];
 				pe.message = (String) r[2];

@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/jp.hishidama.eclipse_plugin.dmdl_editor.feature_0.1.2.201302172315.jar" id="jp.hishidama.eclipse_plugin.dmdl_editor.feature" version="0.1.2.201302172315"/>
+   <feature url="features/jp.hishidama.eclipse_plugin.dmdl_editor.feature_0.1.2.201302182059.jar" id="jp.hishidama.eclipse_plugin.dmdl_editor.feature" version="0.1.2.201302182059"/>
 </site>

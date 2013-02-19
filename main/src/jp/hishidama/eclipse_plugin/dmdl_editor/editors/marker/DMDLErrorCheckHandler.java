@@ -15,21 +15,16 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.ui.progress.WorkbenchJob;
 
 public class DMDLErrorCheckHandler extends AbstractHandler {
 
@@ -98,30 +93,20 @@ public class DMDLErrorCheckHandler extends AbstractHandler {
 			boolean checkMark) {
 		final DMDLErrorCheckTask task = new DMDLErrorCheckTask(projects,
 				createIndex, checkMark);
-		Display.getDefault().syncExec(new Runnable() {
+		WorkbenchJob job = new WorkbenchJob("DMDL create index") {
 			@Override
-			public void run() {
-				Shell shell = null;
-				IWorkbench workbench = PlatformUI.getWorkbench();
-				if (workbench != null) {
-					IWorkbenchWindow window = workbench
-							.getActiveWorkbenchWindow();
-					if (window != null) {
-						shell = window.getShell();
-					}
-				}
-				ProgressMonitorDialog dialog = new ProgressMonitorDialog(shell);
+			public IStatus runInUIThread(IProgressMonitor monitor) {
 				try {
-					dialog.run(true, true, task);
+					task.run(monitor);
 				} catch (InvocationTargetException e) {
-					ILog log = Activator.getDefault().getLog();
-					log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,
-							"DMDL error check error.", e));
+					return new Status(Status.WARNING, Activator.PLUGIN_ID,
+							"DMDL error check error.", e);
 				} catch (InterruptedException e) {
-					MessageDialog.openInformation(shell, "DMDL error check",
-							"canceled.");
+					return Status.CANCEL_STATUS;
 				}
+				return Status.OK_STATUS;
 			}
-		});
+		};
+		job.schedule();
 	}
 }

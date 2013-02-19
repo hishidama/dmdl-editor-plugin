@@ -3,6 +3,7 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.parser.index;
 import java.util.HashMap;
 import java.util.Map;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker.DMDLErrorCheckHandler;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
 
 import org.eclipse.core.resources.IFile;
@@ -47,9 +48,16 @@ public class IndexContainer {
 		return ic;
 	}
 
-	public static IndexContainer getContainer(IProject project) {
+	public static IndexContainer getContainer(IProject project, IFile file) {
 		try {
-			return (IndexContainer) project.getSessionProperty(KEY);
+			IndexContainer ic = (IndexContainer) project
+					.getSessionProperty(KEY);
+			if (ic == null) {
+				DMDLErrorCheckHandler handler = new DMDLErrorCheckHandler();
+				handler.execute(file, true, false);
+				ic = (IndexContainer) project.getSessionProperty(KEY);
+			}
+			return ic;
 		} catch (CoreException e) {
 			return null;
 		}

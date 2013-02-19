@@ -59,7 +59,7 @@
       <command
             categoryId="dmdl-editor-plugin.category"
             id="dmdl-editor-plugin.errorcheck-command"
-            name="DMDL error check">
+            name="DMDL create index / error check">
       </command>
       <command
             categoryId="dmdl-editor-plugin.category"
@@ -105,7 +105,7 @@
                label="DMDL editor">
             <command
                   commandId="dmdl-editor-plugin.errorcheck-command"
-                  label="error check">
+                  label="create index / error check">
             </command>
          </menu>
       </menuContribution>
@@ -117,7 +117,7 @@
                   commandId="dmdl-editor-plugin.errorcheck-command"
                   icon="icons/hishidama16.gif"
                   style="push"
-                  tooltip="DMDL error check">
+                  tooltip="DMDL create index / error check">
             </command>
          </toolbar>
       </menuContribution>

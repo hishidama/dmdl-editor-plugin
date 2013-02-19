@@ -24,7 +24,10 @@ import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 
@@ -54,14 +57,14 @@ public class DMDLErrorCheckHandler extends AbstractHandler {
 			}
 		}
 
-		execute(list);
+		execute(list, true, true);
 		return null;
 	}
 
-	public void execute(IFile file) {
+	public void execute(IFile file, boolean createIndex, boolean checkMark) {
 		FileList list = new FileList();
 		search(list, file);
-		execute(list);
+		execute(list, createIndex, checkMark);
 	}
 
 	private void search(FileList list, IFile file) {
@@ -91,20 +94,34 @@ public class DMDLErrorCheckHandler extends AbstractHandler {
 		}
 	}
 
-	private void execute(FileList projects) {
-		DMDLErrorCheckTask task = new DMDLErrorCheckTask(projects);
-		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-				.getShell();
-		ProgressMonitorDialog dialog = new ProgressMonitorDialog(shell);
-		try {
-			dialog.run(true, true, task);
-		} catch (InvocationTargetException e) {
-			ILog log = Activator.getDefault().getLog();
-			log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,
-					"DMDL error check error.", e));
-		} catch (InterruptedException e) {
-			MessageDialog.openInformation(shell, "DMDL error check",
-					"canceled.");
-		}
+	private void execute(FileList projects, boolean createIndex,
+			boolean checkMark) {
+		final DMDLErrorCheckTask task = new DMDLErrorCheckTask(projects,
+				createIndex, checkMark);
+		Display.getDefault().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				Shell shell = null;
+				IWorkbench workbench = PlatformUI.getWorkbench();
+				if (workbench != null) {
+					IWorkbenchWindow window = workbench
+							.getActiveWorkbenchWindow();
+					if (window != null) {
+						shell = window.getShell();
+					}
+				}
+				ProgressMonitorDialog dialog = new ProgressMonitorDialog(shell);
+				try {
+					dialog.run(true, true, task);
+				} catch (InvocationTargetException e) {
+					ILog log = Activator.getDefault().getLog();
+					log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,
+							"DMDL error check error.", e));
+				} catch (InterruptedException e) {
+					MessageDialog.openInformation(shell, "DMDL error check",
+							"canceled.");
+				}
+			}
+		});
 	}
 }

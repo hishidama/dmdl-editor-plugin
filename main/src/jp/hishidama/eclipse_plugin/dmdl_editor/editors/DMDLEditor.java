@@ -3,7 +3,6 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.editors;
 import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.folding.FoldingManager;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.hyperlink.DMDLHyperlinkDetector;
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker.DMDLErrorCheckHandler;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.outline.OutlinePage;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.ColorManager;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.Index;
@@ -101,23 +100,6 @@ public class DMDLEditor extends TextEditor implements IPropertyChangeListener {
 		DMDLConfiguration configuration = (DMDLConfiguration) getSourceViewerConfiguration();
 		DMDLHyperlinkDetector detector = configuration.getHyperlinkDetector();
 		detector.init(this);
-
-		// プロジェクト毎に初回だけエラーチェック
-		IProject project = getProject();
-		if (project != null) {
-			IndexContainer ic = IndexContainer.getContainer(project);
-			if (ic == null) {
-				try {
-					DMDLErrorCheckHandler handler = new DMDLErrorCheckHandler();
-					handler.execute(getFile());
-				} catch (Exception e) {
-					ILog log = Activator.getDefault().getLog();
-					log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,
-							"first check error. project=" + project.getName(),
-							e));
-				}
-			}
-		}
 	}
 
 	@Override
@@ -290,7 +272,8 @@ public class DMDLEditor extends TextEditor implements IPropertyChangeListener {
 			return false;
 		}
 
-		IndexContainer ic = IndexContainer.getContainer(getProject());
+		IndexContainer ic = IndexContainer
+				.getContainer(getProject(), getFile());
 		if (ic == null) {
 			return false;
 		}

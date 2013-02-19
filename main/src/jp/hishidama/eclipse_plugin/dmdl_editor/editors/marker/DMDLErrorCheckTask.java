@@ -52,12 +52,19 @@ public class DMDLErrorCheckTask implements IRunnableWithProgress {
 			return map.values();
 		}
 
-		public int getCount(int project, int file) {
+		public int getCount(boolean createIndex, boolean checkMark) {
 			int n = 0;
 			for (List<IFile> list : map.values()) {
 				n += list.size();
 			}
-			return map.size() * project + n * file;
+			int r = 0;
+			if (createIndex) {
+				r += n;
+			}
+			if (checkMark) {
+				r += n + map.size();
+			}
+			return r;
 		}
 	}
 
@@ -65,16 +72,31 @@ public class DMDLErrorCheckTask implements IRunnableWithProgress {
 			DMDLErrorCheckTask.class.getName(), "parser");
 
 	private FileList projects;
+	private boolean createIndex;
+	private boolean checkMark;
 
-	public DMDLErrorCheckTask(FileList projects) {
+	public DMDLErrorCheckTask(FileList projects, boolean createIndex,
+			boolean checkMark) {
 		this.projects = projects;
+		this.createIndex = createIndex;
+		this.checkMark = checkMark;
 	}
 
 	@Override
 	public void run(IProgressMonitor monitor) throws InvocationTargetException,
 			InterruptedException {
-		int totalWork = projects.getCount(1, 2);
-		monitor.beginTask("DMDL error check", totalWork);
+		int totalWork = projects.getCount(createIndex, checkMark);
+		String title;
+		if (createIndex) {
+			if (checkMark) {
+				title = "DMDL create index & error check";
+			} else {
+				title = "DMDL create index";
+			}
+		} else {
+			title = "DMDL error check";
+		}
+		monitor.beginTask(title, totalWork);
 		try {
 			for (List<IFile> list : projects.values()) {
 				cancelCheck(monitor);
@@ -88,8 +110,12 @@ public class DMDLErrorCheckTask implements IRunnableWithProgress {
 	protected void parse(IProgressMonitor monitor, List<IFile> files)
 			throws InterruptedException {
 		FileDocumentProvider provider = new FileDocumentProvider();
-		createIndex(monitor, files, provider);
-		checkMark(monitor, files, provider);
+		if (createIndex) {
+			createIndex(monitor, files, provider);
+		}
+		if (checkMark) {
+			checkMark(monitor, files, provider);
+		}
 	}
 
 	protected final IJavaProject getJavaProject(IFile file) {

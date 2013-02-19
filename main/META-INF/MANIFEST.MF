@@ -15,3 +15,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.core
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: resource/dmdlparser-caller.jar,
+ plugin.jar

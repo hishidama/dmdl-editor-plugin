@@ -68,8 +68,8 @@ public class DMDLErrorCheckTask implements IRunnableWithProgress {
 		}
 	}
 
-	private static final QualifiedName KEY = new QualifiedName(
-			DMDLErrorCheckTask.class.getName(), "parser");
+	public static final QualifiedName KEY = new QualifiedName(
+			Activator.PLUGIN_ID, "DMDLErrorCheckTask.parser");
 
 	private FileList projects;
 	private boolean createIndex;

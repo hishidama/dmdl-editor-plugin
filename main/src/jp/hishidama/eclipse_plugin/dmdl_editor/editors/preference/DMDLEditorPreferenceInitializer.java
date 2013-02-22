@@ -43,5 +43,18 @@ public class DMDLEditorPreferenceInitializer extends
 		// Formatter
 		store.setDefault(FORMAT_INDENT_ARGUMENT, 2);
 		store.setDefault(FORMAT_INDENT_PROPERTY, 4);
+
+		// Parser
+		store.setDefault(PARSER_BUILD_PROPERTIES, "build.properties");
+		String jars = "M2_REPO/com/asakusafw/asakusa-dmdl-core/0.4.0/asakusa-dmdl-core-0.4.0.jar,"
+				+ "M2_REPO/com/asakusafw/collections/0.4.0/collections-0.4.0.jar,"
+				+ "M2_REPO/com/asakusafw/simple-graph/0.4.0/simple-graph-0.4.0.jar,"
+				+ "M2_REPO/org/slf4j/slf4j-api/1.6.6/slf4j-api-1.6.6.jar,"
+				+ "M2_REPO/com/asakusafw/asakusa-directio-dmdl/0.4.0/asakusa-directio-dmdl-0.4.0.jar,"
+				+ "M2_REPO/com/asakusafw/asakusa-windgate-dmdl/0.4.0/asakusa-windgate-dmdl-0.4.0.jar,"
+				+ "M2_REPO/com/asakusafw/asakusa-thundergate-dmdl/0.4.0/asakusa-thundergate-dmdl-0.4.0.jar,";
+		store.setDefault(PARSER_JAR_FILES, jars);
+		store.setDefault(PARSER_JAR_CHECKED,
+				"true,true,true,true,true,true,false,");
 	}
 }

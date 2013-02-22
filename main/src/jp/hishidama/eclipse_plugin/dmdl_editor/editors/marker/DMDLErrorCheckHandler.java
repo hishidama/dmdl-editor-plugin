@@ -1,16 +1,19 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Properties;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLEditor;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker.DMDLErrorCheckTask.FileList;
+import jp.hishidama.eclipse_plugin.util.FileUtil;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -63,10 +66,23 @@ public class DMDLErrorCheckHandler extends AbstractHandler {
 	}
 
 	private void search(FileList list, IFile file) {
-		IPath path = file.getFullPath();
-		IPath parent = path.removeLastSegments(1);
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		IFolder folder = root.getFolder(parent);
+		IFolder folder = null;
+		{
+			IProject project = file.getProject();
+			Properties properties = ParserClassUtil.getBuildProperties(project);
+			if (properties != null) {
+				String dir = properties.getProperty("asakusa.dmdl.dir");
+				if (dir != null) {
+					folder = FileUtil.getFolder(project, dir);
+				}
+			}
+		}
+		if (folder == null) {
+			IPath path = file.getFullPath();
+			IPath parent = path.removeLastSegments(1);
+			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+			folder = root.getFolder(parent);
+		}
 		search(list, folder);
 	}
 

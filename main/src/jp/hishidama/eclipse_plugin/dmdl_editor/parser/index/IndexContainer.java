@@ -3,6 +3,7 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.parser.index;
 import java.util.HashMap;
 import java.util.Map;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker.DMDLErrorCheckHandler;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
 
@@ -12,7 +13,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.QualifiedName;
 
 public class IndexContainer {
-	static final QualifiedName KEY = new QualifiedName(null, "index");
+	static final QualifiedName KEY = new QualifiedName(Activator.PLUGIN_ID,
+			"IndexContainer.index");
 
 	private Map<String, ModelIndex> map = new HashMap<String, ModelIndex>();
 
@@ -60,6 +62,14 @@ public class IndexContainer {
 			return ic;
 		} catch (CoreException e) {
 			return null;
+		}
+	}
+
+	public static void remove(IProject project) {
+		try {
+			project.setSessionProperty(KEY, null);
+		} catch (CoreException e) {
+			e.printStackTrace();
 		}
 	}
 }

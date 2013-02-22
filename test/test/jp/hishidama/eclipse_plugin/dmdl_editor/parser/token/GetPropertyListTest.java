@@ -264,7 +264,7 @@ public class GetPropertyListTest {
 				Property ex = list.get(j);
 				PropertyToken ac = props.get(j);
 				assertEquals("prop=" + ac, ex.name, ac.getName());
-				assertEquals("prop=" + ac, ex.type, ac.getDataType());
+				assertEquals("prop=" + ac, ex.type, ac.getDataType(null));
 			}
 		}
 	}

@@ -45,12 +45,11 @@ public class ProjectFileSelectionDialog extends ElementTreeSelectionDialog {
 			return;
 		}
 
-		IPath root = project.getLocation();
-		IPath path = root.append(initialPath);
-		IPath base = root.removeLastSegments(1);
-		IPath rel = path.makeRelativeTo(base);
-		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-		IFile file = workspaceRoot.getFile(rel);
+		IPath proj = project.getLocation();
+		IPath path = proj.append(initialPath);
+		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+		IPath rel = path.makeRelativeTo(root.getLocation());
+		IFile file = root.getFile(rel);
 
 		super.setInitialSelection(file);
 	}

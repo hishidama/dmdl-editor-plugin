@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLEditor;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker.DMDLErrorCheckTask.FileList;
 import jp.hishidama.eclipse_plugin.util.FileUtil;
 
@@ -26,6 +25,7 @@ import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.progress.WorkbenchJob;
 
@@ -37,11 +37,9 @@ public class DMDLErrorCheckHandler extends AbstractHandler {
 
 		ISelection selection = HandlerUtil.getCurrentSelection(event);
 		if (selection instanceof TextSelection) {
-			DMDLEditor editor = (DMDLEditor) HandlerUtil.getActiveEditor(event);
-			if (editor != null) {
-				IFile file = editor.getFile();
-				search(list, file);
-			}
+			IEditorPart editor = HandlerUtil.getActiveEditor(event);
+			IFile file = FileUtil.getFile(editor);
+			search(list, file);
 		} else if (selection instanceof TreeSelection) {
 			TreeSelection tree = (TreeSelection) selection;
 			TreePath[] paths = tree.getPaths();
@@ -72,6 +70,9 @@ public class DMDLErrorCheckHandler extends AbstractHandler {
 	}
 
 	private void search(FileList list, IFile file) {
+		if (file == null) {
+			return;
+		}
 		IFolder folder = null;
 		{
 			IProject project = file.getProject();

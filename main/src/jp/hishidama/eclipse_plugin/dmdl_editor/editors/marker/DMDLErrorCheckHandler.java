@@ -65,6 +65,12 @@ public class DMDLErrorCheckHandler extends AbstractHandler {
 		execute(list, createIndex, checkMark);
 	}
 
+	public DMDLErrorCheckTask createTask(IFolder folder) {
+		FileList list = new FileList();
+		search(list, folder);
+		return new DMDLErrorCheckTask(list, true, true);
+	}
+
 	private void search(FileList list, IFile file) {
 		IFolder folder = null;
 		{

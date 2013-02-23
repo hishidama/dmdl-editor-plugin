@@ -85,6 +85,11 @@
             id="dmdl-editor-plugin.jumplink-command"
             name="DMDL open declaration">
       </command>
+      <command
+            categoryId="dmdl-editor-plugin.category"
+            id="dmdl-editor-plugin.compile-command"
+            name="DMDL compile">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -99,6 +104,10 @@
       <handler
             class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.hyperlink.DMDLHyperlinkHandler"
             commandId="dmdl-editor-plugin.jumplink-command">
+      </handler>
+      <handler
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.compile.DMDLCompileHandler"
+            commandId="dmdl-editor-plugin.compile-command">
       </handler>
    </extension>
    <extension
@@ -121,10 +130,15 @@
       <menuContribution
             locationURI="popup:org.eclipse.ui.popup.any?after=additions">
          <menu
-               label="DMDL editor">
+               label="DMDL Editor">
             <command
                   commandId="dmdl-editor-plugin.errorcheck-command"
                   label="create index / error check">
+            </command>
+            <command
+                  commandId="dmdl-editor-plugin.compile-command"
+                  label="compile"
+                  style="push">
             </command>
          </menu>
       </menuContribution>
@@ -138,8 +152,21 @@
                   style="push"
                   tooltip="DMDL create index / error check">
             </command>
+            <command
+                  commandId="dmdl-editor-plugin.compile-command"
+                  icon="icons/hishidama16.gif"
+                  style="push"
+                  tooltip="DMDL compile">
+            </command>
          </toolbar>
       </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.jdt.launching.classpathProviders">
+      <classpathProvider
+            id="jp.hishidama.eclipse_plugin.dmdl_editor.dmdlClasspathProvider"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.compile.DmdlClasspathProvider">
+      </classpathProvider>
    </extension>
 
 </plugin>

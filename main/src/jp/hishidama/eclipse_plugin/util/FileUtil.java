@@ -6,6 +6,9 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IFileEditorInput;
 
 public class FileUtil {
 
@@ -19,5 +22,19 @@ public class FileUtil {
 		IPath ap = project.getFullPath().append(path);
 		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 		return workspaceRoot.getFolder(ap);
+	}
+
+	public static IFile getFile(IEditorPart editor) {
+		if (editor != null) {
+			IEditorInput input = editor.getEditorInput();
+			if (input instanceof IFileEditorInput) {
+				return ((IFileEditorInput) input).getFile();
+			}
+		}
+		return null;
+	}
+
+	public static String getLocation(IFile file) {
+		return file.getLocation().toOSString();
 	}
 }

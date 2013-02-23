@@ -148,8 +148,12 @@ public class ParserClassUtil {
 		}
 	}
 
+	public static String getBuildPropertiesFileName(IProject project) {
+		return getValue(project, PARSER_BUILD_PROPERTIES);
+	}
+
 	public static Properties getBuildProperties(IProject project) {
-		String s = getValue(project, PARSER_BUILD_PROPERTIES);
+		String s = getBuildPropertiesFileName(project);
 		if (s == null) {
 			return null;
 		}

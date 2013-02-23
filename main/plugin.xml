@@ -90,6 +90,15 @@
             id="dmdl-editor-plugin.compile-command"
             name="DMDL compile">
       </command>
+      <category
+            id="dmdl-editor-plugin.jdt.category"
+            name="DMDL Editor">
+      </category>
+      <command
+            categoryId="dmdl-editor-plugin.jdt.category"
+            id="dmdl-editor-plugin.jdt.jumplink-command"
+            name="DMDL compile">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -109,12 +118,16 @@
             class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.compile.DMDLCompileHandler"
             commandId="dmdl-editor-plugin.compile-command">
       </handler>
+      <handler
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.jdt.hyperlink.OpenDeclaredDmdlHyperlinkHandler"
+            commandId="dmdl-editor-plugin.jdt.jumplink-command">
+      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
       <key
             commandId="dmdl-editor-plugin.formatting-command"
-            contextId="org.eclipse.ui.contexts.window"
+            contextId="dmdl-editor-plugin.context"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M2+F">
       </key>
@@ -123,6 +136,12 @@
             contextId="dmdl-editor-plugin.context"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="F3">
+      </key>
+      <key
+            commandId="dmdl-editor-plugin.jdt.jumplink-command"
+            contextId="org.eclipse.jdt.ui.javaEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M2+F3">
       </key>
    </extension>
    <extension
@@ -175,6 +194,7 @@
             class="jp.hishidama.eclipse_plugin.dmdl_editor.jdt.hyperlink.OpenDeclaredDmdlHyperlinkDetector"
             description="Open Declared DMDL"
             id="dmdl-editor-plugin.hyperlinkDetector.jdt.open-declaration"
+            modifierKeys="M2+F3"
             name="Open Declared DMDL"
             targetId="org.eclipse.jdt.ui.javaCode">
       </hyperlinkDetector>

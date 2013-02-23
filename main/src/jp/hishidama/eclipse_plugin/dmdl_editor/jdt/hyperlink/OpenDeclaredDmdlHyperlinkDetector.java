@@ -35,6 +35,10 @@ public class OpenDeclaredDmdlHyperlinkDetector extends
 			return null;
 		}
 		int offset = region.getOffset();
+		return detectHyperlinks(editor, offset);
+	}
+
+	public IHyperlink[] detectHyperlinks(ITextEditor editor, int offset) {
 		IEditorInput input = editor.getEditorInput();
 		IJavaElement element = (IJavaElement) input
 				.getAdapter(IJavaElement.class);

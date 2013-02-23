@@ -90,6 +90,9 @@ public class FoldingManager {
 
 	protected void applyFolding(IDocument document, ModelList models,
 			ProjectionAnnotationModel model) throws BadLocationException {
+		if (models == null) {
+			return;
+		}
 		for (DMDLToken token : models.getBody()) {
 			if (token instanceof ModelToken) {
 				applyFolding(document, (ModelToken) token, model);

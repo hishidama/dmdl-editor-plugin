@@ -168,5 +168,16 @@
             class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.compile.DmdlClasspathProvider">
       </classpathProvider>
    </extension>
+   <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+      <hyperlinkDetector
+            activate="true"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.jdt.hyperlink.OpenDeclaredDmdlHyperlinkDetector"
+            description="Open Declared DMDL"
+            id="dmdl-editor-plugin.hyperlinkDetector.jdt.open-declaration"
+            name="Open Declared DMDL"
+            targetId="org.eclipse.jdt.ui.javaCode">
+      </hyperlinkDetector>
+   </extension>
 
 </plugin>

@@ -18,6 +18,12 @@ public class FileUtil {
 		return workspaceRoot.getFile(ap);
 	}
 
+	public static IFile getFile(IProject project, IPath path) {
+		IPath ap = project.getFullPath().append(path);
+		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+		return workspaceRoot.getFile(ap);
+	}
+
 	public static IFolder getFolder(IProject project, String path) {
 		IPath ap = project.getFullPath().append(path);
 		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();

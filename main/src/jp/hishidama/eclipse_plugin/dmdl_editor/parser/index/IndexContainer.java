@@ -2,6 +2,7 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.parser.index;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker.DMDLErrorCheckHandler;
@@ -17,6 +18,7 @@ public class IndexContainer {
 			"IndexContainer.index");
 
 	private Map<String, ModelIndex> map = new HashMap<String, ModelIndex>();
+	private Map<String, ModelIndex> snakeMap = null;
 
 	public ModelIndex createModel(String modelName, IFile file, ModelToken model) {
 		ModelIndex index = new ModelIndex(file, model);
@@ -38,6 +40,27 @@ public class IndexContainer {
 			return null;
 		}
 		return model.getProperty(propertyName);
+	}
+
+	public ModelIndex findModelSnake(String modelSnakeName) {
+		if (snakeMap == null) {
+			snakeMap = new HashMap<String, ModelIndex>(map.size());
+			for (Entry<String, ModelIndex> entry : map.entrySet()) {
+				String name = convertSnake(entry.getKey());
+				snakeMap.put(name, entry.getValue());
+			}
+		}
+		return snakeMap.get(modelSnakeName);
+	}
+
+	public static String convertSnake(String name) {
+		StringBuilder sb = new StringBuilder(name.length());
+		String[] ss = name.split("\\_");
+		for (String s : ss) {
+			sb.append(Character.toUpperCase(s.charAt(0)));
+			sb.append(s.substring(1).toLowerCase());
+		}
+		return sb.toString();
 	}
 
 	public static IndexContainer createContainer(IProject project) {

@@ -9,7 +9,7 @@
             extensions="dmdl"
             icon="icons/hishidama16.gif"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
-            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLEditor"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLMultiPageEditor"
             id="dmdl_editor.editors.DMDLEditor">
       </editor>
    </extension>

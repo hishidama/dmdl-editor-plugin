@@ -1,6 +1,6 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.hyperlink;
 
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLEditor;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLTextEditor;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.PropertyToken;
@@ -12,13 +12,13 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 
 public class DMDLHyperlink implements IHyperlink {
-	private DMDLEditor editor;
+	private DMDLTextEditor editor;
 	private DMDLToken token;
 
 	private IProject project;
 	private IRegion region;
 
-	public DMDLHyperlink(DMDLEditor editor, DMDLToken token) {
+	public DMDLHyperlink(DMDLTextEditor editor, DMDLToken token) {
 		this.editor = editor;
 		this.token = token;
 	}

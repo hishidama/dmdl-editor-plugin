@@ -1,7 +1,7 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.hyperlink;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLDocument;
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLEditor;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLTextEditor;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelList;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.WordToken;
@@ -28,7 +28,7 @@ public class DMDLHyperlinkDetector extends AbstractHyperlinkDetector {
 			switch (word.getWordType()) {
 			case REF_MODEL_NAME:
 			case REF_PROPERTY_NAME:
-				DMDLEditor editor = (DMDLEditor) getAdapter(DMDLEditor.class);
+				DMDLTextEditor editor = (DMDLTextEditor) getAdapter(DMDLTextEditor.class);
 				return new IHyperlink[] { new DMDLHyperlink(editor, token) };
 			default:
 				break;

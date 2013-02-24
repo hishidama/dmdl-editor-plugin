@@ -1,6 +1,6 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.outline;
 
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLEditor;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLTextEditor;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.PropertyToken;
@@ -11,9 +11,9 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 
 public class OutlineSelectionChangedListener implements
 		ISelectionChangedListener {
-	protected DMDLEditor editor;
+	protected DMDLTextEditor editor;
 
-	public OutlineSelectionChangedListener(DMDLEditor editor) {
+	public OutlineSelectionChangedListener(DMDLTextEditor editor) {
 		this.editor = editor;
 	}
 

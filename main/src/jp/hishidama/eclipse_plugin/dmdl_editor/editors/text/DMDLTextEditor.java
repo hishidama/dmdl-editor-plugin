@@ -28,7 +28,7 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
-public class DMDLEditor extends TextEditor implements IPropertyChangeListener {
+public class DMDLTextEditor extends TextEditor implements IPropertyChangeListener {
 	private ColorManager colorManager = new ColorManager();
 
 	protected FoldingManager foldingManager = new FoldingManager();
@@ -37,7 +37,7 @@ public class DMDLEditor extends TextEditor implements IPropertyChangeListener {
 	/**
 	 * コンストラクター.
 	 */
-	public DMDLEditor() {
+	public DMDLTextEditor() {
 		setDocumentProvider(new DMDLDocumentProvider());
 		setSourceViewerConfiguration(new DMDLConfiguration(this, colorManager));
 

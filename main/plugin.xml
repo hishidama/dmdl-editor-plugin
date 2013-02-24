@@ -192,7 +192,7 @@
       <target
             id="dmdl-editor-plugin.hyperlink.target"
             name="DMDL Editor hyperlink target">
-         <context type="jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLEditor"/>
+         <context type="jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLTextEditor"/>
       </target>
    </extension>
    <extension

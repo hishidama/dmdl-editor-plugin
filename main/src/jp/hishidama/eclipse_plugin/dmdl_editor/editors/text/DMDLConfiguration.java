@@ -27,7 +27,7 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 
 public class DMDLConfiguration extends TextSourceViewerConfiguration {
-	private DMDLEditor editor;
+	private DMDLTextEditor editor;
 	private AttributeManager attrManager;
 
 	/**
@@ -36,7 +36,7 @@ public class DMDLConfiguration extends TextSourceViewerConfiguration {
 	 * @param editor
 	 * @param colorManager
 	 */
-	public DMDLConfiguration(DMDLEditor editor, ColorManager colorManager) {
+	public DMDLConfiguration(DMDLTextEditor editor, ColorManager colorManager) {
 		super(Activator.getDefault().getPreferenceStore());
 		this.editor = editor;
 		attrManager = new AttributeManager(colorManager);

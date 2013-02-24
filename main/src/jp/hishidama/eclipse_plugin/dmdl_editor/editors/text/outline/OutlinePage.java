@@ -3,7 +3,7 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.outline;
 import java.util.List;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLDocument;
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLEditor;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLTextEditor;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelList;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
@@ -19,9 +19,9 @@ import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
 public class OutlinePage extends ContentOutlinePage {
 	protected RootData root = new RootData();
-	protected DMDLEditor editor;
+	protected DMDLTextEditor editor;
 
-	public OutlinePage(DMDLEditor editor) {
+	public OutlinePage(DMDLTextEditor editor) {
 		this.editor = editor;
 	}
 

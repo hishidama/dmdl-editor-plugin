@@ -1,7 +1,7 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.outline;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLEditor;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLTextEditor;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLImages;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.IndexContainer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
@@ -17,9 +17,9 @@ import org.eclipse.swt.graphics.Image;
 
 public class DMDLLabelProvider extends StyledCellLabelProvider {
 
-	private DMDLEditor editor;
+	private DMDLTextEditor editor;
 
-	public DMDLLabelProvider(DMDLEditor editor) {
+	public DMDLLabelProvider(DMDLTextEditor editor) {
 		this.editor = editor;
 	}
 

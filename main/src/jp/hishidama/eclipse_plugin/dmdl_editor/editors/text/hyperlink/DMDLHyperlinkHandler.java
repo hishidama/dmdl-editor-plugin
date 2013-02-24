@@ -1,7 +1,7 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.hyperlink;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLDocument;
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLEditor;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLTextEditor;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelList;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.WordToken;
@@ -16,7 +16,7 @@ public class DMDLHyperlinkHandler extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		DMDLEditor editor = (DMDLEditor) HandlerUtil.getActiveEditor(event);
+		DMDLTextEditor editor = (DMDLTextEditor) HandlerUtil.getActiveEditor(event);
 		DMDLDocument document = editor.getDocument();
 		ModelList models = document.getModelList();
 

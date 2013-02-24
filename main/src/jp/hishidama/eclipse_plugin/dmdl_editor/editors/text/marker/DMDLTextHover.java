@@ -1,7 +1,7 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.marker;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLDocument;
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLEditor;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLTextEditor;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.IndexContainer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.ModelIndex;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.PropertyIndex;
@@ -23,9 +23,9 @@ import org.eclipse.ui.texteditor.MarkerAnnotation;
 public class DMDLTextHover extends DefaultTextHover implements
 		ITextHoverExtension2 {
 
-	private DMDLEditor editor;
+	private DMDLTextEditor editor;
 
-	public DMDLTextHover(DMDLEditor editor, ISourceViewer sourceViewer) {
+	public DMDLTextHover(DMDLTextEditor editor, ISourceViewer sourceViewer) {
 		super(sourceViewer);
 		this.editor = editor;
 	}

@@ -2,7 +2,6 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.editors;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.folding.FoldingManager;
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.hyperlink.DMDLHyperlinkDetector;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.outline.OutlinePage;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.ColorManager;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
@@ -25,10 +24,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
@@ -80,16 +76,6 @@ public class DMDLEditor extends TextEditor implements IPropertyChangeListener {
 	}
 
 	@Override
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
-		super.init(site, input);
-
-		DMDLConfiguration configuration = (DMDLConfiguration) getSourceViewerConfiguration();
-		DMDLHyperlinkDetector detector = configuration.getHyperlinkDetector();
-		detector.init(this);
-	}
-
-	@Override
 	protected void initializeKeyBindingScopes() {
 		super.initializeKeyBindingScopes();
 		setKeyBindingScopes(new String[] { "dmdl-editor-plugin.context" }); //$NON-NLS-1$
@@ -107,6 +93,9 @@ public class DMDLEditor extends TextEditor implements IPropertyChangeListener {
 
 	@Override
 	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
+		if (adapter.isInstance(this)) {
+			return this;
+		}
 		if (IContentOutlinePage.class.equals(adapter)) {
 			if (outlinePage == null) {
 				outlinePage = new OutlinePage(this);

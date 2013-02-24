@@ -8,6 +8,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 
 public class DMDLEditorPreferenceInitializer extends
 		AbstractPreferenceInitializer {
@@ -56,5 +57,10 @@ public class DMDLEditorPreferenceInitializer extends
 		store.setDefault(PARSER_JAR_FILES, jars);
 		store.setDefault(PARSER_JAR_CHECKED,
 				"true,true,true,true,true,true,false,");
+
+		// Hyperlink
+		store.setDefault(
+				AbstractDecoratedTextEditorPreferenceConstants.EDITOR_HYPERLINKS_ENABLED,
+				true);
 	}
 }

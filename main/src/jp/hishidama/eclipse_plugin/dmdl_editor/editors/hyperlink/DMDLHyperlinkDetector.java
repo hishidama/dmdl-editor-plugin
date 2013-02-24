@@ -8,15 +8,10 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.WordToken;
 
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.jface.text.hyperlink.AbstractHyperlinkDetector;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
-import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 
-public class DMDLHyperlinkDetector implements IHyperlinkDetector {
-	protected DMDLEditor editor;
-
-	public void init(DMDLEditor editor) {
-		this.editor = editor;
-	}
+public class DMDLHyperlinkDetector extends AbstractHyperlinkDetector {
 
 	@Override
 	public IHyperlink[] detectHyperlinks(ITextViewer textViewer,
@@ -33,6 +28,7 @@ public class DMDLHyperlinkDetector implements IHyperlinkDetector {
 			switch (word.getWordType()) {
 			case REF_MODEL_NAME:
 			case REF_PROPERTY_NAME:
+				DMDLEditor editor = (DMDLEditor) getAdapter(DMDLEditor.class);
 				return new IHyperlink[] { new DMDLHyperlink(editor, token) };
 			default:
 				break;

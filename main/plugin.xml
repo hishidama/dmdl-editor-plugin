@@ -188,7 +188,22 @@
       </classpathProvider>
    </extension>
    <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectorTargets">
+      <target
+            id="dmdl-editor-plugin.hyperlink.target"
+            name="DMDL Editor hyperlink target">
+         <context type="jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLEditor"/>
+      </target>
+   </extension>
+   <extension
          point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+      <hyperlinkDetector
+            activate="true"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.hyperlink.DMDLHyperlinkDetector"
+            id="dmdl-editor-plugin.hyperlinkDetector.open-declaration"
+            name="Open Declaration"
+            targetId="dmdl-editor-plugin.hyperlink.target">
+      </hyperlinkDetector>
       <hyperlinkDetector
             activate="true"
             class="jp.hishidama.eclipse_plugin.dmdl_editor.jdt.hyperlink.OpenDeclaredDmdlHyperlinkDetector"

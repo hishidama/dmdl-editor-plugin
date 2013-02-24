@@ -1,10 +1,10 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors;
 
-import java.util.Arrays;
+import java.util.Map;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.assist.DMDLContentAssistProcessor;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.format.DMDLContentFormatter;
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.hyperlink.DMDLHyperlinkDetector;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker.DMDLTextHover;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.AttributeManager;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.ColorManager;
@@ -13,20 +13,20 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.NonRuleBasedDamager
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.PartitionDamagerRepairer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.partition.DMDLPartitionScanner;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.formatter.IContentFormatter;
-import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.source.DefaultAnnotationHover;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.jface.text.source.SourceViewerConfiguration;
+import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 
-public class DMDLConfiguration extends SourceViewerConfiguration {
+public class DMDLConfiguration extends TextSourceViewerConfiguration {
 	private DMDLEditor editor;
 	private AttributeManager attrManager;
 
@@ -37,6 +37,7 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 	 * @param colorManager
 	 */
 	public DMDLConfiguration(DMDLEditor editor, ColorManager colorManager) {
+		super(Activator.getDefault().getPreferenceStore());
 		this.editor = editor;
 		attrManager = new AttributeManager(colorManager);
 	}
@@ -90,21 +91,16 @@ public class DMDLConfiguration extends SourceViewerConfiguration {
 		getBlockScanner().initialize();
 	}
 
-	private DMDLHyperlinkDetector hyperlinkDetector;
-
-	public DMDLHyperlinkDetector getHyperlinkDetector() {
-		if (hyperlinkDetector == null) {
-			hyperlinkDetector = new DMDLHyperlinkDetector();
-		}
-		return hyperlinkDetector;
-	}
+	public static final String HYPERLINK_TARGET_ID = "dmdl-editor-plugin.hyperlink.target";
 
 	@Override
-	public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
-		IHyperlinkDetector[] ds = super.getHyperlinkDetectors(sourceViewer);
-		IHyperlinkDetector[] ds2 = Arrays.copyOf(ds, ds.length + 1);
-		ds2[ds2.length - 1] = getHyperlinkDetector();
-		return ds2;
+	protected Map<String, IAdaptable> getHyperlinkDetectorTargets(
+			ISourceViewer sourceViewer) {
+		@SuppressWarnings("unchecked")
+		Map<String, IAdaptable> targets = super
+				.getHyperlinkDetectorTargets(sourceViewer);
+		targets.put(HYPERLINK_TARGET_ID, editor);
+		return targets;
 	}
 
 	@Override

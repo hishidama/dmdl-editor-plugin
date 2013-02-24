@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.DMScanner.AttrType;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.style.DMScanner.AttrType;
 
 public class WordToken extends DMDLTextToken {
 	public static enum WordType {

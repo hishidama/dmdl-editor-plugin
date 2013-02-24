@@ -1,6 +1,6 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor;
 
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLImages;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLImages;
 
 import org.eclipse.jdt.ui.ISharedImages;
 import org.eclipse.jdt.ui.JavaUI;

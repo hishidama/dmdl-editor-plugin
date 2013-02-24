@@ -1,6 +1,6 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.jdt.hyperlink;
 
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.hyperlink.DMDLHyperlink;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.hyperlink.DMDLHyperlink;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.IndexContainer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.ModelIndex;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.PropertyIndex;

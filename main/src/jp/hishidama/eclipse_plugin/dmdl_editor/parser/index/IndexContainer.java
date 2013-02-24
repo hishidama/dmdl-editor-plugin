@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker.DMDLErrorCheckHandler;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.marker.DMDLErrorCheckHandler;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
 
 import org.eclipse.core.resources.IFile;

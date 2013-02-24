@@ -1,6 +1,6 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.parser.token;
 
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.style.DMScanner.AttrType;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.style.DMScanner.AttrType;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.IndexContainer;
 
 public abstract class DMDLToken {

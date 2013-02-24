@@ -1,8 +1,8 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.text;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.outline.DMDLOutlinePage;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.folding.FoldingManager;
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.outline.OutlinePage;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.style.ColorManager;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelList;
@@ -28,11 +28,12 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
-public class DMDLTextEditor extends TextEditor implements IPropertyChangeListener {
+public class DMDLTextEditor extends TextEditor implements
+		IPropertyChangeListener {
 	private ColorManager colorManager = new ColorManager();
 
 	protected FoldingManager foldingManager = new FoldingManager();
-	protected OutlinePage outlinePage;
+	private DMDLOutlinePage outlinePage;
 
 	/**
 	 * コンストラクター.
@@ -97,9 +98,6 @@ public class DMDLTextEditor extends TextEditor implements IPropertyChangeListene
 			return this;
 		}
 		if (IContentOutlinePage.class.equals(adapter)) {
-			if (outlinePage == null) {
-				outlinePage = new OutlinePage(this);
-			}
 			return outlinePage;
 		}
 
@@ -109,6 +107,10 @@ public class DMDLTextEditor extends TextEditor implements IPropertyChangeListene
 		}
 
 		return super.getAdapter(adapter);
+	}
+
+	public void setOutlinePage(DMDLOutlinePage outlinePage) {
+		this.outlinePage = outlinePage;
 	}
 
 	@Override

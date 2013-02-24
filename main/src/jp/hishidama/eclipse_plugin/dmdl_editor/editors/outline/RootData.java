@@ -1,4 +1,4 @@
-package jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.outline;
+package jp.hishidama.eclipse_plugin.dmdl_editor.editors.outline;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelList;
 

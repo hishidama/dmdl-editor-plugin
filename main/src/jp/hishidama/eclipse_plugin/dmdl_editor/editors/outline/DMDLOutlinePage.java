@@ -1,9 +1,9 @@
-package jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.outline;
+package jp.hishidama.eclipse_plugin.dmdl_editor.editors.outline;
 
 import java.util.List;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLMultiPageEditor;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLDocument;
-import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLTextEditor;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelList;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
@@ -17,11 +17,11 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
-public class OutlinePage extends ContentOutlinePage {
+public class DMDLOutlinePage extends ContentOutlinePage {
 	protected RootData root = new RootData();
-	protected DMDLTextEditor editor;
+	protected DMDLMultiPageEditor editor;
 
-	public OutlinePage(DMDLTextEditor editor) {
+	public DMDLOutlinePage(DMDLMultiPageEditor editor) {
 		this.editor = editor;
 	}
 
@@ -32,7 +32,7 @@ public class OutlinePage extends ContentOutlinePage {
 		TreeViewer viewer = getTreeViewer();
 		viewer.setContentProvider(new DMDLContentProvider());
 		viewer.setLabelProvider(new DMDLLabelProvider(editor));
-		viewer.addSelectionChangedListener(new OutlineSelectionChangedListener(
+		viewer.addSelectionChangedListener(new DMDLOutlineSelectionChangedListener(
 				editor));
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
@@ -63,7 +63,10 @@ public class OutlinePage extends ContentOutlinePage {
 
 	public void refresh(ModelList models) {
 		root.element = models;
-		getTreeViewer().refresh();
+		TreeViewer viewer = getTreeViewer();
+		if (viewer != null) {
+			viewer.refresh();
+		}
 	}
 
 	public void selectToken(DMDLToken token) {

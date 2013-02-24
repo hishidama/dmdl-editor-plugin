@@ -5,6 +5,8 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLTextEditor;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelList;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
@@ -13,6 +15,7 @@ import org.eclipse.ui.forms.editor.FormPage;
 public class DMDLFormEditor extends FormPage {
 
 	private DMDLTextEditor editor;
+	private DataModelPage page;
 
 	public DMDLFormEditor(FormEditor formEditor, DMDLTextEditor editor) {
 		super(formEditor, "DMDLFormEditor", editor.getTitle());
@@ -21,15 +24,15 @@ public class DMDLFormEditor extends FormPage {
 
 	@Override
 	protected void createFormContent(IManagedForm managedForm) {
-		ModelToken model = getModel();
+		ModelToken model = findModel();
 
-		DataModelPage page = new NormalPage();
+		page = new NormalPage(this);
 
 		page.setModel(model);
 		page.createFormContent(managedForm);
 	}
 
-	private ModelToken getModel() {
+	private ModelToken findModel() {
 		DMDLDocument document = editor.getDocument();
 		if (document == null) {
 			return null;
@@ -49,5 +52,38 @@ public class DMDLFormEditor extends FormPage {
 		ModelToken model = models.getModelByOffset(offset);
 
 		return model;
+	}
+
+	public void setModel(ModelToken newModel) {
+		if (newModel == null) {
+			return;
+		}
+		if (page == null) {
+			return;
+		}
+		ModelToken oldModel = page.getModel();
+		if (oldModel != null) {
+			if (newModel.getModelName().equals(oldModel.getModelName())) {
+				return;
+			}
+		}
+
+		page.setModel(newModel);
+		page.refreshData();
+	}
+
+	public void selectProperty(String propertyName) {
+		if (page == null) {
+			return;
+		}
+		page.selectProperty(propertyName);
+	}
+
+	public IProject getProject() {
+		return editor.getProject();
+	}
+
+	public IFile getFile() {
+		return editor.getFile();
 	}
 }

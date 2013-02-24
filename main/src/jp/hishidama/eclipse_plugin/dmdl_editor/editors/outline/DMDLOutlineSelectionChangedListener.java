@@ -1,6 +1,7 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.outline;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLMultiPageEditor;
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.form.DMDLFormEditor;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLTextEditor;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
@@ -9,21 +10,24 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.PropertyToken;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.ui.IEditorPart;
 
 public class DMDLOutlineSelectionChangedListener implements
 		ISelectionChangedListener {
-	protected DMDLMultiPageEditor editor;
+	protected DMDLMultiPageEditor multiEditor;
 
 	public DMDLOutlineSelectionChangedListener(DMDLMultiPageEditor editor) {
-		this.editor = editor;
+		this.multiEditor = editor;
 	}
 
 	@Override
 	public void selectionChanged(SelectionChangedEvent event) {
-		IEditorPart active = editor.getActiveEditor();
-		if (active instanceof DMDLTextEditor) {
-			selectChangedTextEditor(event, (DMDLTextEditor) active);
+		{
+			DMDLTextEditor editor = multiEditor.getTextEditor();
+			selectChangedTextEditor(event, editor);
+		}
+		{
+			DMDLFormEditor editor = multiEditor.getFormEditor();
+			selectChangedFormEditor(event, editor);
 		}
 	}
 
@@ -54,6 +58,26 @@ public class DMDLOutlineSelectionChangedListener implements
 			int offset = token.getStart();
 			int length = token.getLength();
 			editor.selectAndReveal(offset, length);
+		}
+	}
+
+	protected void selectChangedFormEditor(SelectionChangedEvent event,
+			DMDLFormEditor editor) {
+		IStructuredSelection selection = (IStructuredSelection) event
+				.getSelection();
+		Object element = selection.getFirstElement();
+		selectByEditor(editor, element);
+	}
+
+	protected void selectByEditor(DMDLFormEditor editor, Object element) {
+		if (element instanceof ModelToken) {
+			ModelToken model = (ModelToken) element;
+			editor.setModel(model);
+		} else if (element instanceof PropertyToken) {
+			PropertyToken prop = (PropertyToken) element;
+			ModelToken model = prop.getModelToken();
+			editor.setModel(model);
+			editor.selectProperty(prop.getPropertyName());
 		}
 	}
 }

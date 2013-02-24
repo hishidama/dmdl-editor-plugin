@@ -3,6 +3,10 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.editors.form;
 import java.util.Collections;
 import java.util.List;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.IndexContainer;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.PropertyToken;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -15,10 +19,8 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 
-import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
-import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.PropertyToken;
-
 public abstract class DataModelPage {
+	protected DMDLFormEditor editor;
 
 	protected ModelToken model;
 
@@ -27,8 +29,16 @@ public abstract class DataModelPage {
 	protected Text nameText;
 	protected Table table;
 
+	public DataModelPage(DMDLFormEditor editor) {
+		this.editor = editor;
+	}
+
 	public final void setModel(ModelToken model) {
 		this.model = model;
+	}
+
+	public final ModelToken getModel() {
+		return model;
 	}
 
 	public void createFormContent(IManagedForm managedForm) {
@@ -40,8 +50,8 @@ public abstract class DataModelPage {
 		FormToolkit kit = managedForm.getToolkit();
 		{
 			Composite composite = kit.createComposite(body, SWT.NONE);
-			composite.setLayout(new GridLayout(2, true));
-			composite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false,
+			composite.setLayout(new GridLayout(2, false));
+			composite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false,
 					false));
 			createHeader(kit, composite);
 		}
@@ -104,11 +114,15 @@ public abstract class DataModelPage {
 		typeText.setText(getModelType());
 		nameText.setText(getModelName());
 
-		table.clearAll();
+		IndexContainer ic = IndexContainer.getContainer(editor.getProject(),
+				editor.getFile());
+
+		table.removeAll();
 		for (PropertyToken prop : getProperties()) {
 			TableItem item = new TableItem(table, SWT.NONE);
-			String[] ss = { decodeDescription(prop.getPropertyDescription()),
-					prop.getPropertyName(), prop.getDataType(null) };
+			String[] ss = {
+					decodeDescription(nonNull(prop.getPropertyDescription())),
+					prop.getPropertyName(), nonNull(prop.getDataType(ic)) };
 			item.setText(ss);
 		}
 	}
@@ -154,5 +168,18 @@ public abstract class DataModelPage {
 			return model.getPropertyList();
 		}
 		return Collections.emptyList();
+	}
+
+	public void selectProperty(String propertyName) {
+		List<PropertyToken> list = getProperties();
+		int i = 0;
+		for (PropertyToken prop : list) {
+			if (propertyName.equals(prop.getPropertyName())) {
+				table.setSelection(i);
+				table.showSelection();
+				break;
+			}
+			i++;
+		}
 	}
 }

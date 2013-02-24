@@ -14,6 +14,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
 public class DMDLMultiPageEditor extends FormEditor {
 
 	private DMDLTextEditor editor;
+	private DMDLFormEditor form;
 	private DMDLOutlinePage outlinePage;
 
 	public DMDLMultiPageEditor() {
@@ -24,19 +25,28 @@ public class DMDLMultiPageEditor extends FormEditor {
 		editor = new DMDLTextEditor();
 		outlinePage = new DMDLOutlinePage(this);
 		editor.setOutlinePage(outlinePage);
+		form = new DMDLFormEditor(this, editor);
 		try {
 			{
 				int n = addPage(editor, getEditorInput());
 				setPageText(n, "editor");
 			}
 			{
-				int n = addPage(new DMDLFormEditor(this, editor));
+				int n = addPage(form);
 				setPageText(n, "table");
 			}
 		} catch (PartInitException e) {
 			throw new IllegalStateException(e);
 		}
 		setPartName(editor.getTitle());
+	}
+
+	public DMDLTextEditor getTextEditor() {
+		return editor;
+	}
+
+	public DMDLFormEditor getFormEditor() {
+		return form;
 	}
 
 	@Override

@@ -14,11 +14,12 @@ public class DMDLMultiPageEditor extends MultiPageEditorPart {
 	protected void createPages() {
 		editor = new DMDLTextEditor();
 		try {
-			int n = addPage(new DMDLTextEditor(), getEditorInput());
+			int n = addPage(editor, getEditorInput());
 			setPageText(n, "editor");
 		} catch (PartInitException e) {
 			throw new IllegalStateException(e);
 		}
+		setPartName(editor.getTitle());
 	}
 
 	@Override

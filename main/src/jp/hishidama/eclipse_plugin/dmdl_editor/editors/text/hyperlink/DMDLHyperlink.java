@@ -41,12 +41,12 @@ public class DMDLHyperlink implements IHyperlink {
 
 	@Override
 	public String getTypeLabel() {
-		return "Open Declared DMDL";
+		return "Open DMDL";
 	}
 
 	@Override
 	public String getHyperlinkText() {
-		return "Open Declared DMDL";
+		return "Open DMDL";
 	}
 
 	@Override

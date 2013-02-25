@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.marker.DMDLErrorCheckHandler;
@@ -31,6 +32,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.ILaunchesListener2;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
@@ -228,8 +230,39 @@ public class DMDLCompileTask implements IWorkspaceRunnable {
 					: ILaunchManager.RUN_MODE;
 			boolean build = false;
 			boolean register = false;
-			ILaunch launch = config.launch(mode, new SubProgressMonitor(
+			final ILaunch launch = config.launch(mode, new SubProgressMonitor(
 					monitor, 20), build, register);
+
+			final ILaunchManager launchManager = DebugPlugin.getDefault()
+					.getLaunchManager();
+			final CountDownLatch latch = new CountDownLatch(1);
+			launchManager.addLaunchListener(new ILaunchesListener2() {
+				@Override
+				public void launchesRemoved(ILaunch[] launches) {
+					return;
+				}
+
+				@Override
+				public void launchesChanged(ILaunch[] launches) {
+					return;
+				}
+
+				@Override
+				public void launchesAdded(ILaunch[] launches) {
+					return;
+				}
+
+				@Override
+				public void launchesTerminated(ILaunch[] launches) {
+					for (ILaunch l : launches) {
+						if (l == launch) {
+							latch.countDown();
+							launchManager.removeLaunchListener(this);
+						}
+					}
+				}
+			});
+			launchManager.addLaunch(launch);
 
 			monitor.worked(10);
 			while (!launch.isTerminated()) {

@@ -47,7 +47,7 @@ public class DMDLEditorFormatterPreferencePage extends
 		addField(indentArgument);
 
 		indentProperty = new IntegerFieldEditor(FORMAT_INDENT_PROPERTY,
-				"intden(block)", parent);
+				"indent(block)", parent);
 		indentProperty.setValidRange(1, 8);
 		addField(indentProperty);
 	}

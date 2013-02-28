@@ -1,5 +1,6 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.parser.index;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,7 +12,10 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.ILog;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.QualifiedName;
+import org.eclipse.core.runtime.Status;
 
 public class IndexContainer {
 	static final QualifiedName KEY = new QualifiedName(Activator.PLUGIN_ID,
@@ -79,11 +83,15 @@ public class IndexContainer {
 					.getSessionProperty(KEY);
 			if (ic == null) {
 				DMDLErrorCheckHandler handler = new DMDLErrorCheckHandler();
-				handler.execute(file, true, false);
+				handler.execute(file, true, false); // create IndexContainer
 				ic = (IndexContainer) project.getSessionProperty(KEY);
 			}
 			return ic;
-		} catch (CoreException e) {
+		} catch (Exception e) {
+			ILog log = Activator.getDefault().getLog();
+			log.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID,
+					MessageFormat.format(
+							"getting IndexContainer error. file={0}", file), e));
 			return null;
 		}
 	}

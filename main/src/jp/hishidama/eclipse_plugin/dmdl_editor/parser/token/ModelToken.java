@@ -181,10 +181,17 @@ public class ModelToken extends DMDLBodyToken {
 	}
 
 	public String getDescription() {
+		DescriptionToken desc = getDescriptionToken();
+		if (desc != null) {
+			return desc.getBody();
+		}
+		return null;
+	}
+
+	public DescriptionToken getDescriptionToken() {
 		for (DMDLToken token : bodyList) {
 			if (token instanceof DescriptionToken) {
-				DescriptionToken desc = (DescriptionToken) token;
-				return desc.getBody();
+				return (DescriptionToken) token;
 			}
 		}
 		return null;

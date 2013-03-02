@@ -1,5 +1,6 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.form;
 
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 
@@ -77,12 +78,14 @@ public abstract class DataModelPage {
 		kit.createLabel(parent, "description");
 		descText = kit.createText(parent, "");
 		descText.setLayoutData(gd);
+		descText.addFocusListener(new ModelDescriptionListener(this));
 		kit.createLabel(parent, "model type");
 		typeText = kit.createText(parent, "");
 		typeText.setLayoutData(gd);
 		kit.createLabel(parent, "model name");
 		nameText = kit.createText(parent, "");
 		nameText.setLayoutData(gd);
+		nameText.addFocusListener(new ModelNameListener(this));
 
 		createHeader2(kit, parent);
 	}
@@ -142,7 +145,7 @@ public abstract class DataModelPage {
 		return "";
 	}
 
-	protected static String decodeDescription(String s) {
+	public static String decodeDescription(String s) {
 		if (s.startsWith("\"")) {
 			s = s.substring(1);
 		}
@@ -150,6 +153,10 @@ public abstract class DataModelPage {
 			s = s.substring(0, s.length() - 1);
 		}
 		return s;
+	}
+
+	public static String encodeDescription(String s) {
+		return "\"" + s + "\"";
 	}
 
 	protected String getModelType() {
@@ -181,5 +188,15 @@ public abstract class DataModelPage {
 			}
 			i++;
 		}
+	}
+
+	public void replaceDocument(int pos, int length, String text) {
+		ModelToken m = editor.replaceDocument(pos, length, text);
+		if (m == null) {
+			throw new IllegalStateException(MessageFormat.format(
+					"replace error. pos={0}, len={1}, text=\"{2}\", model={3}",
+					pos, length, text, model.toString()));
+		}
+		setModel(m);
 	}
 }

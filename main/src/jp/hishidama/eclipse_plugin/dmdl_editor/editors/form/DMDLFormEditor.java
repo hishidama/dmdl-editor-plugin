@@ -1,5 +1,6 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.form;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLDocument;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLTextEditor;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelList;
@@ -7,6 +8,9 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.ILog;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
@@ -85,5 +89,19 @@ public class DMDLFormEditor extends FormPage {
 
 	public IFile getFile() {
 		return editor.getFile();
+	}
+
+	public ModelToken replaceDocument(int pos, int length, String text) {
+		DMDLDocument document = editor.getDocument();
+		try {
+			document.replace(pos, length, text);
+		} catch (BadLocationException e) {
+			ILog log = Activator.getDefault().getLog();
+			log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,
+					"DMDLFormEditor#replace bad location.", e));
+			return null;
+		}
+		ModelList models = document.getModelList();
+		return models.getModelByOffset(pos);
 	}
 }

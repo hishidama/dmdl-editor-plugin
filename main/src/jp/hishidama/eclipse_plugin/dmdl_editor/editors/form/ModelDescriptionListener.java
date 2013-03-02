@@ -16,6 +16,10 @@ public class ModelDescriptionListener implements FocusListener {
 		this.page = page;
 	}
 
+	public void setOldValue(String value) {
+		oldValue = value;
+	}
+
 	@Override
 	public void focusGained(FocusEvent e) {
 		Text text = (Text) e.getSource();
@@ -27,7 +31,11 @@ public class ModelDescriptionListener implements FocusListener {
 		Text text = (Text) e.getSource();
 		String value = text.getText();
 		if (!value.equals(oldValue)) {
-			replace(DataModelPage.encodeDescription(value));
+			if (value.isEmpty()) {
+				replace("");
+			} else {
+				replace(DataModelPage.encodeDescription(value));
+			}
 			oldValue = value;
 		}
 	}
@@ -37,6 +45,14 @@ public class ModelDescriptionListener implements FocusListener {
 		DescriptionToken desc = model.getDescriptionToken();
 		if (desc != null) {
 			page.replaceDocument(desc.getStart(), desc.getLength(), value);
+			return;
+		}
+		if (value.isEmpty()) {
+			return;
+		}
+		WordToken type = model.getModelTypeToken();
+		if (type != null) {
+			page.replaceDocument(type.getStart(), 0, value + "\n");
 			return;
 		}
 		WordToken name = model.getModelNameToken();

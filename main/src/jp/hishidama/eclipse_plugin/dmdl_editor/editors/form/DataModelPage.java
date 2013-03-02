@@ -30,6 +30,8 @@ public abstract class DataModelPage {
 	protected Text nameText;
 	protected Table table;
 
+	private ModelDescriptionListener firstFocus;
+
 	public DataModelPage(DMDLFormEditor editor) {
 		this.editor = editor;
 	}
@@ -78,7 +80,8 @@ public abstract class DataModelPage {
 		kit.createLabel(parent, "description");
 		descText = kit.createText(parent, "");
 		descText.setLayoutData(gd);
-		descText.addFocusListener(new ModelDescriptionListener(this));
+		firstFocus = new ModelDescriptionListener(this);
+		descText.addFocusListener(firstFocus);
 		kit.createLabel(parent, "model type");
 		typeText = kit.createText(parent, "");
 		typeText.setLayoutData(gd);
@@ -113,7 +116,9 @@ public abstract class DataModelPage {
 	}
 
 	public void refreshData() {
-		descText.setText(getModelDescription());
+		String desc = getModelDescription();
+		firstFocus.setOldValue(desc);
+		descText.setText(desc);
 		typeText.setText(getModelType());
 		nameText.setText(getModelName());
 

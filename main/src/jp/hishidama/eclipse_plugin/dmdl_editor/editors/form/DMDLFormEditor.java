@@ -105,6 +105,32 @@ public class DMDLFormEditor extends FormPage {
 
 	public ModelToken replaceDocument(int pos, int length, String text) {
 		DMDLDocument document = editor.getDocument();
+
+		// textが空文字列の場合は、削除という意味になる。
+		// 削除文字列の前後が改行の場合は末尾の改行も一緒に削除する。
+		int end = pos + length;
+		if (text.isEmpty() && pos > 0 && end < document.getLength()) {
+			char prev = 0, next = 0;
+			try {
+				prev = document.getChar(pos - 1);
+				next = document.getChar(end);
+			} catch (BadLocationException e) {
+			}
+			if ((prev == '\r' || prev == '\n')
+					&& (next == '\r' || next == '\n')) {
+				end++;
+				if (next == '\r') {
+					try {
+						if (document.getChar(end) == '\n') {
+							end++;
+						}
+					} catch (BadLocationException e) {
+					}
+				}
+				length = end - pos;
+			}
+		}
+
 		try {
 			document.replace(pos, length, text);
 		} catch (BadLocationException e) {

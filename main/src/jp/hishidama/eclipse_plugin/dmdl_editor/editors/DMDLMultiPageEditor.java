@@ -41,6 +41,17 @@ public class DMDLMultiPageEditor extends FormEditor {
 		setPartName(editor.getTitle());
 	}
 
+	@Override
+	protected void pageChange(int newPageIndex) {
+		super.pageChange(newPageIndex);
+
+		Object page = getSelectedPage();
+		if (page instanceof DMDLFormEditor) {
+			DMDLFormEditor editor = (DMDLFormEditor) page;
+			editor.refreshData();
+		}
+	}
+
 	public DMDLTextEditor getTextEditor() {
 		return editor;
 	}

@@ -76,6 +76,18 @@ public class DMDLFormEditor extends FormPage {
 		page.refreshData();
 	}
 
+	public void refreshData() {
+		if (page == null) {
+			return;
+		}
+		ModelToken model = findModel();
+		if (model == null) {
+			return;
+		}
+		page.setModel(model);
+		page.refreshData();
+	}
+
 	public void selectProperty(String propertyName) {
 		if (page == null) {
 			return;

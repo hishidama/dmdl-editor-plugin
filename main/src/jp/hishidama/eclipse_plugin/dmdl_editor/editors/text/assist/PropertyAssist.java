@@ -11,9 +11,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 
 public class PropertyAssist extends Assist {
-	protected static final String[] TYPE_ASSIST = { "INT", "LONG", "FLOAT",
-			"DOUBLE", "TEXT", "DECIMAL", "DATE", "DATETIME", "BOOLEAN", "BYTE",
-			"SHORT" };
+	protected static final String[] TYPE_ASSIST = WordToken.PROPERTY_TYPE;
 
 	public List<ICompletionProposal> getPropertyAssist(IDocument document,
 			int offset, PropertyToken token) {

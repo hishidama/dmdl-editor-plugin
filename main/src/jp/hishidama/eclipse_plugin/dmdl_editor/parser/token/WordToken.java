@@ -1,5 +1,6 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.parser.token;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -8,6 +9,10 @@ import java.util.Set;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.style.DMScanner.AttrType;
 
 public class WordToken extends DMDLTextToken {
+	public static final String[] PROPERTY_TYPE = { "INT", "LONG", "FLOAT",
+			"DOUBLE", "TEXT", "DECIMAL", "DATE", "DATETIME", "BOOLEAN", "BYTE",
+			"SHORT" };
+
 	public static enum WordType {
 		UNKNOWN, DEF, COMMA, ALLOW, PERCENT,
 		// モデル名
@@ -24,11 +29,7 @@ public class WordToken extends DMDLTextToken {
 
 	static final Set<String> DMDL_PROPERTY_TYPE = new HashSet<String>();
 	static {
-		String[] ss = { "INT", "LONG", "FLOAT", "DOUBLE", "TEXT", "DECIMAL",
-				"DATE", "DATETIME", "BOOLEAN", "BYTE", "SHORT" };
-		for (String s : ss) {
-			DMDL_PROPERTY_TYPE.add(s);
-		}
+		Collections.addAll(DMDL_PROPERTY_TYPE, PROPERTY_TYPE);
 	}
 	static final Set<String> SUMMARIZED_TYPE = new HashSet<String>();
 	static {

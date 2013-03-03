@@ -13,6 +13,8 @@ import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
@@ -48,8 +50,8 @@ public class ModelTableEditor extends TableEditor {
 		} else if (row >= table.getItemCount()) {
 			row = 0;
 		}
-		 table.setSelection(row);
-		//table.deselectAll();
+		table.setSelection(row);
+		// table.deselectAll();
 		switch (column) {
 		case COL_DESC:
 			DescriptionEditor desc = new DescriptionEditor();
@@ -60,16 +62,17 @@ public class ModelTableEditor extends TableEditor {
 			name.start(row, column);
 			break;
 		case COL_TYPE:
+			TypeEditor type = new TypeEditor();
+			type.start(row, column);
 			break;
 		}
 	}
 
-	abstract class TextEditor {
+	protected abstract class Editor {
 		protected int row;
 		protected int column;
 		protected TableItem item;
 		protected String oldValue;
-		protected Text text;
 
 		public void start(final int row, final int column) {
 			this.row = row;
@@ -77,14 +80,14 @@ public class ModelTableEditor extends TableEditor {
 			item = table.getItem(row);
 			oldValue = item.getText(column);
 
-			text = new Text(table, SWT.NONE);
-			text.addFocusListener(new FocusAdapter() {
+			Control editor = createControl(oldValue);
+			editor.addFocusListener(new FocusAdapter() {
 				@Override
 				public void focusLost(FocusEvent e) {
 					commit();
 				}
 			});
-			text.addTraverseListener(new TraverseListener() {
+			editor.addTraverseListener(new TraverseListener() {
 				@Override
 				public void keyTraversed(TraverseEvent e) {
 					switch (e.detail) {
@@ -104,28 +107,30 @@ public class ModelTableEditor extends TableEditor {
 						}
 						break;
 					case SWT.TRAVERSE_ESCAPE:
-						text.dispose();
+						disposeControl();
 						e.doit = false;
 						break;
 					}
 				}
 			});
 
-			ModelTableEditor.super.setEditor(text, item, column);
+			ModelTableEditor.super.setEditor(editor, item, column);
 
-			text.setText(oldValue);
-			text.selectAll();
-			text.setFocus();
+			editor.setFocus();
 		}
 
-		private boolean commit() {
-			String value = text.getText();
+		protected abstract Control createControl(String value);
+
+		protected abstract void disposeControl();
+
+		protected boolean commit() {
+			String value = getText();
 			if (!prepareCommit(value)) {
 				return false;
 			}
 
 			item.setText(column, value);
-			text.dispose();
+			disposeControl();
 
 			if (!value.equals(oldValue)) {
 				ModelToken model = page.getModel();
@@ -136,10 +141,34 @@ public class ModelTableEditor extends TableEditor {
 			return true;
 		}
 
+		protected abstract String getText();
+
 		protected abstract boolean prepareCommit(String value);
 
 		protected abstract void replace(ModelToken model, PropertyToken prop,
 				String value);
+	}
+
+	protected abstract class TextEditor extends Editor {
+		protected Text text;
+
+		@Override
+		protected Control createControl(String value) {
+			text = new Text(table, SWT.NONE);
+			text.setText(value);
+			text.selectAll();
+			return text;
+		}
+
+		@Override
+		protected void disposeControl() {
+			text.dispose();
+		}
+
+		@Override
+		protected String getText() {
+			return text.getText();
+		}
 	}
 
 	class DescriptionEditor extends TextEditor {
@@ -189,6 +218,53 @@ public class ModelTableEditor extends TableEditor {
 			}
 			page.replaceDocument(prop.getStart(), 0, "\n" + value);
 		}
+	}
 
+	protected class TypeEditor extends Editor {
+		protected Combo list;
+
+		@Override
+		protected Control createControl(String value) {
+			list = new Combo(table, SWT.NONE);
+			for (String type : WordToken.PROPERTY_TYPE) {
+				list.add(type);
+			}
+			list.setText(value);
+			return list;
+		}
+
+		@Override
+		protected void disposeControl() {
+			list.dispose();
+		}
+
+		@Override
+		protected String getText() {
+			return list.getText();
+		}
+
+		@Override
+		protected boolean prepareCommit(String value) {
+			if (value.isEmpty()) {
+				return false;
+			}
+			return true;
+		}
+
+		@Override
+		protected void replace(ModelToken model, PropertyToken prop,
+				String value) {
+			// TODO summarizeやjoinでは設定しない
+			WordToken type = prop.getDataTypeToken();
+			if (type != null) {
+				page.replaceDocument(type.getStart(), type.getLength(), value);
+				return;
+			}
+			WordToken colon = prop.findWord(":");
+			if (colon != null) {
+				page.replaceDocument(colon.getEnd(), 0, " " + value);
+				return;
+			}
+		}
 	}
 }

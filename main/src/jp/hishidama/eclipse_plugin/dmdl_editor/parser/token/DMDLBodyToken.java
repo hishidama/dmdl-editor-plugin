@@ -67,6 +67,18 @@ public class DMDLBodyToken extends DMDLToken {
 		return null;
 	}
 
+	public WordToken findWord(String text) {
+		for (DMDLToken token : bodyList) {
+			if (token instanceof WordToken) {
+				WordToken word = (WordToken) token;
+				if (text.equals(word.getBody())) {
+					return word;
+				}
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public DMDLToken getTokenByOffset(int offset) {
 		if (start <= offset && offset < end) {

@@ -128,10 +128,10 @@ public abstract class DataModelPage {
 		table.removeAll();
 		for (PropertyToken prop : getProperties()) {
 			TableItem item = new TableItem(table, SWT.NONE);
-			String[] ss = {
-					decodeDescription(nonNull(prop.getPropertyDescription())),
-					prop.getPropertyName(), nonNull(prop.getDataType(ic)) };
-			item.setText(ss);
+			item.setText(0,
+					decodeDescription(nonNull(prop.getPropertyDescription())));
+			item.setText(1, prop.getPropertyName());
+			item.setText(2, nonNull(prop.getDataType(ic)));
 		}
 	}
 

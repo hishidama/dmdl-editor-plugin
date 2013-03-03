@@ -9,6 +9,9 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.PropertyToken;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -113,6 +116,27 @@ public abstract class DataModelPage {
 			col.setText("type");
 			col.setWidth(100);
 		}
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent e) {
+				Point point = new Point(e.x, e.y);
+
+				Table table = (Table) e.getSource();
+				TableItem item = table.getItem(point);
+				if (item == null) {
+					return;
+				}
+				for (int i = 0; i < table.getColumnCount(); i++) {
+					if (item.getBounds(i).contains(point)) {
+						int row = table.indexOf(item);
+						ModelTableEditor te = new ModelTableEditor(
+								DataModelPage.this, table);
+						te.setEditor(row, i);
+						break;
+					}
+				}
+			}
+		});
 	}
 
 	public void refreshData() {

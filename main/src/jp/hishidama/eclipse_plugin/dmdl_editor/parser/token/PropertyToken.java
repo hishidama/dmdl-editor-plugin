@@ -173,10 +173,17 @@ public class PropertyToken extends DMDLBodyToken {
 
 	@Override
 	public String getPropertyDescription() {
+		DescriptionToken desc = getPropertyDescriptionToken();
+		if (desc != null) {
+			return desc.getBody();
+		}
+		return null;
+	}
+
+	public DescriptionToken getPropertyDescriptionToken() {
 		for (DMDLToken token : bodyList) {
 			if (token instanceof DescriptionToken) {
-				DescriptionToken desc = (DescriptionToken) token;
-				return desc.getBody();
+				return (DescriptionToken) token;
 			}
 		}
 		return null;

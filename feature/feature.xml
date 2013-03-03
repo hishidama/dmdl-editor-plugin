@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="jp.hishidama.eclipse_plugin.dmdl_editor.feature"
-      label="dmdl-editor-feature"
+      label="DMDL Editor"
       version="0.1.2.qualifier"
       provider-name="hishidama">
 

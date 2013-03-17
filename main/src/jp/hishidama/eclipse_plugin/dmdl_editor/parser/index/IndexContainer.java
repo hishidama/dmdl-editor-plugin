@@ -1,6 +1,7 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.parser.index;
 
 import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,6 +33,10 @@ public class IndexContainer {
 
 	public void clear() {
 		map.clear();
+	}
+
+	public Collection<ModelIndex> getModels() {
+		return map.values();
 	}
 
 	public ModelIndex findModel(String modelName) {

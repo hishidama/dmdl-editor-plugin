@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.external.DataModelUtil;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.IndexContainer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.PropertyToken;
@@ -174,17 +175,11 @@ public abstract class DataModelPage {
 	}
 
 	public static String decodeDescription(String s) {
-		if (s.startsWith("\"")) {
-			s = s.substring(1);
-		}
-		if (s.endsWith("\"")) {
-			s = s.substring(0, s.length() - 1);
-		}
-		return s;
+		return DataModelUtil.decodeDescription(s);
 	}
 
 	public static String encodeDescription(String s) {
-		return "\"" + s + "\"";
+		return DataModelUtil.encodeDescription(s);
 	}
 
 	protected String getModelType() {

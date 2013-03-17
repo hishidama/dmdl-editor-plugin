@@ -26,6 +26,10 @@ public class ModelIndex implements Index {
 		return model.getModelName();
 	}
 
+	public String getDescription() {
+		return model.getDescription();
+	}
+
 	@Override
 	public IFile getFile() {
 		return file;

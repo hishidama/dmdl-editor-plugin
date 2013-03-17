@@ -1,4 +1,4 @@
-package jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.hyperlink;
+package jp.hishidama.eclipse_plugin.dmdl_editor.external;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.Index;
@@ -20,9 +20,16 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.IGotoMarker;
 
+/**
+ * DMDLハイパーリンクユーティリティー.
+ *
+ * @since 2013.03.17
+ */
 public class DMDLHyperlinkUtil {
 
 	public static boolean gotoPosition(IProject project, DMDLToken token) {
+		assert project != null;
+
 		for (; token != null; token = token.getParent()) {
 			if (token instanceof ModelToken) {
 				ModelToken model = (ModelToken) token;
@@ -40,8 +47,21 @@ public class DMDLHyperlinkUtil {
 		return false;
 	}
 
+	/**
+	 * 指定された名前の場所へ移動する（ファイルを開く）.
+	 *
+	 * @param project
+	 *            プロジェクト（null不可）
+	 * @param modelName
+	 *            モデル名（nullの場合は移動に失敗する）
+	 * @param propertyName
+	 *            プロパティー名（nullの場合はモデル名へジャンプ）
+	 * @return 移動が成功した場合true、失敗した場合false
+	 */
 	public static boolean gotoPosition(IProject project, String modelName,
 			String propertyName) {
+		assert project != null;
+
 		if (modelName == null) {
 			return false;
 		}
@@ -70,6 +90,7 @@ public class DMDLHyperlinkUtil {
 	}
 
 	public static boolean gotoPosition(IFile file, int start, int end) {
+		assert file != null;
 		try {
 			IMarker marker = file.createMarker(IMarker.TEXT);
 			try {

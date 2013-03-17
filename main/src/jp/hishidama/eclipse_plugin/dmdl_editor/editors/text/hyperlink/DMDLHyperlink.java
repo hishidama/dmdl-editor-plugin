@@ -1,6 +1,7 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.hyperlink;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLTextEditor;
+import jp.hishidama.eclipse_plugin.dmdl_editor.external.DMDLHyperlinkUtil;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.PropertyToken;

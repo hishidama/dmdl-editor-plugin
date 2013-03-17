@@ -20,33 +20,33 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.IGotoMarker;
 
-public class HyperlinkUtil {
+public class DMDLHyperlinkUtil {
 
 	public static boolean gotoPosition(IProject project, DMDLToken token) {
 		for (; token != null; token = token.getParent()) {
 			if (token instanceof ModelToken) {
 				ModelToken model = (ModelToken) token;
-				return gotoPosition(project, null, model.getModelName(), null);
+				return gotoPosition(project, model.getModelName(), null);
 			} else if (token instanceof PropertyToken) {
 				PropertyToken prop = (PropertyToken) token;
 				ModelToken model = prop.getModelToken();
 				if (model == null) {
 					return false;
 				}
-				return gotoPosition(project, null, model.getModelName(),
+				return gotoPosition(project, model.getModelName(),
 						prop.getName());
 			}
 		}
 		return false;
 	}
 
-	public static boolean gotoPosition(IProject project, IFile file,
-			String modelName, String propertyName) {
+	public static boolean gotoPosition(IProject project, String modelName,
+			String propertyName) {
 		if (modelName == null) {
 			return false;
 		}
 
-		IndexContainer ic = IndexContainer.getContainer(project, file);
+		IndexContainer ic = IndexContainer.getContainer(project);
 		if (ic == null) {
 			return false;
 		}

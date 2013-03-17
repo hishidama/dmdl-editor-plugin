@@ -37,16 +37,14 @@ public class DMDLErrorCheckHandler extends AbstractHandler {
 		if (selection instanceof TextSelection) {
 			IEditorPart editor = HandlerUtil.getActiveEditor(event);
 			IFile file = FileUtil.getFile(editor);
-			search(list, file);
+			search(list, file.getProject());
 		} else if (selection instanceof TreeSelection) {
 			TreeSelection tree = (TreeSelection) selection;
 			TreePath[] paths = tree.getPaths();
 			for (TreePath path : paths) {
 				Object segment = path.getLastSegment();
-				if (segment instanceof IFile) {
-					search(list, (IFile) segment);
-				} else if (segment instanceof IFolder) {
-					search(list, (IFolder) segment);
+				if (segment instanceof IResource) {
+					search(list, ((IResource) segment).getProject());
 				}
 			}
 		}
@@ -55,9 +53,9 @@ public class DMDLErrorCheckHandler extends AbstractHandler {
 		return null;
 	}
 
-	public void execute(IFile file, boolean createIndex, boolean checkMark) {
+	public void execute(IProject project, boolean createIndex, boolean checkMark) {
 		FileList list = new FileList();
-		search(list, file);
+		search(list, project);
 		execute(list, createIndex, checkMark);
 	}
 
@@ -67,11 +65,7 @@ public class DMDLErrorCheckHandler extends AbstractHandler {
 		return new DMDLErrorCheckTask(list, true, true);
 	}
 
-	private void search(FileList list, IFile file) {
-		if (file == null) {
-			return;
-		}
-		IProject project = file.getProject();
+	private void search(FileList list, IProject project) {
 		if (project == null) {
 			return;
 		}
@@ -88,7 +82,7 @@ public class DMDLErrorCheckHandler extends AbstractHandler {
 		if (folder != null) {
 			search(list, folder);
 		} else {
-			search(list, project);
+			search(list, (IContainer) project);
 		}
 	}
 

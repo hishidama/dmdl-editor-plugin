@@ -52,7 +52,7 @@ public class DMDLHyperlink implements IHyperlink {
 	@Override
 	public void open() {
 		if (project != null) {
-			HyperlinkUtil.gotoPosition(project, token);
+			DMDLHyperlinkUtil.gotoPosition(project, token);
 			return;
 		}
 		WordToken target = token.getReferenceWord();
@@ -68,15 +68,15 @@ public class DMDLHyperlink implements IHyperlink {
 					if (ref instanceof WordToken) {
 						String modelName = ((WordToken) ref).getBody();
 						String propName = prop.getRefNameToken().getBody();
-						HyperlinkUtil.gotoPosition(editor.getProject(),
-								editor.getFile(), modelName, propName);
+						DMDLHyperlinkUtil.gotoPosition(editor.getProject(),
+								modelName, propName);
 					}
 					return;
 				} else if (t instanceof ModelToken) {
 					if (token instanceof WordToken) {
 						String modelName = ((WordToken) token).getBody();
-						HyperlinkUtil.gotoPosition(editor.getProject(),
-								editor.getFile(), modelName, null);
+						DMDLHyperlinkUtil.gotoPosition(editor.getProject(),
+								modelName, null);
 					}
 					return;
 				}

@@ -4,11 +4,8 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.hyperlink.DMDLHyperl
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.IndexContainer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.ModelIndex;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.PropertyIndex;
-import jp.hishidama.eclipse_plugin.util.FileUtil;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
@@ -167,9 +164,7 @@ public class OpenDeclaredDmdlHyperlinkDetector extends
 
 	private static ModelIndex findModel(IType type) {
 		IProject project = type.getJavaProject().getProject();
-		IPath path = type.getPath();
-		IFile file = FileUtil.getFile(project, path);
-		IndexContainer ic = IndexContainer.getContainer(project, file);
+		IndexContainer ic = IndexContainer.getContainer(project);
 		if (ic == null) {
 			return null;
 		}

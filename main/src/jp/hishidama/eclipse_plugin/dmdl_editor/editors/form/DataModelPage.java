@@ -146,8 +146,7 @@ public abstract class DataModelPage {
 		typeText.setText(getModelType());
 		nameText.setText(getModelName());
 
-		IndexContainer ic = IndexContainer.getContainer(editor.getProject(),
-				editor.getFile());
+		IndexContainer ic = IndexContainer.getContainer(editor.getProject());
 
 		table.removeAll();
 		for (PropertyToken prop : getProperties()) {

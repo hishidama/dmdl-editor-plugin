@@ -63,8 +63,7 @@ public class DMDLLabelProvider extends StyledCellLabelProvider {
 	protected void update(ViewerCell cell, PropertyToken prop) {
 		StyledString styledString = new StyledString(prop.getPropertyName());
 
-		IndexContainer ic = IndexContainer.getContainer(editor.getProject(),
-				editor.getFile());
+		IndexContainer ic = IndexContainer.getContainer(editor.getProject());
 		String type = prop.getDataType(ic);
 		if (type != null) {
 			styledString.append(" : " + type, StyledString.DECORATIONS_STYLER);

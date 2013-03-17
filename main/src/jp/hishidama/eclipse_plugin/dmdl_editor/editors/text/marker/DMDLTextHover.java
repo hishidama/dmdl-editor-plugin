@@ -72,8 +72,8 @@ public class DMDLTextHover extends DefaultTextHover implements
 						}
 						return name;
 					} else {
-						IndexContainer ic = IndexContainer.getContainer(
-								editor.getProject(), editor.getFile());
+						IndexContainer ic = IndexContainer.getContainer(editor
+								.getProject());
 						if (ic != null) {
 							ModelIndex index = ic.findModel(name);
 							if (index != null) {
@@ -90,15 +90,15 @@ public class DMDLTextHover extends DefaultTextHover implements
 				case REF_PROPERTY_NAME: {
 					WordToken ref = word.getReferenceWord();
 					if (ref != null) {
-						IndexContainer ic = IndexContainer.getContainer(
-								editor.getProject(), editor.getFile());
+						IndexContainer ic = IndexContainer.getContainer(editor
+								.getProject());
 						PropertyToken prop = (PropertyToken) ref.getParent();
 						return prop.getQualifiedName(ic);
 					} else {
 						DMDLToken model = word.findRefModelToken();
 						if (model instanceof WordToken) {
-							IndexContainer ic = IndexContainer.getContainer(
-									editor.getProject(), editor.getFile());
+							IndexContainer ic = IndexContainer
+									.getContainer(editor.getProject());
 							if (ic != null) {
 								String modelName = ((WordToken) model)
 										.getBody();
@@ -118,8 +118,8 @@ public class DMDLTextHover extends DefaultTextHover implements
 					return null;
 				}
 			} else if (token instanceof PropertyToken) {
-				IndexContainer ic = IndexContainer.getContainer(
-						editor.getProject(), editor.getFile());
+				IndexContainer ic = IndexContainer.getContainer(editor
+						.getProject());
 				PropertyToken prop = (PropertyToken) token;
 				return prop.getQualifiedName(ic);
 			} else if (token instanceof ModelToken) {

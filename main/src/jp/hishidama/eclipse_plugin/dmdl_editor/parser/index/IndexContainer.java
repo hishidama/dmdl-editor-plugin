@@ -77,13 +77,13 @@ public class IndexContainer {
 		return ic;
 	}
 
-	public static IndexContainer getContainer(IProject project, IFile file) {
+	public static IndexContainer getContainer(IProject project) {
 		try {
 			IndexContainer ic = (IndexContainer) project
 					.getSessionProperty(KEY);
 			if (ic == null) {
 				DMDLErrorCheckHandler handler = new DMDLErrorCheckHandler();
-				handler.execute(file, true, false); // create IndexContainer
+				handler.execute(project, true, false); // create IndexContainer
 				ic = (IndexContainer) project.getSessionProperty(KEY);
 			}
 			return ic;
@@ -91,7 +91,8 @@ public class IndexContainer {
 			ILog log = Activator.getDefault().getLog();
 			log.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID,
 					MessageFormat.format(
-							"getting IndexContainer error. file={0}", file), e));
+							"getting IndexContainer error. project={0}",
+							project), e));
 			return null;
 		}
 	}

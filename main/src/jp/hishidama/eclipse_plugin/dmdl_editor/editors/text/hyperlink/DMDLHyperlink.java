@@ -2,9 +2,9 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.hyperlink;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLTextEditor;
 import jp.hishidama.eclipse_plugin.dmdl_editor.external.DMDLHyperlinkUtil;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.PositionUtil;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.PositionUtil.NamePair;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.DMDLToken;
-import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.ModelToken;
-import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.PropertyToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.WordToken;
 
 import org.eclipse.core.resources.IProject;
@@ -62,25 +62,11 @@ public class DMDLHyperlink implements IHyperlink {
 			int length = target.getLength();
 			editor.selectAndReveal(offset, length);
 		} else {
-			for (DMDLToken t = token; t != null; t = t.getParent()) {
-				if (t instanceof PropertyToken) {
-					PropertyToken prop = (PropertyToken) t;
-					DMDLToken ref = prop.findRefModelToken();
-					if (ref instanceof WordToken) {
-						String modelName = ((WordToken) ref).getBody();
-						String propName = prop.getRefNameToken().getBody();
-						DMDLHyperlinkUtil.gotoPosition(editor.getProject(),
-								modelName, propName);
-					}
-					return;
-				} else if (t instanceof ModelToken) {
-					if (token instanceof WordToken) {
-						String modelName = ((WordToken) token).getBody();
-						DMDLHyperlinkUtil.gotoPosition(editor.getProject(),
-								modelName, null);
-					}
-					return;
-				}
+			IProject project = editor.getProject();
+			NamePair name = PositionUtil.getName(project, token);
+			if (name != null) {
+				DMDLHyperlinkUtil.gotoPosition(project, name.getModelName(),
+						name.getPropertyName());
 			}
 		}
 	}

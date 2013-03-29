@@ -47,7 +47,7 @@ public class ModelToken extends DMDLBodyToken {
 							if (t instanceof WordToken) {
 								WordToken w = (WordToken) t;
 								w.setWordType(WordType.REF_MODEL_NAME);
-								refModel = word;
+								refModel = w;
 								break;
 							} else if (t instanceof BlockToken) {
 								refModel = t;

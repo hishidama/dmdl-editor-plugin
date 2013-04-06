@@ -50,9 +50,14 @@
             id="dmdl-editor-plugin.errorcheck.page"
             name="parser">
          <enabledWhen>
-            <instanceof
-                  value="org.eclipse.core.resources.IProject">
-            </instanceof>
+            <or>
+               <instanceof
+                     value="org.eclipse.core.resources.IResource">
+               </instanceof>
+               <instanceof
+                     value="org.eclipse.jdt.core.IJavaElement">
+               </instanceof>
+            </or>
          </enabledWhen>
       </page>
    </extension>

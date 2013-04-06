@@ -7,10 +7,13 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.marker.ParserClassUtil;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.QualifiedName;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ISelection;
@@ -40,7 +43,7 @@ public class DMDLErrorCheckPropertyPage extends PropertyPage {
 	@Override
 	protected Control createContents(Composite parent) {
 		setTitle("Dmdl Parser settings");
-		final IProject project = (IProject) getElement();
+		final IProject project = getProject();
 
 		Composite composite = new Composite(parent, SWT.NONE);
 		{
@@ -248,12 +251,27 @@ public class DMDLErrorCheckPropertyPage extends PropertyPage {
 
 	@Override
 	public boolean performOk() {
-		IProject project = (IProject) getElement();
+		IProject project = getProject();
 
 		setValue(project, PARSER_BUILD_PROPERTIES, buildProperties.getText());
 		ParserClassUtil.save(viewer, project);
 
 		return true;
+	}
+
+	private IProject getProject() {
+		IAdaptable element = getElement();
+		if (element instanceof IResource) {
+			return ((IResource) getElement()).getProject();
+		}
+		if (element instanceof IJavaElement) {
+			return ((IJavaElement) element).getJavaProject().getProject();
+		}
+		IProject project = (IProject) element.getAdapter(IProject.class);
+		if (project != null) {
+			return project;
+		}
+		throw new UnsupportedOperationException("未対応:" + element.getClass());
 	}
 
 	@Override

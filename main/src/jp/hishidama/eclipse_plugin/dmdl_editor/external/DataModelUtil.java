@@ -11,9 +11,26 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.marker.ParserClassUt
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.IndexContainer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.ModelIndex;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 
 public class DataModelUtil {
+
+	public static DataModelInfo findModel(IProject project, String modelName) {
+		if (project == null) {
+			return null;
+		}
+		IndexContainer ic = IndexContainer.getContainer(project);
+		if (ic == null) {
+			return null;
+		}
+
+		ModelIndex mi = ic.findModel(modelName);
+		if (mi == null) {
+			return null;
+		}
+		return createInfo(mi);
+	}
 
 	public static List<DataModelInfo> getModels(IProject project) {
 		assert project != null;
@@ -26,9 +43,7 @@ public class DataModelUtil {
 		Collection<ModelIndex> models = ic.getModels();
 		List<DataModelInfo> list = new ArrayList<DataModelInfo>(models.size());
 		for (ModelIndex mi : models) {
-			DataModelInfo info = new DataModelInfo(mi.getName(),
-					decodeDescription(mi.getDescription()), mi.getFile());
-			list.add(info);
+			list.add(createInfo(mi));
 		}
 
 		Collections.sort(list, new Comparator<DataModelInfo>() {
@@ -41,6 +56,14 @@ public class DataModelUtil {
 		});
 
 		return list;
+	}
+
+	private static DataModelInfo createInfo(ModelIndex mi) {
+		String name = mi.getName();
+		String desc = decodeDescription(mi.getDescription());
+		IFile file = mi.getFile();
+		DataModelInfo info = new DataModelInfo(name, desc, file);
+		return info;
 	}
 
 	public static String getModelClass(IProject project, String modelName) {

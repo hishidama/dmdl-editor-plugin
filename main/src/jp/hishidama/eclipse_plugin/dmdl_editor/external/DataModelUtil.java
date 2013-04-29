@@ -5,7 +5,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Properties;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.marker.ParserClassUtil;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.IndexContainer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.ModelIndex;
 
@@ -39,6 +41,19 @@ public class DataModelUtil {
 		});
 
 		return list;
+	}
+
+	public static String getModelClass(IProject project, String modelName) {
+		Properties properties = ParserClassUtil.getBuildProperties(project);
+		if (properties == null) {
+			return null;
+		}
+		String pack = properties.getProperty("asakusa.modelgen.package");
+		if (pack == null) {
+			return null;
+		}
+		String sname = IndexContainer.convertSnake(modelName);
+		return pack + ".dmdl.model." + sname;
 	}
 
 	public static String decodeDescription(String s) {

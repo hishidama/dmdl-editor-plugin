@@ -1,6 +1,8 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.parser.index;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -14,7 +16,7 @@ public class ModelIndex implements Index {
 
 	private IFile file;
 	private ModelToken model;
-	private Map<String, PropertyIndex> map = new HashMap<String, PropertyIndex>();
+	private Map<String, PropertyIndex> map = new LinkedHashMap<String, PropertyIndex>();
 	private Map<String, PropertyIndex> snakeMap = null;
 
 	public ModelIndex(IFile file, ModelToken model) {
@@ -79,5 +81,9 @@ public class ModelIndex implements Index {
 			}
 		}
 		return snakeMap.get(snakeName);
+	}
+
+	public Collection<PropertyIndex> getProperties() {
+		return map.values();
 	}
 }

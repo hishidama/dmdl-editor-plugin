@@ -10,6 +10,8 @@ import java.util.Properties;
 import jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.marker.ParserClassUtil;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.IndexContainer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.ModelIndex;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.index.PropertyIndex;
+import jp.hishidama.eclipse_plugin.dmdl_editor.parser.token.PropertyToken;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -17,6 +19,14 @@ import org.eclipse.core.resources.IProject;
 public class DataModelUtil {
 
 	public static DataModelInfo findModel(IProject project, String modelName) {
+		ModelIndex mi = findModelIndex(project, modelName);
+		if (mi == null) {
+			return null;
+		}
+		return createInfo(mi);
+	}
+
+	private static ModelIndex findModelIndex(IProject project, String modelName) {
 		if (project == null) {
 			return null;
 		}
@@ -24,17 +34,13 @@ public class DataModelUtil {
 		if (ic == null) {
 			return null;
 		}
-
-		ModelIndex mi = ic.findModel(modelName);
-		if (mi == null) {
-			return null;
-		}
-		return createInfo(mi);
+		return ic.findModel(modelName);
 	}
 
 	public static List<DataModelInfo> getModels(IProject project) {
-		assert project != null;
-
+		if (project == null) {
+			return null;
+		}
 		IndexContainer ic = IndexContainer.getContainer(project);
 		if (ic == null) {
 			return null;
@@ -77,6 +83,26 @@ public class DataModelUtil {
 		}
 		String sname = IndexContainer.convertSnake(modelName);
 		return pack + ".dmdl.model." + sname;
+	}
+
+	public static List<DataModelProperty> getModelProperties(IProject project,
+			String modelName) {
+		ModelIndex mi = findModelIndex(project, modelName);
+		if (mi == null) {
+			return null;
+		}
+		IndexContainer ic = IndexContainer.getContainer(project);
+
+		List<DataModelProperty> list = new ArrayList<DataModelProperty>();
+		for (PropertyIndex pi : mi.getProperties()) {
+			PropertyToken token = pi.getToken();
+			String name = token.getPropertyName();
+			String desc = decodeDescription(token.getPropertyDescription());
+			String type = token.getDataType(ic);
+			DataModelProperty p = new DataModelProperty(name, desc, type);
+			list.add(p);
+		}
+		return list;
 	}
 
 	public static String decodeDescription(String s) {

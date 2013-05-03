@@ -1,5 +1,6 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.WordToken.WordType;
@@ -216,5 +217,22 @@ public class ModelToken extends DMDLBodyToken {
 		sb.append(name);
 
 		return sb.toString();
+	}
+
+	public List<PropertyToken> getOwnPropertyList() {
+		List<PropertyToken> list = new ArrayList<PropertyToken>();
+		getOwnPropertyList(list, this);
+		return list;
+	}
+
+	private void getOwnPropertyList(List<PropertyToken> list,
+			DMDLBodyToken token) {
+		for (DMDLToken t : token.getBody()) {
+			if (t instanceof PropertyToken) {
+				list.add((PropertyToken) t);
+			} else if (t instanceof DMDLBodyToken) {
+				getOwnPropertyList(list, (DMDLBodyToken) t);
+			}
+		}
 	}
 }

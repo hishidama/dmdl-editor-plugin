@@ -95,6 +95,12 @@
             id="dmdl-editor-plugin.compile-command"
             name="DMDL compile">
       </command>
+      <command
+            categoryId="dmdl-editor-plugin.category"
+            id="dmdl-editor-plugin.attributeWizard-command"
+            name="Modify attribute">
+      </command>
+
       <category
             id="dmdl-editor-plugin.jdt.category"
             name="DMDL Editor">
@@ -123,6 +129,11 @@
             class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.compile.DMDLCompileHandler"
             commandId="dmdl-editor-plugin.compile-command">
       </handler>
+      <handler
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.AttributeWizardHandler"
+            commandId="dmdl-editor-plugin.attributeWizard-command">
+      </handler>
+
       <handler
             class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.jdt.hyperlink.OpenDeclaredDmdlHyperlinkHandler"
             commandId="dmdl-editor-plugin.jdt.jumplink-command">
@@ -157,11 +168,16 @@
                label="DMDL Editor">
             <command
                   commandId="dmdl-editor-plugin.errorcheck-command"
-                  label="create index / error check">
+                  label="Create index / error check">
             </command>
             <command
                   commandId="dmdl-editor-plugin.compile-command"
-                  label="compile"
+                  label="Compile"
+                  style="push">
+            </command>
+            <command
+                  commandId="dmdl-editor-plugin.attributeWizard-command"
+                  label="Add/Remove attribute"
                   style="push">
             </command>
          </menu>

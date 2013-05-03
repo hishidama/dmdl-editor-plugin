@@ -38,7 +38,7 @@ public class AssistMatcher {
 			}
 			DMDLToken t = list.get(i);
 			if (t instanceof WordToken) {
-				String word = ((WordToken) t).getBody();
+				String word = ((WordToken) t).getText();
 				if (expected[i].equals(word)) {
 					matched++;
 					continue;
@@ -82,7 +82,7 @@ public class AssistMatcher {
 				} else {
 					DMDLToken t = list.get(n - i + j);
 					if (t instanceof WordToken) {
-						String word = ((WordToken) t).getBody();
+						String word = ((WordToken) t).getText();
 						if (expected[j].equals(word)) {
 							matched++;
 						}
@@ -118,7 +118,7 @@ public class AssistMatcher {
 	public String getWord(int n) {
 		DMDLToken token = getToken(n);
 		if (token instanceof DMDLTextToken) {
-			return ((DMDLTextToken) token).getBody();
+			return ((DMDLTextToken) token).getText();
 		}
 		return null;
 	}

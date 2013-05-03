@@ -16,7 +16,7 @@ public class PositionUtil {
 				WordToken word = (WordToken) token;
 				switch (word.getWordType()) {
 				case REF_MODEL_NAME: {
-					String name = word.getBody();
+					String name = word.getText();
 					WordToken ref = word.getReferenceWord();
 					if (ref != null) {
 						ModelToken model = ref.getModelToken();
@@ -54,9 +54,9 @@ public class PositionUtil {
 									.getContainer(project);
 							if (ic != null) {
 								String modelName = ((WordToken) model)
-										.getBody();
+										.getText();
 								PropertyIndex index = ic.findProperty(
-										modelName, word.getBody());
+										modelName, word.getText());
 								if (index != null) {
 									PropertyToken p = index.getToken();
 									String file = index.getFile().getFullPath()
@@ -114,7 +114,7 @@ public class PositionUtil {
 				WordToken word = (WordToken) token;
 				switch (word.getWordType()) {
 				case REF_MODEL_NAME: {
-					String name = word.getBody();
+					String name = word.getText();
 					WordToken ref = word.getReferenceWord();
 					if (ref != null) {
 						ModelToken model = ref.getModelToken();
@@ -147,9 +147,9 @@ public class PositionUtil {
 									.getContainer(project);
 							if (ic != null) {
 								String modelName = ((WordToken) model)
-										.getBody();
+										.getText();
 								PropertyIndex index = ic.findProperty(
-										modelName, word.getBody());
+										modelName, word.getText());
 								if (index != null) {
 									PropertyToken prop = index.getToken();
 									return new NamePair(modelName,

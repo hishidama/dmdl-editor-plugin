@@ -125,7 +125,7 @@ public class ModelToken extends DMDLBodyToken {
 		}
 		modelTypeToken = token;
 		if (token != null) {
-			String text = token.getBody();
+			String text = token.getText();
 			if (text.equals("summarized")) {
 				token.setWordType(WordType.SUMMARIZED_MODEL);
 				parseSummarized();
@@ -162,7 +162,7 @@ public class ModelToken extends DMDLBodyToken {
 	public String getModelName() {
 		WordToken token = getModelNameToken();
 		if (token != null) {
-			return token.getBody();
+			return token.getText();
 		}
 		return null;
 	}
@@ -175,7 +175,7 @@ public class ModelToken extends DMDLBodyToken {
 	public String getModelType() {
 		WordToken token = getModelTypeToken();
 		if (token != null) {
-			return token.getBody();
+			return token.getText();
 		}
 		return null;
 	}
@@ -183,7 +183,7 @@ public class ModelToken extends DMDLBodyToken {
 	public String getDescription() {
 		DescriptionToken desc = getDescriptionToken();
 		if (desc != null) {
-			return desc.getBody();
+			return desc.getText();
 		}
 		return null;
 	}

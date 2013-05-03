@@ -78,7 +78,7 @@ public class WordToken extends DMDLTextToken {
 
 	@Override
 	public AttrType getStyleAttribute() {
-		String s = getBody();
+		String s = getText();
 		switch (getWordType()) {
 		case SUMMARIZED_MODEL:
 		case JOIN_MODEL:
@@ -102,7 +102,7 @@ public class WordToken extends DMDLTextToken {
 	public WordToken getReferenceWord() {
 		switch (getWordType()) {
 		case REF_MODEL_NAME: {
-			ModelToken refModel = findModel(getBody());
+			ModelToken refModel = findModel(getText());
 			if (refModel != null) {
 				WordToken refName = refModel.getModelNameToken();
 				if (refName != null) {
@@ -116,10 +116,10 @@ public class WordToken extends DMDLTextToken {
 			if (refToken instanceof WordToken) {
 				WordToken refModelName = (WordToken) refToken;
 				if (refModelName != null) {
-					ModelToken refModel = findModel(refModelName.getBody());
+					ModelToken refModel = findModel(refModelName.getText());
 					if (refModel != null) {
 						PropertyToken refProp = refModel
-								.findProperty(getBody());
+								.findProperty(getText());
 						if (refProp != null) {
 							WordToken refName = refProp.getNameToken();
 							if (refName != null) {
@@ -130,7 +130,7 @@ public class WordToken extends DMDLTextToken {
 				}
 			} else if (refToken instanceof BlockToken) {
 				BlockToken refBlock = (BlockToken) refToken;
-				PropertyToken refProp = refBlock.findProperty(getBody());
+				PropertyToken refProp = refBlock.findProperty(getText());
 				if (refProp != null) {
 					WordToken refName = refProp.getNameToken();
 					if (refName != null) {

@@ -59,7 +59,7 @@ public class DMDLContentFormatter implements IContentFormatter {
 		prevText = null;
 		defaultFormatter.format(models);
 
-		if (prevText != null && ";".equals(prevText.getBody())) {
+		if (prevText != null && ";".equals(prevText.getText())) {
 			append(prevText.getStart(), LF);
 		}
 
@@ -129,7 +129,7 @@ public class DMDLContentFormatter implements IContentFormatter {
 				}
 				if (token instanceof WordToken) {
 					WordToken word = (WordToken) token;
-					formatWord(word, firstToken, word.getBody(), firstWord);
+					formatWord(word, firstToken, word.getText(), firstWord);
 					firstWord = false;
 					prevText = word;
 				} else if (token instanceof DescriptionToken) {
@@ -169,19 +169,19 @@ public class DMDLContentFormatter implements IContentFormatter {
 		protected void formatWord(WordToken token, boolean firstToken,
 				String word, boolean firstWord) {
 			appendIfNotLf(token.getStart(), " ");
-			append(token.getStart(), token.getBody());
+			append(token.getStart(), token.getText());
 		}
 
 		protected void formatDescription(DescriptionToken token,
 				boolean firstToken) {
 			appendIfNotLf(token.getStart(), LF);
-			append(token.getStart(), token.getBody());
+			append(token.getStart(), token.getText());
 		}
 
 		protected void formatAnnotation(AnnotationToken token,
 				boolean firstToken) {
 			appendIfNotLf(token.getStart(), LF);
-			append(token.getStart(), token.getBody());
+			append(token.getStart(), token.getText());
 		}
 
 		protected void formatText(DMDLTextToken token, boolean firstToken) {
@@ -192,7 +192,7 @@ public class DMDLContentFormatter implements IContentFormatter {
 				shrinkLf(prevText.getEnd(), token.getStart(), token);
 			}
 			appendIfNotLf(token.getStart(), " ");
-			append(token.getStart(), token.getBody());
+			append(token.getStart(), token.getText());
 		}
 	}
 
@@ -326,7 +326,7 @@ public class DMDLContentFormatter implements IContentFormatter {
 		protected void formatDescription(DescriptionToken token,
 				boolean firstToken) {
 			appendIfNotLf(token.getStart(), " ");
-			append(token.getStart(), token.getBody());
+			append(token.getStart(), token.getText());
 		}
 	};
 
@@ -375,7 +375,7 @@ public class DMDLContentFormatter implements IContentFormatter {
 				append(token.getStart(), LF);
 			}
 			append(token.getStart(), INDENT_PROPERTY);
-			append(token.getStart(), token.getBody());
+			append(token.getStart(), token.getText());
 		}
 
 		@Override
@@ -386,7 +386,7 @@ public class DMDLContentFormatter implements IContentFormatter {
 				append(token.getStart(), LF);
 			}
 			append(token.getStart(), INDENT_PROPERTY);
-			append(token.getStart(), token.getBody());
+			append(token.getStart(), token.getText());
 		}
 	};
 

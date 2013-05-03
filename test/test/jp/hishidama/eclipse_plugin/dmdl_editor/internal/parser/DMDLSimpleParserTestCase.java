@@ -29,8 +29,8 @@ public class DMDLSimpleParserTestCase {
 		if (expected instanceof DMDLTextToken) {
 			DMDLTextToken ac = (DMDLTextToken) actual;
 			DMDLTextToken ec = (DMDLTextToken) expected;
-			String as = ac.getBody();
-			String es = ec.getBody();
+			String as = ac.getText();
+			String es = ec.getText();
 			assertEquals("expected=" + ec + "\nactual=" + ac, es, as);
 			return;
 		}

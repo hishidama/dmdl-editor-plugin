@@ -75,7 +75,7 @@ public class Assist {
 		if (refModelName == null) {
 			return new String[] {};
 		}
-		ModelToken refModel = refModelName.findModel(refModelName.getBody());
+		ModelToken refModel = refModelName.findModel(refModelName.getText());
 		if (refModel != null) {
 			List<String> alist = new ArrayList<String>();
 			for (PropertyToken p : refModel.getPropertyList()) {

@@ -71,7 +71,7 @@ public class DMDLBodyToken extends DMDLToken {
 		for (DMDLToken token : bodyList) {
 			if (token instanceof WordToken) {
 				WordToken word = (WordToken) token;
-				if (text.equals(word.getBody())) {
+				if (text.equals(word.getText())) {
 					return word;
 				}
 			}
@@ -141,7 +141,7 @@ public class DMDLBodyToken extends DMDLToken {
 					WordToken word = (WordToken) t;
 					if (word.getWordType() == WordType.REF_MODEL_NAME) {
 						if (!nextIs(l, i + 1, "=>", "->")) {
-							ModelToken refModel = findModel(word.getBody());
+							ModelToken refModel = findModel(word.getText());
 							addProperty(list, refModel, set);
 						}
 					}
@@ -163,7 +163,7 @@ public class DMDLBodyToken extends DMDLToken {
 			return false;
 		}
 		if (token instanceof WordToken) {
-			String word = ((WordToken) token).getBody();
+			String word = ((WordToken) token).getText();
 			return word.equals(text1) || word.equals(text2);
 		}
 		return false;

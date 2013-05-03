@@ -9,7 +9,7 @@ public class DMDLTextToken extends DMDLToken {
 		this.text = text;
 	}
 
-	public String getBody() {
+	public String getText() {
 		return text;
 	}
 

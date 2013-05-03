@@ -46,7 +46,7 @@ public class BlockAssist extends Assist {
 			}
 		}
 
-		ModelToken refModel = token.findModel(refModelName.getBody());
+		ModelToken refModel = token.findModel(refModelName.getText());
 		if (refModel != null) {
 			List<DMDLToken> list = getList(token, offset);
 			AssistMatcher matcher = new AssistMatcher(list, offset);

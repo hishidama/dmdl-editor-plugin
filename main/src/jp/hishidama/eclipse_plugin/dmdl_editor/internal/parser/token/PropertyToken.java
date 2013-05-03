@@ -46,7 +46,7 @@ public class PropertyToken extends DMDLBodyToken {
 
 	public String getName() {
 		if (nameToken != null) {
-			return nameToken.getBody();
+			return nameToken.getText();
 		}
 		return null;
 	}
@@ -88,7 +88,7 @@ public class PropertyToken extends DMDLBodyToken {
 	public String getPropertyName() {
 		WordToken token = getPropertyNameToken();
 		if (token != null) {
-			return token.getBody();
+			return token.getText();
 		}
 		return null;
 	}
@@ -113,7 +113,7 @@ public class PropertyToken extends DMDLBodyToken {
 			return dataType;
 		}
 
-		String sumType = (sumTypeToken != null) ? sumTypeToken.getBody() : null;
+		String sumType = (sumTypeToken != null) ? sumTypeToken.getText() : null;
 		if ("count".equals(sumType)) {
 			return "LONG";
 		}
@@ -138,7 +138,7 @@ public class PropertyToken extends DMDLBodyToken {
 	private String getDataTypeFirst(IndexContainer ic, Set<PropertyToken> set) {
 		WordToken token = getDataTypeToken();
 		if (token != null) {
-			return token.getBody();
+			return token.getText();
 		}
 		if (refNameToken != null) {
 			WordToken target = refNameToken.getReferenceWord();
@@ -149,7 +149,7 @@ public class PropertyToken extends DMDLBodyToken {
 					return prop.getDataType(ic, set);
 				}
 			} else {
-				return getDataTypeFrom(ic, refNameToken.getBody());
+				return getDataTypeFrom(ic, refNameToken.getText());
 			}
 		}
 		return null;
@@ -161,7 +161,7 @@ public class PropertyToken extends DMDLBodyToken {
 		}
 		DMDLToken ref = findRefModelToken();
 		if (ref instanceof WordToken) {
-			String modelName = ((WordToken) ref).getBody();
+			String modelName = ((WordToken) ref).getText();
 			PropertyIndex index = ic.findProperty(modelName, name);
 			if (index != null) {
 				PropertyToken token = index.getToken();
@@ -175,7 +175,7 @@ public class PropertyToken extends DMDLBodyToken {
 	public String getPropertyDescription() {
 		DescriptionToken desc = getPropertyDescriptionToken();
 		if (desc != null) {
-			return desc.getBody();
+			return desc.getText();
 		}
 		return null;
 	}

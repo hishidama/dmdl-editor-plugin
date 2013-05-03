@@ -9,30 +9,30 @@
             extensions="dmdl"
             icon="icons/hishidama16.gif"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
-            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.DMDLMultiPageEditor"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.DMDLMultiPageEditor"
             id="dmdl_editor.editors.DMDLEditor">
       </editor>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
-      <initializer class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.preference.DMDLEditorPreferenceInitializer"/>
+      <initializer class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.preference.DMDLEditorPreferenceInitializer"/>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.preference.DMDLEditorPreferencePage"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.preference.DMDLEditorPreferencePage"
             id="dmdl-editor.preference-page"
             name="DMDL Editor">
       </page>
       <page
             category="dmdl-editor.preference-page"
-            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.preference.DMDLEditorColorPreferencePage"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.preference.DMDLEditorColorPreferencePage"
             id="dmdl-editor.color-preference-page"
             name="color">
       </page>
       <page
             category="dmdl-editor.preference-page"
-            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.preference.DMDLEditorFormatterPreferencePage"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.preference.DMDLEditorFormatterPreferencePage"
             id="dmdl-editor.formatter-preference-page"
             name="formatter">
       </page>
@@ -40,13 +40,13 @@
    <extension
          point="org.eclipse.ui.propertyPages">
       <page
-            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.property.DMDLPropertyPage"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.property.DMDLPropertyPage"
             id="dmdl-editor-plugin.page"
             name="DMDL Editor">
       </page>
       <page
             category="dmdl-editor-plugin.page"
-            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.property.DMDLErrorCheckPropertyPage"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.property.DMDLErrorCheckPropertyPage"
             id="dmdl-editor-plugin.errorcheck.page"
             name="parser">
          <enabledWhen>
@@ -108,23 +108,23 @@
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.format.FormattingHandler"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.format.FormattingHandler"
             commandId="dmdl-editor-plugin.formatting-command">
       </handler>
       <handler
-            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.marker.DMDLErrorCheckHandler"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.marker.DMDLErrorCheckHandler"
             commandId="dmdl-editor-plugin.errorcheck-command">
       </handler>
       <handler
-            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.hyperlink.DMDLHyperlinkHandler"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.hyperlink.DMDLHyperlinkHandler"
             commandId="dmdl-editor-plugin.jumplink-command">
       </handler>
       <handler
-            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.compile.DMDLCompileHandler"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.compile.DMDLCompileHandler"
             commandId="dmdl-editor-plugin.compile-command">
       </handler>
       <handler
-            class="jp.hishidama.eclipse_plugin.dmdl_editor.jdt.hyperlink.OpenDeclaredDmdlHyperlinkHandler"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.jdt.hyperlink.OpenDeclaredDmdlHyperlinkHandler"
             commandId="dmdl-editor-plugin.jdt.jumplink-command">
       </handler>
    </extension>
@@ -189,7 +189,7 @@
          point="org.eclipse.jdt.launching.classpathProviders">
       <classpathProvider
             id="jp.hishidama.eclipse_plugin.dmdl_editor.dmdlClasspathProvider"
-            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.compile.DmdlClasspathProvider">
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.compile.DmdlClasspathProvider">
       </classpathProvider>
    </extension>
    <extension
@@ -197,21 +197,21 @@
       <target
             id="dmdl-editor-plugin.hyperlink.target"
             name="DMDL Editor hyperlink target">
-         <context type="jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.DMDLTextEditor"/>
+         <context type="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.DMDLTextEditor"/>
       </target>
    </extension>
    <extension
          point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
       <hyperlinkDetector
             activate="true"
-            class="jp.hishidama.eclipse_plugin.dmdl_editor.editors.text.hyperlink.DMDLHyperlinkDetector"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.hyperlink.DMDLHyperlinkDetector"
             id="dmdl-editor-plugin.hyperlinkDetector.open-declaration"
             name="Open Declaration"
             targetId="dmdl-editor-plugin.hyperlink.target">
       </hyperlinkDetector>
       <hyperlinkDetector
             activate="true"
-            class="jp.hishidama.eclipse_plugin.dmdl_editor.jdt.hyperlink.OpenDeclaredDmdlHyperlinkDetector"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.jdt.hyperlink.OpenDeclaredDmdlHyperlinkDetector"
             description="Open DMDL"
             id="dmdl-editor-plugin.hyperlinkDetector.jdt.open-declaration"
             modifierKeys="M2+F3"

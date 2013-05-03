@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Dmdl-editor-plugin
 Bundle-SymbolicName: jp.hishidama.eclipse_plugin.dmdl_editor;singleton:=true
 Bundle-Version: 1.0.1.qualifier
-Bundle-Activator: jp.hishidama.eclipse_plugin.dmdl_editor.Activator
+Bundle-Activator: jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jface.text,
@@ -20,4 +20,4 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: resource/dmdlparser-caller.jar,
  plugin.jar
-Export-Package: jp.hishidama.eclipse_plugin.dmdl_editor.external
+Export-Package: jp.hishidama.eclipse_plugin.dmdl_editor.util

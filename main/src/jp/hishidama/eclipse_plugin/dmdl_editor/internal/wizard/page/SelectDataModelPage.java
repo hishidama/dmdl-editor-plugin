@@ -33,10 +33,16 @@ public class SelectDataModelPage extends WizardPage {
 		setPageComplete(false);
 	}
 
+	public void setAdd(boolean add) {
+		if (add) {
+			setDescription("属性を追加するデータモデルを選択して下さい。");
+		} else {
+			setDescription("属性を削除するデータモデルを選択して下さい。");
+		}
+	}
+
 	@Override
 	public void createControl(Composite parent) {
-		setDescription("変更するデータモデルを選択して下さい。");
-
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new GridLayout(1, false));
 

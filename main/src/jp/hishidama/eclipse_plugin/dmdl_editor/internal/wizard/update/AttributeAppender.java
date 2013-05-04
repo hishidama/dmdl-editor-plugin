@@ -95,7 +95,6 @@ public class AttributeAppender extends AttributeUpdater<AppendRegion> {
 		}
 
 		String text = sb.toString();
-		System.out.println(text);
 		addRegion(file, new AppendRegion(offset, text));
 	}
 

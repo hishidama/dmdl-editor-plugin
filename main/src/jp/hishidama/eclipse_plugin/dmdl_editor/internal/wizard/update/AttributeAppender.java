@@ -100,18 +100,21 @@ public class AttributeAppender extends AttributeUpdater<AppendRegion> {
 
 	private String convert(String key, String modelName, String propName,
 			String propDesc) {
+		String s;
 		if ("modelName".equals(key)) {
-			return modelName;
+			s = modelName;
 		} else if ("modelName.toUpper".equals(key)) {
-			return modelName.toUpperCase();
+			s = modelName.toUpperCase();
 		} else if ("name".equals(key)) {
-			return propName;
+			s = propName;
 		} else if ("name.toUpper".equals(key)) {
-			return propName.toUpperCase();
+			s = propName.toUpperCase();
 		} else if ("description".equals(key)) {
-			return DataModelUtil.decodeDescription(propDesc);
+			s = DataModelUtil.decodeDescription(propDesc);
+		} else {
+			s = "";
 		}
-		return "";
+		return (s != null) ? s : "";
 	}
 
 	@Override

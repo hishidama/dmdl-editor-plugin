@@ -14,6 +14,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
@@ -36,14 +37,20 @@ public abstract class SetAttributePage extends WizardPage {
 
 	@Override
 	public void createControl(Composite parent) {
-		Composite composite = new Composite(parent, SWT.NONE);
+		Composite parent0 = new Composite(parent, SWT.NONE);
+		{
+			parent0.setLayout(new GridLayout(1, false));
+			GridData grid = new GridData(GridData.FILL_HORIZONTAL);
+			parent0.setLayoutData(grid);
+		}
+		Composite composite = new Composite(parent0, SWT.NONE);
 		composite.setLayout(new GridLayout(2, false));
 		GridData compositeGrid = new GridData(GridData.FILL_HORIZONTAL);
 		composite.setLayoutData(compositeGrid);
 		{
 			{
 				Label label = new Label(composite, SWT.NONE);
-				label.setText("モデル名の属性");
+				label.setText("モデルの属性");
 				modelText = new Text(composite, SWT.BORDER | SWT.MULTI
 						| SWT.V_SCROLL);
 				modelText.setText(nonNull(getSetting(SETTINGS_MODEL_ATTR)));
@@ -59,7 +66,7 @@ public abstract class SetAttributePage extends WizardPage {
 			}
 			{
 				Label label = new Label(composite, SWT.NONE);
-				label.setText("プロパティー名の属性");
+				label.setText("プロパティーの属性");
 				propertyText = new Text(composite, SWT.BORDER | SWT.MULTI
 						| SWT.V_SCROLL);
 				propertyText.setText(nonNull(getSetting(SETTINGS_PROP_ATTR)));
@@ -110,10 +117,19 @@ public abstract class SetAttributePage extends WizardPage {
 				}
 			}
 		}
+		{
+			Group group = new Group(parent0, SWT.SHADOW_IN);
+			group.setText("note");
+			GridData grid = new GridData(GridData.FILL_HORIZONTAL);
+			group.setLayoutData(grid);
+			createNoteArea(group);
+		}
 		validate();
 
-		setControl(composite);
+		setControl(parent0);
 	}
+
+	protected abstract void createNoteArea(Group group);
 
 	private static String nonNull(String s) {
 		return (s != null) ? s : "";

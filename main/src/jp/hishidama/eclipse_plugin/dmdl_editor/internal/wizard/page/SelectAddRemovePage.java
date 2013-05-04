@@ -16,12 +16,11 @@ public class SelectAddRemovePage extends WizardPage {
 	public SelectAddRemovePage() {
 		super("SelectAddRemovePage");
 		setTitle("属性の更新内容の選択");
+		setDescription("属性を追加するのか削除するのかを選択して下さい。");
 	}
 
 	@Override
 	public void createControl(Composite parent) {
-		setDescription("属性を追加するのか削除するのか選択して下さい。");
-
 		IDialogSettings settings = getDialogSettings();
 
 		Composite composite = new Composite(parent, SWT.NONE);

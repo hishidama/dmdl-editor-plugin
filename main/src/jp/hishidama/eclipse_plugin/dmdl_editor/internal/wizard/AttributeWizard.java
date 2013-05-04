@@ -18,9 +18,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.PlatformUI;
 
 public class AttributeWizard extends Wizard {
 
@@ -38,8 +35,10 @@ public class AttributeWizard extends Wizard {
 
 	@Override
 	public void addPages() {
-		this.project = getProject();
 		List<IFile> list = DMDLFileUtil.getSelectionDmdlFiles();
+		if (!list.isEmpty()) {
+			this.project = list.get(0).getProject();
+		}
 
 		selectPage = new SelectAddRemovePage();
 		addPage(selectPage);
@@ -49,13 +48,6 @@ public class AttributeWizard extends Wizard {
 		addPage(setRemoveAttrPage);
 		modelPage = new SelectDataModelPage(list);
 		addPage(modelPage);
-	}
-
-	private IProject getProject() {
-		IEditorPart editor = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-		IFileEditorInput input = (IFileEditorInput) editor.getEditorInput();
-		return input.getFile().getProject();
 	}
 
 	@Override
@@ -124,8 +116,10 @@ public class AttributeWizard extends Wizard {
 			return false;
 		}
 
-		DMDLErrorCheckHandler handler = new DMDLErrorCheckHandler();
-		handler.execute(project, true, true);
+		if (project != null) {
+			DMDLErrorCheckHandler handler = new DMDLErrorCheckHandler();
+			handler.execute(project, true, true);
+		}
 		return true;
 	}
 }

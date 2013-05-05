@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.marker.DMDLErrorCheckHandler;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken;
+import jp.hishidama.eclipse_plugin.util.StringUtil;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -19,8 +20,7 @@ import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
 
 public class IndexContainer {
-	static final QualifiedName KEY = new QualifiedName(Activator.PLUGIN_ID,
-			"IndexContainer.index");
+	static final QualifiedName KEY = new QualifiedName(Activator.PLUGIN_ID, "IndexContainer.index");
 
 	private Map<String, ModelIndex> map = new HashMap<String, ModelIndex>();
 	private Map<String, ModelIndex> snakeMap = null;
@@ -55,21 +55,11 @@ public class IndexContainer {
 		if (snakeMap == null) {
 			snakeMap = new HashMap<String, ModelIndex>(map.size());
 			for (Entry<String, ModelIndex> entry : map.entrySet()) {
-				String name = convertSnake(entry.getKey());
+				String name = StringUtil.toCamelCase(entry.getKey());
 				snakeMap.put(name, entry.getValue());
 			}
 		}
 		return snakeMap.get(modelSnakeName);
-	}
-
-	public static String convertSnake(String name) {
-		StringBuilder sb = new StringBuilder(name.length());
-		String[] ss = name.split("\\_");
-		for (String s : ss) {
-			sb.append(Character.toUpperCase(s.charAt(0)));
-			sb.append(s.substring(1).toLowerCase());
-		}
-		return sb.toString();
 	}
 
 	public static IndexContainer createContainer(IProject project) {
@@ -84,8 +74,7 @@ public class IndexContainer {
 
 	public static IndexContainer getContainer(IProject project) {
 		try {
-			IndexContainer ic = (IndexContainer) project
-					.getSessionProperty(KEY);
+			IndexContainer ic = (IndexContainer) project.getSessionProperty(KEY);
 			if (ic == null) {
 				DMDLErrorCheckHandler handler = new DMDLErrorCheckHandler();
 				handler.execute(project, true, false); // create IndexContainer
@@ -94,10 +83,8 @@ public class IndexContainer {
 			return ic;
 		} catch (Exception e) {
 			ILog log = Activator.getDefault().getLog();
-			log.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID,
-					MessageFormat.format(
-							"getting IndexContainer error. project={0}",
-							project), e));
+			log.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, MessageFormat.format(
+					"getting IndexContainer error. project={0}", project), e));
 			return null;
 		}
 	}

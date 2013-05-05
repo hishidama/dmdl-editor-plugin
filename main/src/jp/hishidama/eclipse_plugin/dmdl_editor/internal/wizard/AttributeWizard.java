@@ -46,7 +46,7 @@ public class AttributeWizard extends Wizard {
 		addPage(setAddAttrPage);
 		setRemoveAttrPage = new SetRemoveAttributePage();
 		addPage(setRemoveAttrPage);
-		modelPage = new SelectDataModelPage(list);
+		modelPage = new SelectDataModelPage("変更するデータモデルの指定", list);
 		addPage(modelPage);
 	}
 
@@ -73,7 +73,11 @@ public class AttributeWizard extends Wizard {
 			return getSetAttributePage();
 		}
 		if (page == modelPage) {
-			modelPage.setAdd(selectPage.isAdd());
+			if (selectPage.isAdd()) {
+				modelPage.setDescription("属性を追加するデータモデルを選択して下さい。");
+			} else {
+				modelPage.setDescription("属性を削除するデータモデルを選択して下さい。");
+			}
 		}
 		return page;
 	}

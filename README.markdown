@@ -53,6 +53,9 @@ Eclipseの「新規ソフトウェアのインストール」で更新サイト�
     * エラーチェックと同様のプロパティーを使ってコンパイル対象を決定している。
 * 属性の追加/削除が出来る。
     * コンテキストメニューの「DMDL Editor」→「Add/Remove attribute」でウィザードが開く。
+* DMDLからImporter/Exporterの雛形クラスを作成することが出来る。
+    * コンテキストメニューの「DMDL Editor」→「New importer/exporter class」でウィザードが開く。
+        * DMDLのコンパイルによってスケルトンクラス（AbstractHogeCsvInputDescription等）が作られていることが前提。（無いと、生成されたクラスがコンパイルエラーになる）
 * JavaソースからDMDLへのハイパーリンクが使える。
     * データモデルクラスのクラス名・メソッド名をCtrlキーを押しながらクリックすると、定義元のDMDLへジャンプする。
     * またはShift+F3キー。

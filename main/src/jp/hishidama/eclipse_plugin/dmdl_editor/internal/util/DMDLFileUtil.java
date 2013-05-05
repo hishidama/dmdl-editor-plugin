@@ -49,8 +49,7 @@ public class DMDLFileUtil {
 		return list;
 	}
 
-	private static void getDmdlFiles(IContainer folder, Collection<IFile> list)
-			throws CoreException {
+	private static void getDmdlFiles(IContainer folder, Collection<IFile> list) throws CoreException {
 		for (IResource r : folder.members()) {
 			if (r instanceof IFile) {
 				IFile file = (IFile) r;
@@ -64,8 +63,7 @@ public class DMDLFileUtil {
 	}
 
 	public static List<IFile> getSelectionDmdlFiles() {
-		ISelection selection = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow().getActivePage().getSelection();
+		ISelection selection = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getSelection();
 		if (selection != null && selection instanceof IStructuredSelection) {
 			IStructuredSelection ss = (IStructuredSelection) selection;
 			Set<IFile> set = new HashSet<IFile>();
@@ -76,7 +74,10 @@ public class DMDLFileUtil {
 					obj = java.getResource();
 				}
 				if (obj instanceof IFile) {
-					set.add((IFile) obj);
+					IFile file = (IFile) obj;
+					if ("dmdl".equals(file.getFileExtension())) {
+						set.add(file);
+					}
 				} else if (obj instanceof IContainer) {
 					try {
 						getDmdlFiles((IContainer) obj, set);
@@ -90,13 +91,15 @@ public class DMDLFileUtil {
 			return list;
 		}
 
-		IEditorPart editor = PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+		IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
 		if (editor != null) {
 			IEditorInput input = editor.getEditorInput();
 			if (input instanceof IFileEditorInput) {
 				IFileEditorInput finput = (IFileEditorInput) input;
-				return Arrays.asList(finput.getFile());
+				IFile file = finput.getFile();
+				if ("dmdl".equals(file.getFileExtension())) {
+					return Arrays.asList(file);
+				}
 			}
 		}
 
@@ -135,8 +138,7 @@ public class DMDLFileUtil {
 
 		DocumentManager(IPath path) throws CoreException {
 			this.path = path;
-			ITextFileBufferManager manager = FileBuffers
-					.getTextFileBufferManager();
+			ITextFileBufferManager manager = FileBuffers.getTextFileBufferManager();
 			manager.connect(path, LocationKind.IFILE, null);
 			buffer = manager.getTextFileBuffer(path, LocationKind.IFILE);
 		}
@@ -156,8 +158,7 @@ public class DMDLFileUtil {
 		@Override
 		public void close() throws IOException {
 			try {
-				ITextFileBufferManager manager = FileBuffers
-						.getTextFileBufferManager();
+				ITextFileBufferManager manager = FileBuffers.getTextFileBufferManager();
 				manager.disconnect(path, LocationKind.IFILE, null);
 			} catch (CoreException e) {
 				throw new IOException(e);

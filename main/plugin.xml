@@ -98,7 +98,12 @@
       <command
             categoryId="dmdl-editor-plugin.category"
             id="dmdl-editor-plugin.attributeWizard-command"
-            name="Modify attribute">
+            name="DMDL add/remove attribute">
+      </command>
+      <command
+            categoryId="dmdl-editor-plugin.category"
+            id="dmdl-editor-plugin.newimpexp-command"
+            name="DMDL new importer/exporter class">
       </command>
 
       <category
@@ -132,6 +137,10 @@
       <handler
             class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.AttributeWizardHandler"
             commandId="dmdl-editor-plugin.attributeWizard-command">
+      </handler>
+      <handler
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.NewImporterExporterHandler"
+            commandId="dmdl-editor-plugin.newimpexp-command">
       </handler>
 
       <handler
@@ -178,6 +187,11 @@
             <command
                   commandId="dmdl-editor-plugin.attributeWizard-command"
                   label="Add/Remove attribute"
+                  style="push">
+            </command>
+            <command
+                  commandId="dmdl-editor-plugin.newimpexp-command"
+                  label="New importer/exporter class"
                   style="push">
             </command>
          </menu>

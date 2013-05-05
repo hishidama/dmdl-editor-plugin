@@ -32,8 +32,7 @@ public class SetAddAttributePage extends SetAttributePage {
 		Label label = new Label(group, SWT.NONE);
 		label.setText("追加する属性には右記の変数を指定することが出来ます。\n行を選択してCtrl+Cを押すと変数名をコピーできます。");
 
-		Table table = new Table(group, SWT.BORDER | SWT.SINGLE
-				| SWT.FULL_SELECTION);
+		Table table = new Table(group, SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);
 		table.setHeaderVisible(false);
 		table.setLinesVisible(true);
 		GridData grid = new GridData(GridData.GRAB_HORIZONTAL);
@@ -47,11 +46,11 @@ public class SetAddAttributePage extends SetAttributePage {
 			TableColumn col = new TableColumn(table, SWT.NONE);
 			col.setWidth(128 + 64);
 		}
-		createItem(table, "モデル名", "${modelName}");
-		createItem(table, "モデル名（大文字）", "${modelName.toUpper}");
-		createItem(table, "プロパティー名", "${name}");
-		createItem(table, "プロパティー名（大文字）", "${name.toUpper}");
-		createItem(table, "プロパティー説明", "${description}");
+		createItem(table, "モデル名", "$(modelName)");
+		createItem(table, "モデル名（大文字）", "$(modelName.toUpper)");
+		createItem(table, "プロパティー名", "$(name)");
+		createItem(table, "プロパティー名（大文字）", "$(name.toUpper)");
+		createItem(table, "プロパティー説明", "$(description)");
 		table.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -103,7 +102,7 @@ public class SetAddAttributePage extends SetAttributePage {
 					+ "  datetime = \"yyyy-MM-dd HH:mm:ss\",\n" //
 					+ ")";
 		case WINDGATE_JDBC:
-			return "@windgate.jdbc.table(name =\"${modelName.toUpper}\")";
+			return "@windgate.jdbc.table(name =\"$(modelName.toUpper)\")";
 		default:
 			return "";
 		}
@@ -113,11 +112,11 @@ public class SetAddAttributePage extends SetAttributePage {
 	protected String getDefaultPropertyAttribute(AttributeType type) {
 		switch (type) {
 		case DIRECTIO_CSV:
-			return "@directio.csv.field(name = \"${name}\")";
+			return "@directio.csv.field(name = \"$(name)\")";
 		case WINDGATE_CSV:
-			return "@windgate.csv.field(name = \"${name}\")";
+			return "@windgate.csv.field(name = \"$(name)\")";
 		case WINDGATE_JDBC:
-			return "@windgate.jdbc.column(name = \"${name.toUpper}\")";
+			return "@windgate.jdbc.column(name = \"$(name.toUpper)\")";
 		default:
 			return "";
 		}

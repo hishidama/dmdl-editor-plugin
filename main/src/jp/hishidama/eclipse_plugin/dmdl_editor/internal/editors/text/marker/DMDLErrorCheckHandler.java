@@ -5,6 +5,7 @@ import java.util.Properties;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.marker.DMDLErrorCheckTask.FileList;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.util.BuildPropertiesUtil;
 import jp.hishidama.eclipse_plugin.util.FileUtil;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -71,12 +72,10 @@ public class DMDLErrorCheckHandler extends AbstractHandler {
 		}
 		IFolder folder = null;
 		{
-			Properties properties = ParserClassUtil.getBuildProperties(project);
-			if (properties != null) {
-				String dir = properties.getProperty("asakusa.dmdl.dir");
-				if (dir != null) {
-					folder = FileUtil.getFolder(project, dir);
-				}
+			Properties properties = BuildPropertiesUtil.getBuildProperties(project);
+			String dir = BuildPropertiesUtil.getDmdlDir(properties);
+			if (dir != null) {
+				folder = FileUtil.getFolder(project, dir);
 			}
 		}
 		if (folder != null) {
@@ -105,18 +104,15 @@ public class DMDLErrorCheckHandler extends AbstractHandler {
 		}
 	}
 
-	private void execute(FileList projects, boolean createIndex,
-			boolean checkMark) {
-		final DMDLErrorCheckTask task = new DMDLErrorCheckTask(projects,
-				createIndex, checkMark);
+	private void execute(FileList projects, boolean createIndex, boolean checkMark) {
+		final DMDLErrorCheckTask task = new DMDLErrorCheckTask(projects, createIndex, checkMark);
 		WorkbenchJob job = new WorkbenchJob("DMDL create index") {
 			@Override
 			public IStatus runInUIThread(IProgressMonitor monitor) {
 				try {
 					task.run(monitor);
 				} catch (InvocationTargetException e) {
-					return new Status(Status.WARNING, Activator.PLUGIN_ID,
-							"DMDL error check error.", e);
+					return new Status(Status.WARNING, Activator.PLUGIN_ID, "DMDL error check error.", e);
 				} catch (InterruptedException e) {
 					return Status.CANCEL_STATUS;
 				}

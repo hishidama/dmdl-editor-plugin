@@ -9,7 +9,7 @@ import java.util.Properties;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.marker.DMDLErrorCheckHandler;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.marker.DMDLErrorCheckTask;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.marker.ParserClassUtil;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.util.BuildPropertiesUtil;
 import jp.hishidama.eclipse_plugin.util.FileUtil;
 
 import org.eclipse.core.resources.IFile;
@@ -52,13 +52,11 @@ public class DMDLCompileTask implements IWorkspaceRunnable {
 	public void run(IProgressMonitor monitor) throws CoreException {
 		monitor.beginTask("DMDL Compile", 100);
 		try {
-			String arguments = createArguments(new SubProgressMonitor(monitor,
-					10));
+			String arguments = createArguments(new SubProgressMonitor(monitor, 10));
 			if (arguments == null) {
 				return;
 			}
-			ILaunchConfiguration config = createConfiguration(
-					new SubProgressMonitor(monitor, 10), arguments);
+			ILaunchConfiguration config = createConfiguration(new SubProgressMonitor(monitor, 10), arguments);
 			launch(new SubProgressMonitor(monitor, 60), config, false);
 			install(new SubProgressMonitor(monitor, 10));
 			mark(new SubProgressMonitor(monitor, 10));
@@ -68,30 +66,22 @@ public class DMDLCompileTask implements IWorkspaceRunnable {
 		}
 	}
 
-	private String createArguments(IProgressMonitor monitor)
-			throws CoreException {
+	private String createArguments(IProgressMonitor monitor) throws CoreException {
 		assert monitor != null;
 		monitor.beginTask("create arguments", 5);
 		try {
 			monitor.subTask("create arguments");
 			checkCancel(monitor);
 
-			Properties properties = ParserClassUtil.getBuildProperties(project);
+			Properties properties = BuildPropertiesUtil.getBuildProperties(project);
 			if (properties == null) {
 				Display.getDefault().syncExec(new Runnable() {
 					@Override
 					public void run() {
-						String file = ParserClassUtil
-								.getBuildPropertiesFileName(project);
-						MessageDialog
-								.openWarning(
-										null,
-										"DMDL compile",
-										MessageFormat
-												.format("プロジェクト内にAsakusa Frameworkのbuild.propertiesが見つからない為、DMDLをコンパイルできません。\n"
-														+ "プロジェクトのプロパティーでbuild.propertiesの場所を指定して下さい。\n\n"
-														+ "現在指定されているパス={0}",
-														file));
+						String file = BuildPropertiesUtil.getBuildPropertiesFileName(project);
+						MessageDialog.openWarning(null, "DMDL compile", MessageFormat.format(
+								"プロジェクト内にAsakusa Frameworkのbuild.propertiesが見つからない為、DMDLをコンパイルできません。\n"
+										+ "プロジェクトのプロパティーでbuild.propertiesの場所を指定して下さい。\n\n" + "現在指定されているパス={0}", file));
 					}
 				});
 				return null;
@@ -119,8 +109,7 @@ public class DMDLCompileTask implements IWorkspaceRunnable {
 				monitor.worked(1);
 			}
 			{
-				String charset = properties
-						.getProperty("asakusa.dmdl.encoding");
+				String charset = properties.getProperty("asakusa.dmdl.encoding");
 				if (charset == null) {
 					charset = project.getDefaultCharset(true);
 					if (charset == null) {
@@ -137,21 +126,17 @@ public class DMDLCompileTask implements IWorkspaceRunnable {
 		}
 	}
 
-	private String getValue(Properties properties, String key)
-			throws CoreException {
+	private String getValue(Properties properties, String key) throws CoreException {
 		String value = properties.getProperty(key);
 		if (value == null) {
-			IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-					MessageFormat.format(
-							"not found property of build.properties. key={0}",
-							key));
+			IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, MessageFormat.format(
+					"not found property of build.properties. key={0}", key));
 			throw new CoreException(status);
 		}
 		return value;
 	}
 
-	private void append(StringBuilder sb, String name, String value,
-			boolean quote) {
+	private void append(StringBuilder sb, String name, String value, boolean quote) {
 		if (sb.length() != 0) {
 			sb.append(" ");
 		}
@@ -168,8 +153,7 @@ public class DMDLCompileTask implements IWorkspaceRunnable {
 		}
 	}
 
-	private ILaunchConfigurationWorkingCopy createConfiguration(
-			IProgressMonitor monitor, String programArguments)
+	private ILaunchConfigurationWorkingCopy createConfiguration(IProgressMonitor monitor, String programArguments)
 			throws CoreException {
 		monitor.beginTask("create configuration", 1);
 		try {
@@ -181,58 +165,36 @@ public class DMDLCompileTask implements IWorkspaceRunnable {
 			IPath workingDirectory = project.getLocation();
 			String vmArguments = "";
 
-			ILaunchManager manager = DebugPlugin.getDefault()
-					.getLaunchManager();
+			ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
 			ILaunchConfigurationType type = manager
 					.getLaunchConfigurationType(IJavaLaunchConfigurationConstants.ID_JAVA_APPLICATION);
-			ILaunchConfigurationWorkingCopy config = type.newInstance(null,
-					Activator.PLUGIN_ID);
-			config.setAttribute(
-					IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH,
-					true);
-			config.setAttribute(
-					IJavaLaunchConfigurationConstants.ATTR_ALLOW_TERMINATE,
-					true);
-			config.setAttribute(
-					IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER,
-					classpathProviderId);
-			config.setAttribute(
-					IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME,
-					mainClassName);
-			config.setAttribute(
-					IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS,
-					vmArguments);
-			config.setAttribute(
-					IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS,
-					programArguments);
-			config.setAttribute(
-					IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME,
-					project.getName());
-			config.setAttribute(
-					IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY,
-					workingDirectory.toOSString());
+			ILaunchConfigurationWorkingCopy config = type.newInstance(null, Activator.PLUGIN_ID);
+			config.setAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, true);
+			config.setAttribute(IJavaLaunchConfigurationConstants.ATTR_ALLOW_TERMINATE, true);
+			config.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER, classpathProviderId);
+			config.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, mainClassName);
+			config.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmArguments);
+			config.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, programArguments);
+			config.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, project.getName());
+			config.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, workingDirectory.toOSString());
 			return config;
 		} finally {
 			monitor.done();
 		}
 	}
 
-	private void launch(IProgressMonitor monitor, ILaunchConfiguration config,
-			boolean debugMode) throws CoreException {
+	private void launch(IProgressMonitor monitor, ILaunchConfiguration config, boolean debugMode) throws CoreException {
 		monitor.beginTask("launch", 100);
 		try {
 			monitor.subTask("launch DMDL compiler");
 			checkCancel(monitor);
 
-			String mode = debugMode ? ILaunchManager.DEBUG_MODE
-					: ILaunchManager.RUN_MODE;
+			String mode = debugMode ? ILaunchManager.DEBUG_MODE : ILaunchManager.RUN_MODE;
 			boolean build = false;
 			boolean register = false;
-			ILaunch launch = config.launch(mode, new SubProgressMonitor(
-					monitor, 20), build, register);
+			ILaunch launch = config.launch(mode, new SubProgressMonitor(monitor, 20), build, register);
 
-			ILaunchManager launchManager = DebugPlugin.getDefault()
-					.getLaunchManager();
+			ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
 			launchManager.addLaunch(launch);
 
 			monitor.worked(10);
@@ -256,8 +218,7 @@ public class DMDLCompileTask implements IWorkspaceRunnable {
 		monitor.beginTask("refresh", 100);
 		try {
 			checkCancel(monitor);
-			project.refreshLocal(IResource.DEPTH_INFINITE,
-					new SubProgressMonitor(monitor, 20));
+			project.refreshLocal(IResource.DEPTH_INFINITE, new SubProgressMonitor(monitor, 20));
 			if (project.findMember(output) == null) {
 				return;
 			}
@@ -266,14 +227,10 @@ public class DMDLCompileTask implements IWorkspaceRunnable {
 			IJavaProject javaProject = JavaCore.create(project);
 			if (!isInstalled(javaProject)) {
 				IClasspathEntry[] classpath = javaProject.getRawClasspath();
-				IClasspathEntry[] newClasspath = Arrays.copyOf(classpath,
-						classpath.length + 1);
-				newClasspath[classpath.length] = JavaCore
-						.newSourceEntry(getAbsolutePath(output));
-				javaProject.setRawClasspath(newClasspath,
-						new SubProgressMonitor(monitor, 20));
-				javaProject.getProject().build(
-						IncrementalProjectBuilder.FULL_BUILD,
+				IClasspathEntry[] newClasspath = Arrays.copyOf(classpath, classpath.length + 1);
+				newClasspath[classpath.length] = JavaCore.newSourceEntry(getAbsolutePath(output));
+				javaProject.setRawClasspath(newClasspath, new SubProgressMonitor(monitor, 20));
+				javaProject.getProject().build(IncrementalProjectBuilder.FULL_BUILD,
 						new SubProgressMonitor(monitor, 30));
 			}
 		} finally {
@@ -284,8 +241,7 @@ public class DMDLCompileTask implements IWorkspaceRunnable {
 	private boolean isInstalled(IJavaProject project) throws JavaModelException {
 		IPath sourcePath = getAbsolutePath(output);
 		for (IClasspathEntry entry : project.getRawClasspath()) {
-			if (entry.getEntryKind() == IClasspathEntry.CPE_SOURCE
-					&& entry.getPath().equals(sourcePath)) {
+			if (entry.getEntryKind() == IClasspathEntry.CPE_SOURCE && entry.getPath().equals(sourcePath)) {
 				return true;
 			}
 		}
@@ -302,8 +258,7 @@ public class DMDLCompileTask implements IWorkspaceRunnable {
 			DMDLErrorCheckTask task = handler.createTask(folder);
 			task.run(new SubProgressMonitor(monitor, 1));
 		} catch (InvocationTargetException e) {
-			IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-					"create mark error", e.getCause());
+			IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "create mark error", e.getCause());
 			throw new CoreException(status);
 		} catch (InterruptedException e) {
 			throw new OperationCanceledException();
@@ -317,8 +272,7 @@ public class DMDLCompileTask implements IWorkspaceRunnable {
 		return projectPath.append(path);
 	}
 
-	private void checkCancel(IProgressMonitor monitor)
-			throws OperationCanceledException {
+	private void checkCancel(IProgressMonitor monitor) throws OperationCanceledException {
 		if (monitor.isCanceled()) {
 			throw new OperationCanceledException();
 		}

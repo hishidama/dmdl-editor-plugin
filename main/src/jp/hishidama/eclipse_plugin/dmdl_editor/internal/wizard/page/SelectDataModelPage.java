@@ -4,16 +4,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.DMDLImages;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelList;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.util.DMDLFileUtil;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.jdt.ui.JavaUI;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -25,20 +30,12 @@ public class SelectDataModelPage extends WizardPage {
 
 	private Tree tree;
 
-	public SelectDataModelPage(List<IFile> list) {
+	public SelectDataModelPage(String title, List<IFile> list) {
 		super("SelectDataModelPage");
-		setTitle("変更するデータモデルの指定");
+		setTitle(title);
 		this.files = list;
 
 		setPageComplete(false);
-	}
-
-	public void setAdd(boolean add) {
-		if (add) {
-			setDescription("属性を追加するデータモデルを選択して下さい。");
-		} else {
-			setDescription("属性を削除するデータモデルを選択して下さい。");
-		}
 	}
 
 	@Override
@@ -67,10 +64,15 @@ public class SelectDataModelPage extends WizardPage {
 	}
 
 	private void rebuild() {
+		ImageRegistry registry = Activator.getDefault().getImageRegistry();
+		Image rowImage = registry.get(DMDLImages.DMDL_FILE);
+		Image itemImage = JavaUI.getSharedImages().getImage(org.eclipse.jdt.ui.ISharedImages.IMG_OBJS_CLASS);
+
 		tree.removeAll();
 		for (IFile file : files) {
 			TreeItem row = new TreeItem(tree, SWT.NONE);
 			row.setText(file.getFullPath().toPortableString());
+			row.setImage(rowImage);
 			row.setExpanded(true);
 			row.setData(file);
 			ModelList models;
@@ -92,6 +94,7 @@ public class SelectDataModelPage extends WizardPage {
 
 				TreeItem item = new TreeItem(row, SWT.NONE);
 				item.setText(text);
+				item.setImage(itemImage);
 				item.setData(model);
 			}
 

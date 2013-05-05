@@ -2,6 +2,7 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text;
 
 public interface DMDLImages {
 
+	public static final String DMDL_FILE = "dmdlFile";
 	public static final String MODEL_IMAGE = "MODEL_IMAGE.";
 	public static final String MODEL_SUM_IMAGE = MODEL_IMAGE + "summarized";
 	public static final String MODEL_JOIN_IMAGE = MODEL_IMAGE + "joined";

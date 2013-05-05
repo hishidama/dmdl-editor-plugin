@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.PropertyToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.WordToken;
+import jp.hishidama.eclipse_plugin.util.StringUtil;
 
 import org.eclipse.core.resources.IFile;
 
@@ -76,7 +77,7 @@ public class ModelIndex implements Index {
 		if (snakeMap == null) {
 			snakeMap = new HashMap<String, PropertyIndex>(map.size());
 			for (Entry<String, PropertyIndex> entry : map.entrySet()) {
-				String name = IndexContainer.convertSnake(entry.getKey());
+				String name = StringUtil.toCamelCase(entry.getKey());
 				snakeMap.put(name, entry.getValue());
 			}
 		}

@@ -1,19 +1,12 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.marker;
 
-import static jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.preference.PreferenceConst.PARSER_BUILD_PROPERTIES;
 import static jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.preference.PreferenceConst.PARSER_JAR_CHECKED;
 import static jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.preference.PreferenceConst.PARSER_JAR_FILES;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.text.MessageFormat;
 import java.util.List;
-import java.util.Properties;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.index.IndexContainer;
@@ -26,7 +19,6 @@ import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
@@ -42,15 +34,13 @@ public class ParserClassUtil {
 		setTable(viewer, jars, checks);
 	}
 
-	public static void initTable(CheckboxTableViewer viewer,
-			IPreferenceStore store) {
+	public static void initTable(CheckboxTableViewer viewer, IPreferenceStore store) {
 		String jars = store.getString(PARSER_JAR_FILES);
 		String checks = store.getString(PARSER_JAR_CHECKED);
 		setTable(viewer, jars, checks);
 	}
 
-	private static void setTable(CheckboxTableViewer viewer, String jars,
-			String checks) {
+	private static void setTable(CheckboxTableViewer viewer, String jars, String checks) {
 		viewer.setContentProvider(new IStructuredContentProvider() {
 			@Override
 			public Object[] getElements(Object inputElement) {
@@ -58,8 +48,7 @@ public class ParserClassUtil {
 			}
 
 			@Override
-			public void inputChanged(Viewer viewer, Object oldInput,
-					Object newInput) {
+			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			}
 
 			@Override
@@ -105,14 +94,12 @@ public class ParserClassUtil {
 	public static void getClassPath(List<URL> list, IProject project) {
 		String jars = getValue(project, PARSER_JAR_FILES);
 		if (jars == null) {
-			IPreferenceStore store = Activator.getDefault()
-					.getPreferenceStore();
+			IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 			jars = store.getString(PARSER_JAR_FILES);
 		}
 		String checks = getValue(project, PARSER_JAR_CHECKED);
 		if (checks == null) {
-			IPreferenceStore store = Activator.getDefault()
-					.getPreferenceStore();
+			IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 			checks = store.getString(PARSER_JAR_CHECKED);
 		}
 
@@ -148,78 +135,13 @@ public class ParserClassUtil {
 		}
 	}
 
-	public static String getBuildPropertiesFileName(IProject project) {
-		return getValue(project, PARSER_BUILD_PROPERTIES);
-	}
-
-	public static Properties getBuildProperties(IProject project) {
-		String s = getBuildPropertiesFileName(project);
-		if (s == null) {
-			return null;
-		}
-
-		IFile file = FileUtil.getFile(project, s);
-		if (file == null) {
-			ILog log = Activator.getDefault().getLog();
-			log.log(new Status(
-					Status.WARNING,
-					Activator.PLUGIN_ID,
-					MessageFormat
-							.format("not found Asakusa Framework build properties. file={0}",
-									s)));
-			return null;
-		}
-
-		InputStream is = null;
-		Reader reader = null;
+	public static String getValue(IProject project, String key) {
 		try {
-			is = file.getContents();
-			String cs;
-			try {
-				cs = file.getCharset();
-			} catch (Exception e) {
-				cs = "UTF-8";
-			}
-			reader = new InputStreamReader(is, cs);
-			Properties p = new Properties();
-			p.load(reader);
-			return p;
-		} catch (CoreException e) {
-			ILog log = Activator.getDefault().getLog();
-			log.log(e.getStatus());
-			return null;
-		} catch (IOException e) {
-			ILog log = Activator.getDefault().getLog();
-			log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,
-					MessageFormat.format(
-							"build.properties read error. file={0}", s), e));
-			return null;
-		} finally {
-			if (reader != null) {
-				try {
-					reader.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			} else if (is != null) {
-				try {
-					is.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-	private static String getValue(IProject project, String key) {
-		try {
-			String value = project.getPersistentProperty(new QualifiedName(
-					Activator.PLUGIN_ID, key));
+			String value = project.getPersistentProperty(new QualifiedName(Activator.PLUGIN_ID, key));
 			if (value != null) {
 				return value;
 			}
-			IPreferenceStore store = Activator.getDefault()
-					.getPreferenceStore();
+			IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 			return store.getString(key);
 		} catch (CoreException e) {
 			ILog log = Activator.getDefault().getLog();
@@ -230,8 +152,7 @@ public class ParserClassUtil {
 
 	private static void setValue(IProject project, String key, String value) {
 		try {
-			project.setPersistentProperty(new QualifiedName(
-					Activator.PLUGIN_ID, key), value);
+			project.setPersistentProperty(new QualifiedName(Activator.PLUGIN_ID, key), value);
 		} catch (CoreException e) {
 			ILog log = Activator.getDefault().getLog();
 			log.log(e.getStatus());

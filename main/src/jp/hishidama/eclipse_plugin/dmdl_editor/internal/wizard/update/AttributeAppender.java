@@ -5,7 +5,7 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.PropertyToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.WordToken;
-import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelUtil;
+import jp.hishidama.eclipse_plugin.util.StringUtil;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.BadLocationException;
@@ -51,8 +51,7 @@ public class AttributeAppender extends AttributeUpdater<AppendRegion> {
 			WordToken token = getFirstWordToken(prop);
 			if (token != null) {
 				int offset = getLineTop(doc, token.getStart());
-				addAppendRegion(file, offset, propAttr, mname,
-						prop.getPropertyName(), prop.getPropertyDescription());
+				addAppendRegion(file, offset, propAttr, mname, prop.getPropertyName(), prop.getPropertyDescription());
 			}
 		}
 	}
@@ -66,55 +65,13 @@ public class AttributeAppender extends AttributeUpdater<AppendRegion> {
 		return null;
 	}
 
-	private void addAppendRegion(IFile file, int offset, String attr,
-			String modelName, String propName, String propDesc) {
+	private void addAppendRegion(IFile file, int offset, String attr, String modelName, String propName, String propDesc) {
 		if (attr.isEmpty()) {
 			return;
 		}
 
-		StringBuilder sb = new StringBuilder(attr.length());
-		for (int pos = 0;;) {
-			int n = attr.indexOf("${", pos);
-			if (n >= 0) {
-				sb.append(attr.substring(pos, n));
-				pos = n;
-				int m = attr.indexOf("}", pos);
-				if (m >= 0) {
-					String key = attr.substring(n + 2, m);
-					sb.append(convert(key, modelName, propName, propDesc));
-					pos = m + 1;
-				} else {
-					String key = attr.substring(n + 2);
-					sb.append(convert(key, modelName, propName, propDesc));
-					break;
-				}
-			} else {
-				sb.append(attr.substring(pos));
-				break;
-			}
-		}
-
-		String text = sb.toString();
+		String text = StringUtil.replace(attr, modelName, propName, propDesc);
 		addRegion(file, new AppendRegion(offset, text));
-	}
-
-	private String convert(String key, String modelName, String propName,
-			String propDesc) {
-		String s;
-		if ("modelName".equals(key)) {
-			s = modelName;
-		} else if ("modelName.toUpper".equals(key)) {
-			s = modelName.toUpperCase();
-		} else if ("name".equals(key)) {
-			s = propName;
-		} else if ("name.toUpper".equals(key)) {
-			s = propName.toUpperCase();
-		} else if ("description".equals(key)) {
-			s = DataModelUtil.decodeDescription(propDesc);
-		} else {
-			s = "";
-		}
-		return (s != null) ? s : "";
 	}
 
 	@Override

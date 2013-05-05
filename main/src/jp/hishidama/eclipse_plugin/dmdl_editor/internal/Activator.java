@@ -31,7 +31,7 @@ public class Activator extends AbstractUIPlugin {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext
 	 * )
@@ -43,7 +43,7 @@ public class Activator extends AbstractUIPlugin {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see
 	 * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext
 	 * )
@@ -55,26 +55,22 @@ public class Activator extends AbstractUIPlugin {
 
 	@Override
 	protected void initializeImageRegistry(ImageRegistry reg) {
-		reg.put(DMDLImages.MODEL_SUM_IMAGE,
-				createModelImage("/icons/model_sum.gif"));
-		reg.put(DMDLImages.MODEL_JOIN_IMAGE,
-				createModelImage("/icons/model_join.gif"));
-		reg.put(DMDLImages.MODEL_PROJ_IMAGE,
-				createModelImage("/icons/model_proj.gif"));
+		reg.put(DMDLImages.DMDL_FILE, getImageDescriptor("/icons/hishidama16.gif"));
+		reg.put(DMDLImages.MODEL_SUM_IMAGE, createModelImage("/icons/model_sum.gif"));
+		reg.put(DMDLImages.MODEL_JOIN_IMAGE, createModelImage("/icons/model_join.gif"));
+		reg.put(DMDLImages.MODEL_PROJ_IMAGE, createModelImage("/icons/model_proj.gif"));
 	}
 
 	protected Image createModelImage(String path) {
-		Image baseImage = JavaUI.getSharedImages().getImage(
-				ISharedImages.IMG_OBJS_CLASS);
+		Image baseImage = JavaUI.getSharedImages().getImage(ISharedImages.IMG_OBJS_CLASS);
 		ImageDescriptor decorateDescriptor = getImageDescriptor(path);
-		ImageDescriptor descriptor = new DecorationOverlayIcon(baseImage,
-				decorateDescriptor, IDecoration.BOTTOM_RIGHT);
+		ImageDescriptor descriptor = new DecorationOverlayIcon(baseImage, decorateDescriptor, IDecoration.BOTTOM_RIGHT);
 		return descriptor.createImage();
 	}
 
 	/**
 	 * Returns the shared instance
-	 *
+	 * 
 	 * @return the shared instance
 	 */
 	public static Activator getDefault() {
@@ -84,7 +80,7 @@ public class Activator extends AbstractUIPlugin {
 	/**
 	 * Returns an image descriptor for the image file at the given plug-in
 	 * relative path
-	 *
+	 * 
 	 * @param path
 	 *            the path
 	 * @return the image descriptor

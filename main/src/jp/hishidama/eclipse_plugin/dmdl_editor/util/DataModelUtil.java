@@ -7,11 +7,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.marker.ParserClassUtil;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.index.IndexContainer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.index.ModelIndex;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.index.PropertyIndex;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.PropertyToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.util.BuildPropertiesUtil;
+import jp.hishidama.eclipse_plugin.util.StringUtil;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -73,20 +74,16 @@ public class DataModelUtil {
 	}
 
 	public static String getModelClass(IProject project, String modelName) {
-		Properties properties = ParserClassUtil.getBuildProperties(project);
-		if (properties == null) {
-			return null;
-		}
-		String pack = properties.getProperty("asakusa.modelgen.package");
+		Properties properties = BuildPropertiesUtil.getBuildProperties(project);
+		String pack = BuildPropertiesUtil.getModelgenPackage(properties);
 		if (pack == null) {
 			return null;
 		}
-		String sname = IndexContainer.convertSnake(modelName);
+		String sname = StringUtil.toCamelCase(modelName);
 		return pack + ".dmdl.model." + sname;
 	}
 
-	public static List<DataModelProperty> getModelProperties(IProject project,
-			String modelName) {
+	public static List<DataModelProperty> getModelProperties(IProject project, String modelName) {
 		ModelIndex mi = findModelIndex(project, modelName);
 		if (mi == null) {
 			return null;

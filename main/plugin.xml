@@ -175,6 +175,9 @@
             locationURI="popup:org.eclipse.ui.popup.any?after=additions">
          <menu
                label="DMDL Editor">
+            <visibleWhen>
+               <reference definitionId="dmdl-editor-plugin.command.visibleWhen" />
+            </visibleWhen>
             <command
                   commandId="dmdl-editor-plugin.errorcheck-command"
                   label="Create index / error check">
@@ -215,6 +218,39 @@
          </toolbar>
       </menuContribution>
    </extension>
+   <extension
+         point="org.eclipse.core.expressions.definitions">
+      <definition
+            id="dmdl-editor-plugin.command.visibleWhen">
+         <or>
+            <with
+                  variable="selection">
+               <iterate
+                     operator="or">
+                  <or>
+                     <adapt
+                           type="org.eclipse.core.resources.IFolder">
+                     </adapt>
+                     <adapt
+                           type="org.eclipse.core.resources.IFile">
+                        <test
+                              property="org.eclipse.core.resources.extension"
+                              value="dmdl">
+                        </test>
+                     </adapt>
+                  </or>
+               </iterate>
+            </with>
+            <with
+                  variable="activeEditorId">
+               <equals
+                     value="dmdl_editor.editors.DMDLEditor">
+               </equals>
+            </with>
+         </or>
+      </definition>
+   </extension>
+
    <extension
          point="org.eclipse.jdt.launching.classpathProviders">
       <classpathProvider

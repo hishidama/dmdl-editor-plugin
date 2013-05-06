@@ -4,15 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.DMDLImages;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelList;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.util.DMDLFileUtil;
+import jp.hishidama.eclipse_plugin.dmdl_editor.util.DMDLImages;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.jdt.ui.JavaUI;
-import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
@@ -64,9 +61,7 @@ public class SelectDataModelPage extends WizardPage {
 	}
 
 	private void rebuild() {
-		ImageRegistry registry = Activator.getDefault().getImageRegistry();
-		Image rowImage = registry.get(DMDLImages.DMDL_FILE);
-		Image itemImage = JavaUI.getSharedImages().getImage(org.eclipse.jdt.ui.ISharedImages.IMG_OBJS_CLASS);
+		Image rowImage = DMDLImages.getDmdlFileImage();
 
 		tree.removeAll();
 		for (IFile file : files) {
@@ -94,7 +89,7 @@ public class SelectDataModelPage extends WizardPage {
 
 				TreeItem item = new TreeItem(row, SWT.NONE);
 				item.setText(text);
-				item.setImage(itemImage);
+				item.setImage(DMDLImages.getDataModelImage(model));
 				item.setData(model);
 			}
 

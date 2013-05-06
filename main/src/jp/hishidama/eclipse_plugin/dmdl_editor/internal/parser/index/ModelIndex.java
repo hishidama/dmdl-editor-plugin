@@ -33,6 +33,10 @@ public class ModelIndex implements Index {
 		return model.getDescription();
 	}
 
+	public ModelToken getModel() {
+		return model;
+	}
+
 	@Override
 	public IFile getFile() {
 		return file;

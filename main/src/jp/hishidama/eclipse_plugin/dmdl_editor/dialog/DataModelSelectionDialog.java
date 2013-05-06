@@ -7,18 +7,16 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import jp.hishidama.eclipse_plugin.dialog.EditDialog;
+import jp.hishidama.eclipse_plugin.dmdl_editor.util.DMDLImages;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelInfo;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelUtil;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 
 public class DataModelSelectionDialog extends EditDialog {
 	private IProject project;
@@ -58,7 +56,7 @@ public class DataModelSelectionDialog extends EditDialog {
 			String file = entry.getKey();
 			TreeItem row = new TreeItem(tree, SWT.NONE);
 			row.setText(file);
-			row.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FILE));
+			row.setImage(DMDLImages.getDmdlFileImage());
 
 			for (DataModelInfo info : entry.getValue()) {
 				String name = info.getName();
@@ -67,7 +65,7 @@ public class DataModelSelectionDialog extends EditDialog {
 				TreeItem item = new TreeItem(row, SWT.NONE);
 				item.setText(title);
 				item.setData(info);
-				item.setImage(JavaUI.getSharedImages().getImage(org.eclipse.jdt.ui.ISharedImages.IMG_OBJS_CLASS));
+				item.setImage(DMDLImages.getDataModelImage(info.getModelType()));
 			}
 
 			row.setExpanded(true);

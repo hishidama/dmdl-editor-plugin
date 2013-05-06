@@ -1,15 +1,11 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.outline;
 
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.DMDLMultiPageEditor;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.DMDLImages;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.index.IndexContainer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.PropertyToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.util.DMDLImages;
 
-import org.eclipse.jdt.ui.ISharedImages;
-import org.eclipse.jdt.ui.JavaUI;
-import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.ViewerCell;
@@ -44,20 +40,8 @@ public class DMDLLabelProvider extends StyledCellLabelProvider {
 		cell.setText(styledString.toString());
 		cell.setStyleRanges(styledString.getStyleRanges());
 
-		String modelType = model.getModelType();
-		Image image = getModelImage(modelType);
+		Image image = DMDLImages.getDataModelImage(model);
 		cell.setImage(image);
-	}
-
-	protected Image getModelImage(String modelType) {
-		if ("summarized".equals(modelType) || "joined".equals(modelType)
-				|| "projective".equals(modelType)) {
-			ImageRegistry registry = Activator.getDefault().getImageRegistry();
-			return registry.get(DMDLImages.MODEL_IMAGE + modelType);
-		} else {
-			return JavaUI.getSharedImages().getImage(
-					ISharedImages.IMG_OBJS_CLASS);
-		}
 	}
 
 	protected void update(ViewerCell cell, PropertyToken prop) {
@@ -70,6 +54,7 @@ public class DMDLLabelProvider extends StyledCellLabelProvider {
 		}
 
 		cell.setText(styledString.toString());
+		cell.setImage(DMDLImages.getPropertyImage());
 		cell.setStyleRanges(styledString.getStyleRanges());
 	}
 }

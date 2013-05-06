@@ -1,7 +1,7 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.util;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -10,8 +10,11 @@ import java.util.Properties;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.index.IndexContainer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.index.ModelIndex;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.index.PropertyIndex;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelList;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.PropertyToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.util.BuildPropertiesUtil;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.util.DMDLFileUtil;
 import jp.hishidama.eclipse_plugin.util.StringUtil;
 
 import org.eclipse.core.resources.IFile;
@@ -42,34 +45,40 @@ public class DataModelUtil {
 		if (project == null) {
 			return null;
 		}
-		IndexContainer ic = IndexContainer.getContainer(project);
-		if (ic == null) {
-			return null;
-		}
 
-		Collection<ModelIndex> models = ic.getModels();
-		List<DataModelInfo> list = new ArrayList<DataModelInfo>(models.size());
-		for (ModelIndex mi : models) {
-			list.add(createInfo(mi));
-		}
-
-		Collections.sort(list, new Comparator<DataModelInfo>() {
+		List<IFile> files = DMDLFileUtil.getDmdlFiles(project);
+		Collections.sort(files, new Comparator<IFile>() {
 			@Override
-			public int compare(DataModelInfo o1, DataModelInfo o2) {
-				String name1 = o1.getName();
-				String name2 = o2.getName();
+			public int compare(IFile o1, IFile o2) {
+				String name1 = o1.getFullPath().toPortableString();
+				String name2 = o2.getFullPath().toPortableString();
 				return name1.compareToIgnoreCase(name2);
 			}
 		});
 
+		List<DataModelInfo> list = new ArrayList<DataModelInfo>(files.size() * 8);
+		for (IFile file : files) {
+			try {
+				ModelList models = DMDLFileUtil.getModels(file);
+				for (ModelToken model : models.getNamedModelList()) {
+					list.add(createInfo(file, model));
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		return list;
 	}
 
 	private static DataModelInfo createInfo(ModelIndex mi) {
-		String name = mi.getName();
-		String desc = decodeDescription(mi.getDescription());
-		IFile file = mi.getFile();
-		DataModelInfo info = new DataModelInfo(name, desc, file);
+		return createInfo(mi.getFile(), mi.getModel());
+	}
+
+	private static DataModelInfo createInfo(IFile file, ModelToken model) {
+		String name = model.getModelName();
+		String desc = decodeDescription(model.getDescription());
+		String type = model.getModelType();
+		DataModelInfo info = new DataModelInfo(name, desc, type, file);
 		return info;
 	}
 

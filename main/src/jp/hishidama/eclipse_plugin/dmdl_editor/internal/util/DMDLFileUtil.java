@@ -39,7 +39,7 @@ import org.eclipse.ui.PlatformUI;
 
 public class DMDLFileUtil {
 
-	public static List<IFile> getDmdlFiles(IFolder folder) {
+	public static List<IFile> getDmdlFiles(IContainer folder) {
 		List<IFile> list = new ArrayList<IFile>();
 		try {
 			getDmdlFiles(folder, list);

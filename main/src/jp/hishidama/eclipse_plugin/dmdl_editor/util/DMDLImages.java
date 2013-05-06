@@ -25,11 +25,11 @@ public class DMDLImages {
 		reg.put(DMDLImages.MODEL_PROJ_IMAGE, createModelImage("/icons/model_proj.gif"));
 	}
 
-	private static Image createModelImage(String path) {
+	private static ImageDescriptor createModelImage(String path) {
 		Image baseImage = getDataModelImage();
 		ImageDescriptor decorateDescriptor = Activator.getImageDescriptor(path);
 		ImageDescriptor descriptor = new DecorationOverlayIcon(baseImage, decorateDescriptor, IDecoration.BOTTOM_RIGHT);
-		return descriptor.createImage();
+		return descriptor;
 	}
 
 	public static Image getImage(String key) {

@@ -10,7 +10,7 @@ import java.text.MessageFormat;
 import java.util.Properties;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.marker.ParserClassUtil;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.property.DMDLPropertyUtil;
 import jp.hishidama.eclipse_plugin.util.FileUtil;
 
 import org.eclipse.core.resources.IFile;
@@ -22,7 +22,7 @@ import org.eclipse.core.runtime.Status;
 public class BuildPropertiesUtil {
 
 	public static String getBuildPropertiesFileName(IProject project) {
-		return ParserClassUtil.getValue(project, PARSER_BUILD_PROPERTIES);
+		return DMDLPropertyUtil.getValue(project, PARSER_BUILD_PROPERTIES);
 	}
 
 	public static Properties getBuildProperties(IProject project) {

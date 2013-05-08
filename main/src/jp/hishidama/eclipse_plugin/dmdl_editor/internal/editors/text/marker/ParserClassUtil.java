@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.List;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.property.DMDLPropertyUtil;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.index.IndexContainer;
 import jp.hishidama.eclipse_plugin.util.FileUtil;
 
@@ -18,9 +19,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
@@ -29,14 +28,14 @@ import org.eclipse.swt.widgets.TableItem;
 public class ParserClassUtil {
 
 	public static void initTable(CheckboxTableViewer viewer, IProject project) {
-		String jars = getValue(project, PARSER_JAR_FILES);
-		String checks = getValue(project, PARSER_JAR_CHECKED);
+		String jars = DMDLPropertyUtil.getValue(project, PARSER_JAR_FILES);
+		String checks = DMDLPropertyUtil.getValue(project, PARSER_JAR_CHECKED);
 		setTable(viewer, jars, checks);
 	}
 
-	public static void initTable(CheckboxTableViewer viewer, IPreferenceStore store) {
-		String jars = store.getString(PARSER_JAR_FILES);
-		String checks = store.getString(PARSER_JAR_CHECKED);
+	public static void initTableDefault(CheckboxTableViewer viewer, IProject project) {
+		String jars = DMDLPropertyUtil.getDefaultValue(project, PARSER_JAR_FILES);
+		String checks = DMDLPropertyUtil.getDefaultValue(project, PARSER_JAR_CHECKED);
 		setTable(viewer, jars, checks);
 	}
 
@@ -78,8 +77,8 @@ public class ParserClassUtil {
 			sb2.append(viewer.getChecked(element));
 			sb2.append(",");
 		}
-		setValue(project, PARSER_JAR_FILES, sb1.toString());
-		setValue(project, PARSER_JAR_CHECKED, sb2.toString());
+		DMDLPropertyUtil.setValue(project, PARSER_JAR_FILES, sb1.toString());
+		DMDLPropertyUtil.setValue(project, PARSER_JAR_CHECKED, sb2.toString());
 
 		try {
 			project.setSessionProperty(DMDLErrorCheckTask.KEY, null);
@@ -92,16 +91,8 @@ public class ParserClassUtil {
 	}
 
 	public static void getClassPath(List<URL> list, IProject project) {
-		String jars = getValue(project, PARSER_JAR_FILES);
-		if (jars == null) {
-			IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-			jars = store.getString(PARSER_JAR_FILES);
-		}
-		String checks = getValue(project, PARSER_JAR_CHECKED);
-		if (checks == null) {
-			IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-			checks = store.getString(PARSER_JAR_CHECKED);
-		}
+		String jars = DMDLPropertyUtil.getValue(project, PARSER_JAR_FILES);
+		String checks = DMDLPropertyUtil.getValue(project, PARSER_JAR_CHECKED);
 
 		String[] path = jars.split(",");
 		String[] check = checks.split(",");
@@ -132,30 +123,6 @@ public class ParserClassUtil {
 					e.printStackTrace();
 				}
 			}
-		}
-	}
-
-	public static String getValue(IProject project, String key) {
-		try {
-			String value = project.getPersistentProperty(new QualifiedName(Activator.PLUGIN_ID, key));
-			if (value != null) {
-				return value;
-			}
-			IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-			return store.getString(key);
-		} catch (CoreException e) {
-			ILog log = Activator.getDefault().getLog();
-			log.log(e.getStatus());
-			return null;
-		}
-	}
-
-	private static void setValue(IProject project, String key, String value) {
-		try {
-			project.setPersistentProperty(new QualifiedName(Activator.PLUGIN_ID, key), value);
-		} catch (CoreException e) {
-			ILog log = Activator.getDefault().getLog();
-			log.log(e.getStatus());
 		}
 	}
 }

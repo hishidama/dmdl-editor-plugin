@@ -8,11 +8,8 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.marker.Pars
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
@@ -56,9 +53,8 @@ public class DMDLErrorCheckPropertyPage extends PropertyPage {
 			label.setText("build.properties path:");
 
 			buildProperties = new Text(composite, SWT.SINGLE | SWT.BORDER);
-			buildProperties
-					.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-			String value = getValue(project, PARSER_BUILD_PROPERTIES);
+			buildProperties.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+			String value = DMDLPropertyUtil.getValue(project, PARSER_BUILD_PROPERTIES);
 			if (value != null) {
 				buildProperties.setText(value);
 			}
@@ -68,8 +64,7 @@ public class DMDLErrorCheckPropertyPage extends PropertyPage {
 			button.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					ProjectFileSelectionDialog dialog = new ProjectFileSelectionDialog(
-							getShell(), project);
+					ProjectFileSelectionDialog dialog = new ProjectFileSelectionDialog(getShell(), project);
 					dialog.setTitle("build.properties Selection");
 					dialog.setMessage("Select the build.properties for Asakusa Framework:");
 					dialog.setAllowMultiple(false);
@@ -99,12 +94,10 @@ public class DMDLErrorCheckPropertyPage extends PropertyPage {
 					layout.horizontalSpacing = 0;
 					layout.verticalSpacing = 0;
 					rows.setLayout(layout);
-					rows.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false,
-							false));
+					rows.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 				}
 				{
-					viewer = CheckboxTableViewer.newCheckList(rows, SWT.BORDER
-							| SWT.MULTI);
+					viewer = CheckboxTableViewer.newCheckList(rows, SWT.BORDER | SWT.MULTI);
 					Table table = viewer.getTable();
 					table.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 					table.setLinesVisible(true);
@@ -158,14 +151,12 @@ public class DMDLErrorCheckPropertyPage extends PropertyPage {
 				rows.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
 
 				Button button1 = new Button(rows, SWT.NONE);
-				button1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false,
-						false));
+				button1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 				button1.setText("Add JARs...");
 				button1.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
-						ProjectFileSelectionDialog dialog = new ProjectFileSelectionDialog(
-								getShell(), project);
+						ProjectFileSelectionDialog dialog = new ProjectFileSelectionDialog(getShell(), project);
 						dialog.setTitle("JAR Selection");
 						dialog.setMessage("Choose the archives to be added to the classpath of DmdlCompiler:");
 						dialog.setAllowMultiple(true);
@@ -185,17 +176,14 @@ public class DMDLErrorCheckPropertyPage extends PropertyPage {
 				});
 
 				Button button2 = new Button(rows, SWT.NONE);
-				button2.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false,
-						false));
+				button2.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 				button2.setText("Add External JARs...");
 				button2.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
-						FileDialog dialog = new FileDialog(getShell(), SWT.OPEN
-								| SWT.MULTI);
+						FileDialog dialog = new FileDialog(getShell(), SWT.OPEN | SWT.MULTI);
 						dialog.setText("JAR Selection");
-						dialog.setFilterExtensions(new String[] {
-								"*.jar; *.zip", "*.*" });
+						dialog.setFilterExtensions(new String[] { "*.jar; *.zip", "*.*" });
 						String file = dialog.open();
 						if (file != null) {
 							viewer.add(file);
@@ -206,14 +194,12 @@ public class DMDLErrorCheckPropertyPage extends PropertyPage {
 				});
 
 				Button button3 = new Button(rows, SWT.NONE);
-				button3.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false,
-						false));
+				button3.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 				button3.setText("Add Variable...");
 				button3.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
-						NewVariableEntryDialog dialog = new NewVariableEntryDialog(
-								getShell());
+						NewVariableEntryDialog dialog = new NewVariableEntryDialog(getShell());
 						dialog.setTitle("JAR Selection");
 						dialog.open();
 						IPath[] r = dialog.getResult();
@@ -229,14 +215,12 @@ public class DMDLErrorCheckPropertyPage extends PropertyPage {
 				});
 
 				Button button4 = new Button(rows, SWT.NONE);
-				button4.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false,
-						false));
+				button4.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 				button4.setText("Remove");
 				button4.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
-						IStructuredSelection selection = (IStructuredSelection) viewer
-								.getSelection();
+						IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
 						viewer.remove(selection.toArray());
 						e.doit = true;
 					}
@@ -253,7 +237,7 @@ public class DMDLErrorCheckPropertyPage extends PropertyPage {
 	public boolean performOk() {
 		IProject project = getProject();
 
-		setValue(project, PARSER_BUILD_PROPERTIES, buildProperties.getText());
+		DMDLPropertyUtil.setValue(project, PARSER_BUILD_PROPERTIES, buildProperties.getText());
 		ParserClassUtil.save(viewer, project);
 
 		return true;
@@ -279,35 +263,8 @@ public class DMDLErrorCheckPropertyPage extends PropertyPage {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 		buildProperties.setText(store.getString(PARSER_BUILD_PROPERTIES));
 
-		ParserClassUtil.initTable(viewer, store);
+		ParserClassUtil.initTableDefault(viewer, getProject());
 
 		super.performDefaults();
-	}
-
-	private String getValue(IProject project, String key) {
-		try {
-			String value = project.getPersistentProperty(new QualifiedName(
-					Activator.PLUGIN_ID, key));
-			if (value != null) {
-				return value;
-			}
-			IPreferenceStore store = Activator.getDefault()
-					.getPreferenceStore();
-			return store.getString(key);
-		} catch (CoreException e) {
-			ILog log = Activator.getDefault().getLog();
-			log.log(e.getStatus());
-			return null;
-		}
-	}
-
-	private void setValue(IProject project, String key, String value) {
-		try {
-			project.setPersistentProperty(new QualifiedName(
-					Activator.PLUGIN_ID, key), value);
-		} catch (CoreException e) {
-			ILog log = Activator.getDefault().getLog();
-			log.log(e.getStatus());
-		}
 	}
 }

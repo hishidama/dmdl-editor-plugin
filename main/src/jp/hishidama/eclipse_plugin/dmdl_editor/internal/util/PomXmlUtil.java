@@ -12,7 +12,7 @@ import org.eclipse.core.runtime.CoreException;
 
 public class PomXmlUtil {
 
-	public static String getValue(IProject project, String tag) {
+	public static String getValue(IProject project) {
 		IFile file = project.getFile("pom.xml");
 		if (!file.exists()) {
 			return "";
@@ -28,10 +28,8 @@ public class PomXmlUtil {
 					if (line == null) {
 						break;
 					}
-					String value = getValue(line, tag);
-					if (value != null) {
-						return value.trim();
-					}
+					sb.append(line);
+					sb.append('\n');
 				}
 				return sb.toString();
 			} catch (UnsupportedEncodingException e) {
@@ -64,5 +62,27 @@ public class PomXmlUtil {
 		} else {
 			return text.substring(n, m);
 		}
+	}
+
+	public static boolean exists(String pom, String tag, String value) {
+		String begin = "<" + tag + ">";
+		String end = "</" + tag + ">";
+		for (int i = 0; i < pom.length();) {
+			int n = pom.indexOf(begin, i);
+			if (n < 0) {
+				return false;
+			}
+			n += begin.length();
+			int m = pom.indexOf(end, n);
+			if (m < 0) {
+				m = pom.length();
+			}
+			String v = pom.substring(n, m);
+			if (v.trim().equals(value)) {
+				return true;
+			}
+			i = m + end.length();
+		}
+		return false;
 	}
 }

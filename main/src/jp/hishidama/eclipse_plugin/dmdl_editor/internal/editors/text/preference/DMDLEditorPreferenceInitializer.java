@@ -62,7 +62,7 @@ public class DMDLEditorPreferenceInitializer extends AbstractPreferenceInitializ
 
 		// Parser
 		store.setDefault(PARSER_BUILD_PROPERTIES, "build.properties");
-		String[] jars = getJars("0.4.0");
+		String[] jars = getJars("0.4.0", true, true, false);
 		store.setDefault(PARSER_JAR_FILES, jars[0]);
 		store.setDefault(PARSER_JAR_CHECKED, jars[1]);
 
@@ -70,7 +70,7 @@ public class DMDLEditorPreferenceInitializer extends AbstractPreferenceInitializ
 		store.setDefault(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_HYPERLINKS_ENABLED, true);
 	}
 
-	public static String[] getJars(String version) {
+	public static String[] getJars(String version, boolean directio, boolean windgate, boolean thundergate) {
 		StringBuilder jars = new StringBuilder(96 * 7);
 		StringBuilder checked = new StringBuilder(8 * 7);
 		addJar(jars, checked, "M2_REPO/com/asakusafw/asakusa-dmdl-core/${version}/asakusa-dmdl-core-${version}.jar",
@@ -80,14 +80,14 @@ public class DMDLEditorPreferenceInitializer extends AbstractPreferenceInitializ
 				version);
 		addJar(jars, checked, "M2_REPO/org/slf4j/slf4j-api/1.6.6/slf4j-api-1.6.6.jar", true, version);
 		addJar(jars, checked,
-				"M2_REPO/com/asakusafw/asakusa-directio-dmdl/${version}/asakusa-directio-dmdl-${version}.jar", true,
-				version);
+				"M2_REPO/com/asakusafw/asakusa-directio-dmdl/${version}/asakusa-directio-dmdl-${version}.jar",
+				directio, version);
 		addJar(jars, checked,
-				"M2_REPO/com/asakusafw/asakusa-windgate-dmdl/${version}/asakusa-windgate-dmdl-${version}.jar", true,
-				version);
+				"M2_REPO/com/asakusafw/asakusa-windgate-dmdl/${version}/asakusa-windgate-dmdl-${version}.jar",
+				windgate, version);
 		addJar(jars, checked,
 				"M2_REPO/com/asakusafw/asakusa-thundergate-dmdl/${version}/asakusa-thundergate-dmdl-${version}.jar",
-				false, version);
+				thundergate, version);
 		return new String[] { jars.toString(), checked.toString() };
 	}
 

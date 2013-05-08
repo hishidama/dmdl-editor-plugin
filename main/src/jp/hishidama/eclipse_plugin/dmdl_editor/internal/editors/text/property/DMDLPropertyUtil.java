@@ -42,9 +42,13 @@ public class DMDLPropertyUtil {
 				return value;
 			}
 
-			String version = PomXmlUtil.getValue(project, "asakusafw.version");
+			String pom = PomXmlUtil.getValue(project);
+			String version = PomXmlUtil.getValue(pom, "asakusafw.version");
 			if (version != null) {
-				String[] jars = DMDLEditorPreferenceInitializer.getJars(version);
+				boolean d = PomXmlUtil.exists(pom, "artifactId", "asakusa-directio-dmdl");
+				boolean w = PomXmlUtil.exists(pom, "artifactId", "asakusa-windgate-dmdl");
+				boolean t = PomXmlUtil.exists(pom, "artifactId", "asakusa-thundergate-dmdl");
+				String[] jars = DMDLEditorPreferenceInitializer.getJars(version, d, w, t);
 				defaultBuf.put(defaultBufKey(project, PARSER_JAR_FILES), jars[0]);
 				defaultBuf.put(defaultBufKey(project, PARSER_JAR_CHECKED), jars[1]);
 				value = defaultBuf.get(bufKey);

@@ -28,13 +28,13 @@
             category="dmdl-editor.preference-page"
             class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.preference.DMDLEditorColorPreferencePage"
             id="dmdl-editor.color-preference-page"
-            name="color">
+            name="Color">
       </page>
       <page
             category="dmdl-editor.preference-page"
             class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.preference.DMDLEditorFormatterPreferencePage"
             id="dmdl-editor.formatter-preference-page"
-            name="formatter">
+            name="Formatter">
       </page>
    </extension>
    <extension
@@ -48,7 +48,7 @@
             category="dmdl-editor-plugin.page"
             class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.property.DMDLErrorCheckPropertyPage"
             id="dmdl-editor-plugin.errorcheck.page"
-            name="parser">
+            name="Parser">
          <enabledWhen>
             <or>
                <instanceof

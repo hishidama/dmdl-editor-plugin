@@ -102,7 +102,7 @@ public class SetAddAttributePage extends SetAttributePage {
 					+ "  datetime = \"yyyy-MM-dd HH:mm:ss\",\n" //
 					+ ")";
 		case WINDGATE_JDBC:
-			return "@windgate.jdbc.table(name =\"$(modelName.toUpper)\")";
+			return "@windgate.jdbc.table(name = \"$(modelName.toUpper)\")";
 		default:
 			return "";
 		}

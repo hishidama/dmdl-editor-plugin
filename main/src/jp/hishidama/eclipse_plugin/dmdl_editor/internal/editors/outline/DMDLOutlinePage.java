@@ -32,13 +32,11 @@ public class DMDLOutlinePage extends ContentOutlinePage {
 		TreeViewer viewer = getTreeViewer();
 		viewer.setContentProvider(new DMDLContentProvider());
 		viewer.setLabelProvider(new DMDLLabelProvider(editor));
-		viewer.addSelectionChangedListener(new DMDLOutlineSelectionChangedListener(
-				editor));
+		viewer.addSelectionChangedListener(new DMDLOutlineSelectionChangedListener(editor));
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
-				IStructuredSelection selection = (IStructuredSelection) event
-						.getSelection();
+				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 				if (selection.isEmpty()) {
 					return;
 				}
@@ -71,6 +69,9 @@ public class DMDLOutlinePage extends ContentOutlinePage {
 
 	public void selectToken(DMDLToken token) {
 		TreeViewer viewer = getTreeViewer();
+		if (viewer == null) {
+			return;
+		}
 		if (token instanceof PropertyToken) {
 			for (DMDLToken t = token.getParent(); t != null; t = t.getParent()) {
 				if (t instanceof ModelToken) {

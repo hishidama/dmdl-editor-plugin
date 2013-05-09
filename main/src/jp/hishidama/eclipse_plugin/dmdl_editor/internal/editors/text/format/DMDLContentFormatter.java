@@ -38,7 +38,7 @@ public class DMDLContentFormatter implements IContentFormatter {
 	protected int changeStart;
 	protected StringBuilder sb;
 	protected DMDLTextToken prevText;
-	protected String LF = "\r\n";
+	protected String LF = "\n";
 	protected String INDENT_ARGUMENT = "  ";
 	protected String INDENT_PROPERTY = "    ";
 
@@ -68,8 +68,7 @@ public class DMDLContentFormatter implements IContentFormatter {
 			document.replace(start, length, text); // TODO start,length
 		} catch (BadLocationException e) {
 			ILog log = Activator.getDefault().getLog();
-			log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,
-					"DMDLContentFormatter bad location.", e));
+			log.log(new Status(Status.WARNING, Activator.PLUGIN_ID, "DMDLContentFormatter bad location.", e));
 		}
 	}
 
@@ -85,10 +84,8 @@ public class DMDLContentFormatter implements IContentFormatter {
 	private void init() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 
-		INDENT_ARGUMENT = space(getInt(store,
-				PreferenceConst.FORMAT_INDENT_ARGUMENT));
-		INDENT_PROPERTY = space(getInt(store,
-				PreferenceConst.FORMAT_INDENT_PROPERTY));
+		INDENT_ARGUMENT = space(getInt(store, PreferenceConst.FORMAT_INDENT_ARGUMENT));
+		INDENT_PROPERTY = space(getInt(store, PreferenceConst.FORMAT_INDENT_PROPERTY));
 	}
 
 	private int getInt(IPreferenceStore store, String key) {
@@ -166,20 +163,17 @@ public class DMDLContentFormatter implements IContentFormatter {
 			}
 		}
 
-		protected void formatWord(WordToken token, boolean firstToken,
-				String word, boolean firstWord) {
+		protected void formatWord(WordToken token, boolean firstToken, String word, boolean firstWord) {
 			appendIfNotLf(token.getStart(), " ");
 			append(token.getStart(), token.getText());
 		}
 
-		protected void formatDescription(DescriptionToken token,
-				boolean firstToken) {
+		protected void formatDescription(DescriptionToken token, boolean firstToken) {
 			appendIfNotLf(token.getStart(), LF);
 			append(token.getStart(), token.getText());
 		}
 
-		protected void formatAnnotation(AnnotationToken token,
-				boolean firstToken) {
+		protected void formatAnnotation(AnnotationToken token, boolean firstToken) {
 			appendIfNotLf(token.getStart(), LF);
 			append(token.getStart(), token.getText());
 		}
@@ -198,8 +192,7 @@ public class DMDLContentFormatter implements IContentFormatter {
 
 	protected TokenFormatter<ModelToken> modelFormatter = new TokenFormatter<ModelToken>() {
 		@Override
-		protected void formatWord(WordToken token, boolean firstToken,
-				String word, boolean firstWord) {
+		protected void formatWord(WordToken token, boolean firstToken, String word, boolean firstWord) {
 			prepare(token, firstToken);
 			if (firstWord) {
 				appendIfNotLf(token.getStart(), LF);
@@ -216,15 +209,13 @@ public class DMDLContentFormatter implements IContentFormatter {
 		}
 
 		@Override
-		protected void formatDescription(DescriptionToken token,
-				boolean firstToken) {
+		protected void formatDescription(DescriptionToken token, boolean firstToken) {
 			prepare(token, firstToken);
 			super.formatDescription(token, firstToken);
 		}
 
 		@Override
-		protected void formatAnnotation(AnnotationToken token,
-				boolean firstToken) {
+		protected void formatAnnotation(AnnotationToken token, boolean firstToken) {
 			prepare(token, firstToken);
 			super.formatAnnotation(token, firstToken);
 		}
@@ -284,8 +275,7 @@ public class DMDLContentFormatter implements IContentFormatter {
 
 	protected TokenFormatter<ArgumentsToken> argumentsFormatter = new TokenFormatter<ArgumentsToken>() {
 		@Override
-		protected void formatWord(WordToken token, boolean firstToken,
-				String word, boolean firstWord) {
+		protected void formatWord(WordToken token, boolean firstToken, String word, boolean firstWord) {
 			if ("(".equals(word) || ",".equals(word)) {
 				// 何も入れない
 			} else if (")".equals(word)) {
@@ -305,15 +295,13 @@ public class DMDLContentFormatter implements IContentFormatter {
 
 	protected TokenFormatter<ArgumentToken> argumentFormatter = new TokenFormatter<ArgumentToken>() {
 		@Override
-		protected void formatWord(WordToken token, boolean firstToken,
-				String word, boolean firstWord) {
+		protected void formatWord(WordToken token, boolean firstToken, String word, boolean firstWord) {
 			if (firstWord) {
 				ArgumentToken parent = (ArgumentToken) token.getParent();
 				ArgumentsToken args = (ArgumentsToken) parent.getParent();
 				if (args.getBody().size() > 3) {
 					appendIfNotLf(token.getStart(), LF);
-					String indent = inBlock(args.getParent()) ? INDENT_PROPERTY
-							+ INDENT_ARGUMENT : INDENT_ARGUMENT;
+					String indent = inBlock(args.getParent()) ? INDENT_PROPERTY + INDENT_ARGUMENT : INDENT_ARGUMENT;
 					append(token.getStart(), indent);
 				}
 			} else {
@@ -323,8 +311,7 @@ public class DMDLContentFormatter implements IContentFormatter {
 		}
 
 		@Override
-		protected void formatDescription(DescriptionToken token,
-				boolean firstToken) {
+		protected void formatDescription(DescriptionToken token, boolean firstToken) {
 			appendIfNotLf(token.getStart(), " ");
 			append(token.getStart(), token.getText());
 		}
@@ -342,8 +329,7 @@ public class DMDLContentFormatter implements IContentFormatter {
 
 	protected TokenFormatter<BlockToken> blockFormatter = new TokenFormatter<BlockToken>() {
 		@Override
-		protected void formatWord(WordToken token, boolean firstToken,
-				String word, boolean firstWord) {
+		protected void formatWord(WordToken token, boolean firstToken, String word, boolean firstWord) {
 			if ("}".equals(word)) {
 				appendIfNotLf(token.getStart(), LF);
 			} else {
@@ -354,8 +340,7 @@ public class DMDLContentFormatter implements IContentFormatter {
 	};
 	protected TokenFormatter<PropertyToken> propertyFormatter = new TokenFormatter<PropertyToken>() {
 		@Override
-		protected void formatWord(WordToken token, boolean firstToken,
-				String word, boolean firstWord) {
+		protected void formatWord(WordToken token, boolean firstToken, String word, boolean firstWord) {
 			if (firstWord) {
 				appendIfNotLf(token.getStart(), LF);
 				append(token.getStart(), INDENT_PROPERTY);
@@ -368,8 +353,7 @@ public class DMDLContentFormatter implements IContentFormatter {
 		}
 
 		@Override
-		protected void formatAnnotation(AnnotationToken token,
-				boolean firstToken) {
+		protected void formatAnnotation(AnnotationToken token, boolean firstToken) {
 			appendIfNotLf(token.getStart(), LF);
 			if (firstToken) {
 				append(token.getStart(), LF);
@@ -379,8 +363,7 @@ public class DMDLContentFormatter implements IContentFormatter {
 		}
 
 		@Override
-		protected void formatDescription(DescriptionToken token,
-				boolean firstToken) {
+		protected void formatDescription(DescriptionToken token, boolean firstToken) {
 			appendIfNotLf(token.getStart(), LF);
 			if (firstToken) {
 				append(token.getStart(), LF);
@@ -392,8 +375,7 @@ public class DMDLContentFormatter implements IContentFormatter {
 
 	protected TokenFormatter<ArrayToken> arrayFormatter = new TokenFormatter<ArrayToken>() {
 		@Override
-		protected void formatWord(WordToken token, boolean firstToken,
-				String word, boolean firstWord) {
+		protected void formatWord(WordToken token, boolean firstToken, String word, boolean firstWord) {
 			if (",".equals(word)) {
 				// 何も入れない
 			} else {

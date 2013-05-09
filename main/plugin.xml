@@ -43,6 +43,9 @@
             class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.property.DMDLPropertyPage"
             id="dmdl-editor-plugin.page"
             name="DMDL Editor">
+         <enabledWhen>
+            <adapt type="org.eclipse.core.resources.IProject"/>
+         </enabledWhen>
       </page>
       <page
             category="dmdl-editor-plugin.page"

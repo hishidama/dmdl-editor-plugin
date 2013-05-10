@@ -193,6 +193,9 @@ public class DMDLCompileTask implements IWorkspaceRunnable {
 			boolean build = false;
 			boolean register = false;
 			ILaunch launch = config.launch(mode, new SubProgressMonitor(monitor, 20), build, register);
+			if (!launch.hasChildren()) {
+				throw new OperationCanceledException();
+			}
 
 			ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
 			launchManager.addLaunch(launch);

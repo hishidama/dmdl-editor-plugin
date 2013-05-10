@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -64,7 +66,12 @@ public class PomXmlUtil {
 		}
 	}
 
-	public static boolean exists(String pom, String tag, String value) {
+	public static boolean exists(String pom, String tag, String... values) {
+		Set<String> set = new HashSet<String>();
+		for (String s : values) {
+			set.add(s);
+		}
+
 		String begin = "<" + tag + ">";
 		String end = "</" + tag + ">";
 		for (int i = 0; i < pom.length();) {
@@ -78,7 +85,7 @@ public class PomXmlUtil {
 				m = pom.length();
 			}
 			String v = pom.substring(n, m);
-			if (v.trim().equals(value)) {
+			if (set.contains(v.trim())) {
 				return true;
 			}
 			i = m + end.length();

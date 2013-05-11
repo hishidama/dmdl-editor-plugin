@@ -13,6 +13,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -51,23 +54,45 @@ public abstract class DataModelPage {
 	public void createFormContent(IManagedForm managedForm) {
 		ScrolledForm form = managedForm.getForm();
 		Composite body = form.getBody();
-		body.setLayout(new GridLayout(1, false));
-		body.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
+		body.setLayoutData(new GridData(GridData.FILL_BOTH));
+		body.setLayout(new FormLayout());
 
 		FormToolkit kit = managedForm.getToolkit();
+
+		Composite headerArea = kit.createComposite(body, SWT.NONE);
 		{
-			Composite composite = kit.createComposite(body, SWT.NONE);
-			composite.setLayout(new GridLayout(2, false));
-			composite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false,
-					false));
-			createHeader(kit, composite);
+			FormData data = new FormData();
+			data.left = new FormAttachment(0, 8);
+			data.right = new FormAttachment(100, -80);
+			data.top = new FormAttachment(0, 8);
+			headerArea.setLayoutData(data);
+
+			headerArea.setLayout(new GridLayout(2, false));
+			createHeader(kit, headerArea);
 		}
+
+		Composite tableArea = kit.createComposite(body, SWT.NONE);
 		{
-			Composite composite = kit.createComposite(body, SWT.NONE);
-			composite.setLayout(new GridLayout(1, true));
-			composite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false,
-					false));
-			table = kit.createTable(composite, SWT.BORDER | SWT.FULL_SELECTION);
+			{
+				FormData data = new FormData();
+				data.top = new FormAttachment(headerArea, 8);
+				data.left = new FormAttachment(0, 8);
+				data.right = new FormAttachment(100, -8);
+				data.bottom = new FormAttachment(100, -8);
+				tableArea.setLayoutData(data);
+			}
+
+			tableArea.setLayout(new FormLayout());
+			table = kit.createTable(tableArea, SWT.BORDER | SWT.FULL_SELECTION | SWT.H_SCROLL);
+			{
+				FormData data = new FormData();
+				data.top = new FormAttachment(0, 0);
+				data.left = new FormAttachment(0, 0);
+				data.right = new FormAttachment(100, -0);
+				data.bottom = new FormAttachment(100, -0);
+				data.height = 32; // 最小の高さ
+				table.setLayoutData(data);
+			}
 			table.setHeaderVisible(true);
 			table.setLinesVisible(true);
 			createTable(table);
@@ -77,9 +102,8 @@ public abstract class DataModelPage {
 	}
 
 	protected void createHeader(FormToolkit kit, Composite parent) {
-		GridData gd = new GridData(GridData.VERTICAL_ALIGN_FILL
-				| GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL
-				| GridData.GRAB_VERTICAL);
+		GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL
+				| GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL);
 
 		kit.createLabel(parent, "description");
 		descText = kit.createText(parent, "");
@@ -130,8 +154,7 @@ public abstract class DataModelPage {
 				for (int i = 0; i < table.getColumnCount(); i++) {
 					if (item.getBounds(i).contains(point)) {
 						int row = table.indexOf(item);
-						ModelTableEditor te = new ModelTableEditor(
-								DataModelPage.this, table);
+						ModelTableEditor te = new ModelTableEditor(DataModelPage.this, table);
 						te.setEditor(row, i);
 						break;
 					}
@@ -152,8 +175,7 @@ public abstract class DataModelPage {
 		table.removeAll();
 		for (PropertyToken prop : getProperties()) {
 			TableItem item = new TableItem(table, SWT.NONE);
-			item.setText(0,
-					decodeDescription(nonNull(prop.getPropertyDescription())));
+			item.setText(0, decodeDescription(nonNull(prop.getPropertyDescription())));
 			item.setText(1, prop.getPropertyName());
 			item.setText(2, nonNull(prop.getDataType(ic)));
 		}
@@ -217,8 +239,7 @@ public abstract class DataModelPage {
 		ModelToken m = editor.replaceDocument(pos, length, text);
 		if (m == null) {
 			throw new IllegalStateException(MessageFormat.format(
-					"replace error. pos={0}, len={1}, text=\"{2}\", model={3}",
-					pos, length, text, model.toString()));
+					"replace error. pos={0}, len={1}, text=\"{2}\", model={3}", pos, length, text, model.toString()));
 		}
 		setModel(m);
 	}

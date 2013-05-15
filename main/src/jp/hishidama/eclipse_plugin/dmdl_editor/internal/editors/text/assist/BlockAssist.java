@@ -22,8 +22,7 @@ public class BlockAssist extends Assist {
 	// 1文字でも入れられているとPropertyTokenになるので
 	// ここには来ない。
 
-	public List<ICompletionProposal> getBlockAssist(DMDLDocument document,
-			int offset, BlockToken token) {
+	public List<ICompletionProposal> getBlockAssist(DMDLDocument document, int offset, BlockToken token) {
 		WordToken refModelName = (WordToken) token.getRefModelToken();
 		if (refModelName != null) {
 			return getRefAssist(document, offset, token, refModelName);
@@ -31,8 +30,8 @@ public class BlockAssist extends Assist {
 		return null;
 	}
 
-	protected List<ICompletionProposal> getRefAssist(IDocument document,
-			int offset, BlockToken token, WordToken refModelName) {
+	protected List<ICompletionProposal> getRefAssist(IDocument document, int offset, BlockToken token,
+			WordToken refModelName) {
 		if ("summarized".equals(token.getModelType())) {
 			List<DMDLToken> list = getList(token, offset);
 			AssistMatcher matcher = new AssistMatcher(list, offset);
@@ -46,7 +45,7 @@ public class BlockAssist extends Assist {
 			}
 		}
 
-		ModelToken refModel = token.findModel(refModelName.getText());
+		ModelToken refModel = findModel(token, refModelName.getText());
 		if (refModel != null) {
 			List<DMDLToken> list = getList(token, offset);
 			AssistMatcher matcher = new AssistMatcher(list, offset);
@@ -54,14 +53,8 @@ public class BlockAssist extends Assist {
 			case 0:
 				return null;
 			case 1:
-				List<String> alist = new ArrayList<String>();
-				for (PropertyToken p : refModel.getPropertyList()) {
-					if (p.getName() != null) {
-						alist.add(p.getName());
-					}
-				}
-				return matcher.createAssist(document,
-						alist.toArray(new String[alist.size()]));
+				String[] propNames = getRefProperties(refModelName);
+				return matcher.createAssist(document, propNames);
 			default:
 				break;
 			}
@@ -77,8 +70,7 @@ public class BlockAssist extends Assist {
 			if (offset < t.getStart()) {
 				break;
 			}
-			if (t instanceof PropertyToken || t instanceof CommentToken
-					|| t instanceof DescriptionToken) {
+			if (t instanceof PropertyToken || t instanceof CommentToken || t instanceof DescriptionToken) {
 				continue;
 			}
 			list.add(t);

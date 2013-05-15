@@ -9,10 +9,9 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 
 public class ModelAssist extends Assist {
-	protected static final String[] MODEL_ASSIST = { "summarized", "joined",
-			"projective" };
+	protected static final String[] MODEL_ASSIST = { "summarized", "joined", "projective" };
 
-	protected static final String BLOCK = String.format("{%n}");
+	protected static final String BLOCK = "{\n}";
 	protected static final String[] BLOCK_ASSIST = { BLOCK };
 	protected static final String[] BLOCK_END_ASSIST = { BLOCK + ";" };
 
@@ -20,8 +19,7 @@ public class ModelAssist extends Assist {
 		return createAssist(offset, MODEL_ASSIST);
 	}
 
-	public List<ICompletionProposal> getModelAssist(DMDLDocument document,
-			int offset, ModelToken token) {
+	public List<ICompletionProposal> getModelAssist(DMDLDocument document, int offset, ModelToken token) {
 		List<DMDLToken> list = getList(token, offset);
 		if (list.isEmpty()) {
 			return createAssist(offset, MODEL_ASSIST);
@@ -44,21 +42,34 @@ public class ModelAssist extends Assist {
 		switch (matcher.matchLast(ANY, "%", ANY)) {
 		case 2: {
 			DMDLToken t = matcher.getToken(-2); // 「%」が-1、「%」の前が-2
-			return matcher.createAssist(document, getProperties(t));
+			List<ICompletionProposal> r = matcher.createAssist(document, getProperties(t));
+			if (r != null && !r.isEmpty()) {
+				if (r.size() == 1) {
+					String word = matcher.getCursorText();
+					if (r.get(0).getDisplayString().equals(word)) {
+						// fall through
+					} else {
+						return r;
+					}
+				} else {
+					return r;
+				}
+			}
+			// fall through
 		}
 		case 3: {
 			String first = matcher.getWord(0);
 			if ("summarized".equals(first)) {
-				return matcher.createAssist(document, ",", ";");
+				return matcher.createAssist(",", ";");
 			} else if ("joined".equals(first)) {
 				int n = matcher.lastIndexOf("+");
 				if (n < 0) {
-					return matcher.createAssist(document, ",", ";", "+");
+					return matcher.createAssist(",", ";", "+");
 				} else {
-					return matcher.createAssist(document, ",", ";");
+					return matcher.createAssist(",", ";");
 				}
 			} else {
-				return matcher.createAssist(document, ",", "+", ";");
+				return matcher.createAssist(",", "+", ";");
 			}
 		}
 		default:
@@ -71,9 +82,9 @@ public class ModelAssist extends Assist {
 		case 2: {
 			String first = matcher.getWord(0);
 			if ("joined".equals(first)) {
-				return matcher.createAssist(document, "-> " + BLOCK, "%");
+				return matcher.createAssist("-> " + BLOCK, "%");
 			}
-			return matcher.createAssist(document, "%");
+			return matcher.createAssist("%");
 		}
 		default:
 			break;
@@ -90,16 +101,16 @@ public class ModelAssist extends Assist {
 		case 2: {
 			String first = matcher.getWord(0);
 			if ("summarized".equals(first)) {
-				return matcher.createAssist(document, ",", ";");
+				return matcher.createAssist(",", ";");
 			} else if ("joined".equals(first)) {
 				int n = matcher.lastIndexOf("+");
 				if (n < 0) {
-					return matcher.createAssist(document, ",", ";", "+");
+					return matcher.createAssist(",", ";", "+");
 				} else {
-					return matcher.createAssist(document, ",", ";");
+					return matcher.createAssist(",", ";");
 				}
 			} else {
-				return matcher.createAssist(document, ",", ";", "+");
+				return matcher.createAssist(",", ";", "+");
 			}
 		}
 		default:
@@ -107,54 +118,63 @@ public class ModelAssist extends Assist {
 		}
 
 		// matchFirst系
-		switch (matcher.matchFirst("summarized", ANY, "=", ANY, "=>", ANY, "%",
-				ANY, ",")) {
+		switch (matcher.matchFirst("summarized", ANY, "=", ANY, "=>", ANY, "%", ANY, ",")) {
 		case 1:
 			return null;
 		case 2:
-			return matcher.createAssist(document, "=");
+			return matcher.createAssist("=");
 		case 3:
 			String[] modelNames = getModelNames(token, matcher.getWord(1));
 			return matcher.createAssist(document, modelNames);
 		case 4:
-			return matcher.createAssist(document, "=> " + BLOCK);
+			if (matcher.existsCursorToken()) {
+				String[] names = getModelNames(token, matcher.getWord(1));
+				List<ICompletionProposal> r = matcher.createAssist(document, names);
+				matcher.addAssist(r, "=> " + BLOCK);
+				return r;
+			}
+			return matcher.createAssist("=> " + BLOCK);
 		case 5:
-			return matcher.createAssist(document, BLOCK_ASSIST);
+			return matcher.createAssist(BLOCK_ASSIST);
 		case 6:
-			return matcher.createAssist(document, "%");
+			return matcher.createAssist("%");
 		case 7: {
 			DMDLToken t = matcher.getToken(5);
 			return matcher.createAssist(document, getProperties(t));
 		}
 		case 8:
-			return matcher.createAssist(document, ",", ";");
+			return matcher.createAssist(",", ";");
 		default:
 			break;
 		}
 
 		switch (matcher.matchFirst("joined", ANY, "=", ANY, "->", ANY)) {
-		case 0:
-			break;
 		case 1:
 			return null;
 		case 2:
-			return matcher.createAssist(document, "=");
+			return matcher.createAssist("=");
 		case 3:
 			String[] modelNames = getModelNames(token, matcher.getWord(1));
 			return matcher.createAssist(document, modelNames);
 		case 4:
-			return matcher.createAssist(document, "-> " + BLOCK, "%");
+			if (matcher.existsCursorToken()) {
+				String[] names = getModelNames(token, matcher.getWord(1));
+				List<ICompletionProposal> r = matcher.createAssist(document, names);
+				matcher.addAssist(r, "-> " + BLOCK, "%");
+				return r;
+			}
+			return matcher.createAssist("-> " + BLOCK, "%");
 		case 5:
-			return matcher.createAssist(document, BLOCK_ASSIST);
+			return matcher.createAssist(BLOCK_ASSIST);
 		case 6:
-			return matcher.createAssist(document, "%");
+			return matcher.createAssist("%");
 		default:
 			break;
 		}
 		switch (matcher.matchFirst("joined", ANY, "=", ANY, "%", ANY)) {
 		// 0～4は前で記述済み
 		case 5:
-			return matcher.createAssist(document, ",", "+");
+			return matcher.createAssist(",", "+");
 		default:
 			break;
 		}
@@ -163,23 +183,40 @@ public class ModelAssist extends Assist {
 		case 1:
 			return null;
 		case 2:
-			return matcher.createAssist(document, "=");
+			return matcher.createAssist("=");
 		case 3:
 			String[] modelNames = getModelNames(token, matcher.getWord(1));
 			return matcher.createAssist(document, modelNames);
 		case 4:
-			return matcher.createAssist(document, "-> " + BLOCK, "+");
+			if (matcher.existsCursorToken()) {
+				String[] names = getModelNames(token, matcher.getWord(1));
+				List<ICompletionProposal> r = matcher.createAssist(document, names);
+				matcher.addAssist(r, "-> " + BLOCK, "+");
+				return r;
+			}
+			return matcher.createAssist("-> " + BLOCK, "+");
 		default:
 			break;
 		}
 
 		switch (matcher.matchFirst(ANY, "=", ANY)) {
+		case 0:
+			if (matcher.existsCursorToken()) {
+				return matcher.createAssist(document, MODEL_ASSIST);
+			}
+			break;
 		case 1:
-			return matcher.createAssist(document, "=");
+			if (!matcher.existsCursorToken()) {
+				return matcher.createAssist("=");
+			} else {
+				List<ICompletionProposal> r = matcher.createAssist(document, MODEL_ASSIST);
+				matcher.addAssist(r, "=");
+				return r;
+			}
 		case 2:
-			return matcher.createAssist(document, BLOCK_END_ASSIST);
+			return matcher.createAssist(BLOCK_END_ASSIST);
 		case 3:
-			return matcher.createAssist(document, ";");
+			return matcher.createAssist(";");
 		default:
 			break;
 		}

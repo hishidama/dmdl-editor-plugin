@@ -13,6 +13,19 @@ public class DMDLTextToken extends DMDLToken {
 		return text;
 	}
 
+	public String getText(int start, int end) {
+		int offset = getStart();
+		int s = Math.max(start, offset);
+		int e = Math.min(end, getEnd());
+		if (s <= e) {
+			s -= offset;
+			e -= offset;
+			return text.substring(s, e);
+		} else {
+			return "";
+		}
+	}
+
 	public String toString(String name) {
 		return name + "(" + text + ")";
 	}

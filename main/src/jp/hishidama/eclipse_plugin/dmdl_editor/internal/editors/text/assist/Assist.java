@@ -20,8 +20,7 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 public class Assist {
 	protected static final String ANY = AssistMatcher.ANY;
 
-	protected static final String[] SUM_ASSIST = { "any", "count", "sum",
-			"min", "max" };
+	protected static final String[] SUM_ASSIST = { "any", "count", "sum", "min", "max" };
 
 	protected List<DMDLToken> getList(DMDLBodyToken token, int offset) {
 		List<DMDLToken> list = new ArrayList<DMDLToken>();
@@ -29,8 +28,7 @@ public class Assist {
 			if (offset < t.getStart()) {
 				break;
 			}
-			if (t instanceof CommentToken || t instanceof DescriptionToken
-					|| t instanceof AnnotationToken
+			if (t instanceof CommentToken || t instanceof DescriptionToken || t instanceof AnnotationToken
 					|| t instanceof ArgumentsToken) {
 				continue;
 			}
@@ -75,7 +73,7 @@ public class Assist {
 		if (refModelName == null) {
 			return new String[] {};
 		}
-		ModelToken refModel = refModelName.findModel(refModelName.getText());
+		ModelToken refModel = findModel(refModelName, refModelName.getText());
 		if (refModel != null) {
 			List<String> alist = new ArrayList<String>();
 			for (PropertyToken p : refModel.getPropertyList()) {
@@ -88,8 +86,11 @@ public class Assist {
 		return new String[] {};
 	}
 
-	protected List<ICompletionProposal> createAssist(int offset,
-			String... candidate) {
+	protected ModelToken findModel(DMDLToken token, String modelName) {
+		return token.findModel(modelName);
+	}
+
+	protected List<ICompletionProposal> createAssist(int offset, String... candidate) {
 		List<ICompletionProposal> list = new ArrayList<ICompletionProposal>();
 		for (String s : candidate) {
 			list.add(new CompletionProposal(s, offset, 0, s.length()));

@@ -32,27 +32,26 @@ public class AssistMatcher {
 			if (list.size() <= i) {
 				break;
 			}
+			DMDLToken t = list.get(i);
+			if (offset <= t.getStart()) {
+				break;
+			}
 			if (expected[i] == ANY) {
 				matched++;
+				if (t.getStart() <= offset && offset <= t.getEnd()) {
+					cursorToken = t;
+				}
 				continue;
 			}
-			DMDLToken t = list.get(i);
 			if (t instanceof WordToken) {
-				String word = ((WordToken) t).getText();
+				String word = ((WordToken) t).getText(t.getStart(), offset);
 				if (expected[i].equals(word)) {
 					matched++;
+					cursorToken = null;
 					continue;
 				}
 			}
 			break;
-		}
-
-		if (matched > 0) {
-			DMDLToken last = list.get(matched - 1);
-			if (last.getStart() <= offset && offset < last.getEnd()) {
-				cursorToken = last;
-				matched--;
-			}
 		}
 
 		return matched;
@@ -63,7 +62,7 @@ public class AssistMatcher {
 		int n = list.size() - 1;
 		if (n >= 0) {
 			DMDLToken last = list.get(n);
-			if (last.getStart() <= offset && offset < last.getEnd()) {
+			if (last.getStart() <= offset && offset <= last.getEnd()) {
 				cursorToken = last;
 				n--;
 			}
@@ -96,6 +95,20 @@ public class AssistMatcher {
 
 		matched = 0;
 		return matched;
+	}
+
+	public boolean existsCursorToken() {
+		return cursorToken != null;
+	}
+
+	public String getCursorText() {
+		if (cursorToken == null) {
+			return null;
+		}
+		if (cursorToken instanceof DMDLTextToken) {
+			return ((DMDLTextToken) cursorToken).getText(cursorToken.getStart(), offset);
+		}
+		return null;
 	}
 
 	/**
@@ -136,8 +149,7 @@ public class AssistMatcher {
 		return -1; // not found
 	}
 
-	public List<ICompletionProposal> createAssist(IDocument document,
-			String... candidate) {
+	public List<ICompletionProposal> createAssist(IDocument document, String... candidate) {
 		if (cursorToken != null) {
 			int start = cursorToken.getStart();
 			int len = offset - start;
@@ -152,21 +164,28 @@ public class AssistMatcher {
 				if (s == null) {
 					continue;
 				}
-				if (s.length() >= text.length()
-						&& s.substring(0, text.length()).equalsIgnoreCase(text)) {
+				if (s.length() >= text.length() && s.substring(0, text.length()).equalsIgnoreCase(text)) {
 					list.add(new CompletionProposal(s, start, len, s.length()));
 				}
 			}
 			return list;
 		} else {
-			List<ICompletionProposal> list = new ArrayList<ICompletionProposal>();
-			for (String s : candidate) {
-				if (s == null) {
-					continue;
-				}
-				list.add(new CompletionProposal(s, offset, 0, s.length()));
+			return createAssist(candidate);
+		}
+	}
+
+	public List<ICompletionProposal> createAssist(String... candidate) {
+		List<ICompletionProposal> list = new ArrayList<ICompletionProposal>();
+		addAssist(list, candidate);
+		return list;
+	}
+
+	public void addAssist(List<ICompletionProposal> list, String... candidate) {
+		for (String s : candidate) {
+			if (s == null) {
+				continue;
 			}
-			return list;
+			list.add(new CompletionProposal(s, offset, 0, s.length()));
 		}
 	}
 }

@@ -6,6 +6,10 @@ import java.util.List;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.WordToken.WordType;
 
 public class ModelToken extends DMDLBodyToken {
+	public static final String SUMMARIZED = "summarized";
+	public static final String JOINED = "joined";
+	public static final String PROJECTIVE = "projective";
+
 	private WordToken nameToken;
 	private WordToken modelTypeToken;
 
@@ -85,8 +89,7 @@ public class ModelToken extends DMDLBodyToken {
 				prevWord = word;
 				continue;
 			}
-			if (token instanceof CommentToken
-					|| token instanceof DescriptionToken) {
+			if (token instanceof CommentToken || token instanceof DescriptionToken) {
 				continue;
 			}
 			if (token instanceof BlockToken) {
@@ -127,12 +130,12 @@ public class ModelToken extends DMDLBodyToken {
 		modelTypeToken = token;
 		if (token != null) {
 			String text = token.getText();
-			if (text.equals("summarized")) {
+			if (text.equals(SUMMARIZED)) {
 				token.setWordType(WordType.SUMMARIZED_MODEL);
 				parseSummarized();
-			} else if (text.equals("joined")) {
+			} else if (text.equals(JOINED)) {
 				token.setWordType(WordType.JOIN_MODEL);
-			} else if (text.equals("projective")) {
+			} else if (text.equals(PROJECTIVE)) {
 				token.setWordType(WordType.PROJECTIVE_MODEL);
 			}
 		}
@@ -225,8 +228,7 @@ public class ModelToken extends DMDLBodyToken {
 		return list;
 	}
 
-	private void getOwnPropertyList(List<PropertyToken> list,
-			DMDLBodyToken token) {
+	private void getOwnPropertyList(List<PropertyToken> list, DMDLBodyToken token) {
 		for (DMDLToken t : token.getBody()) {
 			if (t instanceof PropertyToken) {
 				list.add((PropertyToken) t);

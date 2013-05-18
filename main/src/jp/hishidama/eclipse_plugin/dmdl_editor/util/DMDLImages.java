@@ -1,5 +1,8 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.util;
 
+import static jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken.JOINED;
+import static jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken.PROJECTIVE;
+import static jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken.SUMMARIZED;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken;
 
@@ -51,7 +54,7 @@ public class DMDLImages {
 	}
 
 	public static Image getDataModelImage(String modelType) {
-		if ("summarized".equals(modelType) || "joined".equals(modelType) || "projective".equals(modelType)) {
+		if (SUMMARIZED.equals(modelType) || JOINED.equals(modelType) || PROJECTIVE.equals(modelType)) {
 			return getImage(DMDLImages.MODEL_IMAGE + modelType);
 		} else {
 			return DMDLImages.getDataModelImage();

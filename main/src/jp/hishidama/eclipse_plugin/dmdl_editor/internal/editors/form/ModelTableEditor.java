@@ -2,6 +2,7 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.form;
 
 import java.util.List;
 
+import static jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken.*;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.DescriptionToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.PropertyToken;
@@ -36,14 +37,34 @@ public class ModelTableEditor extends TableEditor {
 		grabHorizontal = true;
 	}
 
-	public void setEditor(int row, int column) {
-		if (column < 0) {
-			row--;
-			column = table.getColumnCount() - 1;
+	public boolean isEditable(int column) {
+		switch (column) {
+		case COL_DESC:
+		case COL_NAME:
+			return true;
+		case COL_TYPE:
+			String type = page.getModelType();
+			if (type.equals(SUMMARIZED) || type.equals(JOINED)) {
+				return false;
+			}
+			return true;
+		default:
+			return false;
 		}
-		if (column >= table.getColumnCount()) {
-			row++;
-			column = 0;
+	}
+
+	public void setEditor(int row, int column, int direction) {
+		int columnCount = table.getColumnCount();
+		while (!isEditable(column)) {
+			column += direction;
+			if (column < 0) {
+				row--;
+				column = columnCount - 1;
+			}
+			if (column >= columnCount) {
+				row++;
+				column = 0;
+			}
 		}
 		if (row < 0) {
 			row = table.getItemCount() - 1;
@@ -65,6 +86,8 @@ public class ModelTableEditor extends TableEditor {
 			TypeEditor type = new TypeEditor();
 			type.start(row, column);
 			break;
+		default:
+			throw new UnsupportedOperationException("column=" + column);
 		}
 	}
 
@@ -97,13 +120,13 @@ public class ModelTableEditor extends TableEditor {
 					case SWT.TRAVERSE_TAB_NEXT:
 						e.doit = commit();
 						if (e.doit) {
-							setEditor(row, column + 1);
+							setEditor(row, column + 1, +1);
 						}
 						break;
 					case SWT.TRAVERSE_TAB_PREVIOUS:
 						e.doit = commit();
 						if (e.doit) {
-							setEditor(row, column - 1);
+							setEditor(row, column - 1, -1);
 						}
 						break;
 					case SWT.TRAVERSE_ESCAPE:
@@ -145,8 +168,7 @@ public class ModelTableEditor extends TableEditor {
 
 		protected abstract boolean prepareCommit(String value);
 
-		protected abstract void replace(ModelToken model, PropertyToken prop,
-				String value);
+		protected abstract void replace(ModelToken model, PropertyToken prop, String value);
 	}
 
 	protected abstract class TextEditor extends Editor {
@@ -178,8 +200,7 @@ public class ModelTableEditor extends TableEditor {
 		}
 
 		@Override
-		protected void replace(ModelToken model, PropertyToken prop,
-				String value) {
+		protected void replace(ModelToken model, PropertyToken prop, String value) {
 			if (!value.isEmpty()) {
 				value = DataModelPage.encodeDescription(value);
 			}
@@ -203,8 +224,7 @@ public class ModelTableEditor extends TableEditor {
 		}
 
 		@Override
-		protected void replace(ModelToken model, PropertyToken prop,
-				String value) {
+		protected void replace(ModelToken model, PropertyToken prop, String value) {
 			WordToken name = prop.getNameToken();
 			if (name != null) {
 				page.replaceDocument(name.getStart(), name.getLength(), value);
@@ -252,9 +272,7 @@ public class ModelTableEditor extends TableEditor {
 		}
 
 		@Override
-		protected void replace(ModelToken model, PropertyToken prop,
-				String value) {
-			// TODO summarizeやjoinでは設定しない
+		protected void replace(ModelToken model, PropertyToken prop, String value) {
 			WordToken type = prop.getDataTypeToken();
 			if (type != null) {
 				page.replaceDocument(type.getStart(), type.getLength(), value);

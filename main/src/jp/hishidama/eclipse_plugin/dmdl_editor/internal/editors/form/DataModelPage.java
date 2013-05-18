@@ -155,7 +155,9 @@ public abstract class DataModelPage {
 					if (item.getBounds(i).contains(point)) {
 						int row = table.indexOf(item);
 						ModelTableEditor te = new ModelTableEditor(DataModelPage.this, table);
-						te.setEditor(row, i);
+						if (te.isEditable(i)) {
+							te.setEditor(row, i, 0);
+						}
 						break;
 					}
 				}

@@ -101,9 +101,8 @@ public class DMDLBodyToken extends DMDLToken {
 			addProperty(propList, this, new HashSet<DMDLToken>());
 
 			String modelType = getModelType();
-			if ("joined".equals(modelType)) {
-				List<PropertyToken> list = new ArrayList<PropertyToken>(
-						propList.size());
+			if (ModelToken.JOINED.equals(modelType)) {
+				List<PropertyToken> list = new ArrayList<PropertyToken>(propList.size());
 				Set<String> set = new HashSet<String>();
 				for (PropertyToken prop : propList) {
 					String name = prop.getName();
@@ -118,8 +117,7 @@ public class DMDLBodyToken extends DMDLToken {
 		return propList;
 	}
 
-	private void addProperty(List<PropertyToken> list, DMDLToken token,
-			Set<DMDLToken> set) {
+	private void addProperty(List<PropertyToken> list, DMDLToken token, Set<DMDLToken> set) {
 		if (token == null) {
 			return;
 		}
@@ -156,8 +154,7 @@ public class DMDLBodyToken extends DMDLToken {
 		}
 	}
 
-	private boolean nextIs(List<DMDLToken> list, int n, String text1,
-			String text2) {
+	private boolean nextIs(List<DMDLToken> list, int n, String text1, String text2) {
 		DMDLToken token = getNextToken(list, n);
 		if (token == null) {
 			return false;
@@ -172,8 +169,7 @@ public class DMDLBodyToken extends DMDLToken {
 	private DMDLToken getNextToken(List<DMDLToken> list, int n) {
 		for (; n < list.size(); n++) {
 			DMDLToken token = list.get(n);
-			if (token instanceof CommentToken
-					|| token instanceof DescriptionToken) {
+			if (token instanceof CommentToken || token instanceof DescriptionToken) {
 				continue;
 			}
 			return token;

@@ -16,10 +16,13 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.update.AttributeU
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchWizard;
 
-public class AttributeWizard extends Wizard {
+public class AttributeWizard extends Wizard implements IWorkbenchWizard {
 
 	private IProject project;
 
@@ -31,6 +34,10 @@ public class AttributeWizard extends Wizard {
 	public AttributeWizard() {
 		setWindowTitle("属性の追加/削除");
 		setDialogSettings(Activator.getDefault().getDialogSettings());
+	}
+
+	@Override
+	public void init(IWorkbench workbench, IStructuredSelection selection) {
 	}
 
 	@Override

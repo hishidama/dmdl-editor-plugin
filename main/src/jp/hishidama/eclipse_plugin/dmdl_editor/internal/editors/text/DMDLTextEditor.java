@@ -28,8 +28,7 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
-public class DMDLTextEditor extends TextEditor implements
-		IPropertyChangeListener {
+public class DMDLTextEditor extends TextEditor implements IPropertyChangeListener {
 	private ColorManager colorManager = new ColorManager();
 
 	protected FoldingManager foldingManager = new FoldingManager();
@@ -48,11 +47,9 @@ public class DMDLTextEditor extends TextEditor implements
 	}
 
 	@Override
-	protected ISourceViewer createSourceViewer(Composite parent,
-			IVerticalRuler ruler, int styles) {
+	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
 		// フォールディングの為のViewerを作成
-		ISourceViewer viewer = foldingManager.createSourceViewer(parent, ruler,
-				fOverviewRuler, styles);
+		ISourceViewer viewer = foldingManager.createSourceViewer(parent, ruler, fOverviewRuler, styles);
 		getSourceViewerDecorationSupport(viewer);
 		return viewer;
 	}
@@ -66,10 +63,8 @@ public class DMDLTextEditor extends TextEditor implements
 			update();
 		}
 		{ // 対応する括弧の強調表示の設定
-			MatchingCharacterPainter painter = new MatchingCharacterPainter(
-					getSourceViewer(), new DMBraceMatcher());
-			painter.setColor(Display.getDefault()
-					.getSystemColor(SWT.COLOR_GRAY));
+			MatchingCharacterPainter painter = new MatchingCharacterPainter(getSourceViewer(), new DMBraceMatcher());
+			painter.setColor(Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
 
 			ITextViewerExtension2 extension = (ITextViewerExtension2) getSourceViewer();
 			extension.addPainter(painter);
@@ -78,8 +73,7 @@ public class DMDLTextEditor extends TextEditor implements
 
 	@Override
 	protected void initializeKeyBindingScopes() {
-		super.initializeKeyBindingScopes();
-		setKeyBindingScopes(new String[] { "dmdl-editor-plugin.context" }); //$NON-NLS-1$
+		setKeyBindingScopes(new String[] { "org.eclipse.ui.textEditorScope", "dmdl-editor-plugin.context" }); //$NON-NLS-1$ $NON-NLS-2$
 	}
 
 	@Override
@@ -134,8 +128,7 @@ public class DMDLTextEditor extends TextEditor implements
 
 		ISourceViewer sourceViewer = getSourceViewer();
 		StyledText styledText = sourceViewer.getTextWidget();
-		int caret = widgetOffset2ModelOffset(sourceViewer,
-				styledText.getCaretOffset());
+		int caret = widgetOffset2ModelOffset(sourceViewer, styledText.getCaretOffset());
 		DMDLToken token = models.getTokenByOffset(caret);
 		if (token instanceof WordToken) {
 			WordToken word = (WordToken) token;
@@ -223,8 +216,7 @@ public class DMDLTextEditor extends TextEditor implements
 	}
 
 	public DMDLDocument getDocument() {
-		IDocument document = getDocumentProvider()
-				.getDocument(getEditorInput());
+		IDocument document = getDocumentProvider().getDocument(getEditorInput());
 		return (DMDLDocument) document;
 	}
 }

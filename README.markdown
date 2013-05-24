@@ -40,7 +40,7 @@ Eclipseの「新規ソフトウェアのインストール」で更新サイト�
 * ソースの整形が出来る。
     * Ctrl+Shift+Fでソースを整形する。（ただし範囲選択だと挙動が怪しい…）
     * 設定によってインデントのスペース数を変更できる。
-* エラーチェックが出来る。
+* DMDLのエラーチェックが出来る。
     * コンテキストメニューの「DMDL Editor」→「create index / error check」で構文解析・意味解析を行い、エラー箇所のマークおよびインデックスの構築を行う。
         * メニューを実行しなくても、ハイパーリンクやアウトラインを初めて表示する際にインデックス構築を行う。
         * ファイルは保存されている必要がある。
@@ -48,11 +48,13 @@ Eclipseの「新規ソフトウェアのインストール」で更新サイト�
             * 別ファイルにあるデータモデルを使用してる場合は そのファイルも同時にチェックしないとエラーになるので、まとめてチェックする。
     * プロパティーによってbuild.propertiesおよびAsakusa Framework本体のDMDLコンパイルに必要なjarファイルを指定できる。
         * デフォルトではAsakusa Framework0.4のDirect I/OとWindGateを対象にしている。
+* DMDLのデータモデルおよびプロパティーをウィザードで新規作成することが出来る。
+    * メニューバーの「ファイル」→「新規」の新規ウィザードで「DMDL Editor」→「New DataModel」。
+* DMDLの属性（@directio.csvとか）の追加/削除が出来る。
+    * コンテキストメニューの「DMDL Editor」→「Add/Remove attribute」でウィザードが開く。
 * DMDLからJavaソースの生成（コンパイル）が出来る。
     * コンテキストメニューの「DMDL Editor」→「compile」でコンパイルを行う。
     * エラーチェックと同様のプロパティーを使ってコンパイル対象を決定している。
-* 属性の追加/削除が出来る。
-    * コンテキストメニューの「DMDL Editor」→「Add/Remove attribute」でウィザードが開く。
 * DMDLからImporter/Exporterの雛形クラスを作成することが出来る。
     * コンテキストメニューの「DMDL Editor」→「New importer/exporter class」でウィザードが開く。
         * DMDLのコンパイルによってスケルトンクラス（AbstractHogeCsvInputDescription等）が作られていることが前提。（無いと、生成されたクラスがコンパイルエラーになる）

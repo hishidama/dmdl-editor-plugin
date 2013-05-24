@@ -41,7 +41,7 @@ public class DataModelUtil {
 		return ic.findModel(modelName);
 	}
 
-	public static List<DataModelInfo> getModels(IProject project) {
+	public static List<IFile> getDmdlFiles(IProject project) {
 		if (project == null) {
 			return null;
 		}
@@ -56,18 +56,37 @@ public class DataModelUtil {
 			}
 		});
 
+		return files;
+	}
+
+	public static List<DataModelInfo> getModels(IProject project) {
+		List<IFile> files = getDmdlFiles(project);
+		if (files == null) {
+			return null;
+		}
+
 		List<DataModelInfo> list = new ArrayList<DataModelInfo>(files.size() * 8);
 		for (IFile file : files) {
-			try {
-				ModelList models = DMDLFileUtil.getModels(file);
-				for (ModelToken model : models.getNamedModelList()) {
-					list.add(createInfo(file, model));
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			getModels(list, file);
 		}
 		return list;
+	}
+
+	public static List<DataModelInfo> getModels(IFile file) {
+		List<DataModelInfo> list = new ArrayList<DataModelInfo>();
+		getModels(list, file);
+		return list;
+	}
+
+	private static void getModels(List<DataModelInfo> list, IFile file) {
+		try {
+			ModelList models = DMDLFileUtil.getModels(file);
+			for (ModelToken model : models.getNamedModelList()) {
+				list.add(createInfo(file, model));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static DataModelInfo createInfo(ModelIndex mi) {

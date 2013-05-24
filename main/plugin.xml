@@ -288,5 +288,30 @@
             targetId="org.eclipse.jdt.ui.javaCode">
       </hyperlinkDetector>
    </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="dmdl-editor-plugin.wizard-category"
+            name="DMDL Editor">
+      </category>
+      <wizard
+            category="dmdl-editor-plugin.wizard-category"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.NewDataModelWizard"
+            id="dmdl-editor-plugin.wizard.new-datamodel"
+            name="New DataModel">
+      </wizard>
+      <wizard
+            category="dmdl-editor-plugin.wizard-category"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.AttributeWizard"
+            id="dmdl-editor-plugin.wizard.attribute"
+            name="Add/Remove attribute of DataModel">
+      </wizard>
+      <wizard
+            category="dmdl-editor-plugin.wizard-category"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.NewImporterExporterWizard"
+            id="dmdl-editor-plugin.wizard.new-importer-exporter"
+            name="New Importer/Exporter class">
+      </wizard>
+   </extension>
 
 </plugin>

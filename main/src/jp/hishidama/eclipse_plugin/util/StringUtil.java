@@ -3,6 +3,13 @@ package jp.hishidama.eclipse_plugin.util;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelUtil;
 
 public class StringUtil {
+	public static boolean nonEmpty(String s) {
+		return s != null && !s.isEmpty();
+	}
+
+	public static boolean isEmpty(String s) {
+		return s == null || s.isEmpty();
+	}
 
 	public static String toCamelCase(String name) {
 		if (name == null) {

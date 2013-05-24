@@ -124,7 +124,13 @@ public abstract class EditDialog extends Dialog {
 	}
 
 	protected Tree createTree(Composite composite) {
-		Tree tree = new Tree(composite, SWT.SINGLE | SWT.BORDER);
+		Tree tree = new Tree(composite, SWT.BORDER | SWT.SINGLE);
+		initializeTree(tree);
+
+		return tree;
+	}
+
+	protected void initializeTree(Tree tree) {
 		GridData data = new GridData(GridData.FILL_HORIZONTAL);
 		data.widthHint = 128 * 3;
 		data.heightHint = 128 * 2;
@@ -143,8 +149,6 @@ public abstract class EditDialog extends Dialog {
 				}
 			}
 		});
-
-		return tree;
 	}
 
 	protected Table createCheckedTable(Composite composite) {

@@ -12,7 +12,7 @@ public class NewImporterExporterHandler extends AbstractHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		Shell shell = null;
-		NewImporterExporeterWizard wizard = new NewImporterExporeterWizard();
+		NewImporterExporterWizard wizard = new NewImporterExporterWizard();
 		WizardDialog dialog = new WizardDialog(shell, wizard);
 		boolean old = TrayDialog.isDialogHelpAvailable();
 		try {

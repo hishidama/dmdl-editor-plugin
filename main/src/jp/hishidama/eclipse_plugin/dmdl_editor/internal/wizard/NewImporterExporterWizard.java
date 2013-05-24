@@ -20,10 +20,13 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchWizard;
 
-public class NewImporterExporeterWizard extends Wizard {
+public class NewImporterExporterWizard extends Wizard implements IWorkbenchWizard {
 
 	private SelectDataModelPage modelPage;
 	private SetImporterExporterNamePage namePage;
@@ -31,9 +34,13 @@ public class NewImporterExporeterWizard extends Wizard {
 
 	private Properties properties = null;
 
-	public NewImporterExporeterWizard() {
+	public NewImporterExporterWizard() {
 		setWindowTitle("Importer/Exporterクラスの作成");
 		setDialogSettings(Activator.getDefault().getDialogSettings());
+	}
+
+	@Override
+	public void init(IWorkbench workbench, IStructuredSelection selection) {
 	}
 
 	@Override

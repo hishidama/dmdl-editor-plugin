@@ -34,7 +34,7 @@ public class DataModelUtil {
 		if (project == null) {
 			return null;
 		}
-		IndexContainer ic = IndexContainer.getContainer(project);
+		IndexContainer ic = IndexContainer.getContainer(project, null);
 		if (ic == null) {
 			return null;
 		}
@@ -116,7 +116,7 @@ public class DataModelUtil {
 		if (mi == null) {
 			return null;
 		}
-		IndexContainer ic = IndexContainer.getContainer(project);
+		IndexContainer ic = IndexContainer.getContainer(project, null);
 
 		List<DataModelProperty> list = new ArrayList<DataModelProperty>();
 		for (PropertyIndex pi : mi.getProperties()) {

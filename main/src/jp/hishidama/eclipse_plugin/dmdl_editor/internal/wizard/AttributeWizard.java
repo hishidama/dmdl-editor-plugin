@@ -129,7 +129,7 @@ public class AttributeWizard extends Wizard implements IWorkbenchWizard {
 
 		if (project != null) {
 			DMDLErrorCheckHandler handler = new DMDLErrorCheckHandler();
-			handler.execute(project, true, true);
+			handler.execute(project, true, true, getContainer());
 		}
 		return true;
 	}

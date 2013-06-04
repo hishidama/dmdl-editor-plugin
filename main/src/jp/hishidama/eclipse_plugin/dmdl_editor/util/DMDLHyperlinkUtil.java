@@ -40,8 +40,7 @@ public class DMDLHyperlinkUtil {
 				if (model == null) {
 					return false;
 				}
-				return gotoPosition(project, model.getModelName(),
-						prop.getName());
+				return gotoPosition(project, model.getModelName(), prop.getName());
 			}
 		}
 		return false;
@@ -58,15 +57,14 @@ public class DMDLHyperlinkUtil {
 	 *            プロパティー名（nullの場合はモデル名へジャンプ）
 	 * @return 移動が成功した場合true、失敗した場合false
 	 */
-	public static boolean gotoPosition(IProject project, String modelName,
-			String propertyName) {
+	public static boolean gotoPosition(IProject project, String modelName, String propertyName) {
 		assert project != null;
 
 		if (modelName == null) {
 			return false;
 		}
 
-		IndexContainer ic = IndexContainer.getContainer(project);
+		IndexContainer ic = IndexContainer.getContainer(project, null);
 		if (ic == null) {
 			return false;
 		}
@@ -83,8 +81,7 @@ public class DMDLHyperlinkUtil {
 
 	private static boolean gotoPosition(Index index) {
 		if (index != null) {
-			return gotoPosition(index.getFile(), index.getOffset(),
-					index.getEnd());
+			return gotoPosition(index.getFile(), index.getOffset(), index.getEnd());
 		}
 		return false;
 	}
@@ -101,8 +98,7 @@ public class DMDLHyperlinkUtil {
 				IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
 				IWorkbenchPage page = window.getActivePage();
 				IEditorPart editor = IDE.openEditor(page, file);
-				IGotoMarker target = (IGotoMarker) editor
-						.getAdapter(IGotoMarker.class);
+				IGotoMarker target = (IGotoMarker) editor.getAdapter(IGotoMarker.class);
 				target.gotoMarker(marker);
 				return true;
 			} finally {
@@ -110,8 +106,7 @@ public class DMDLHyperlinkUtil {
 			}
 		} catch (Exception e) {
 			ILog log = Activator.getDefault().getLog();
-			log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,
-					"gotoMarker error.", e));
+			log.log(new Status(Status.WARNING, Activator.PLUGIN_ID, "gotoMarker error.", e));
 			return false;
 		}
 	}

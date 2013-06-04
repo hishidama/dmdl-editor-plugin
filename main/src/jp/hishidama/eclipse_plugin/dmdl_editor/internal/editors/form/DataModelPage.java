@@ -9,6 +9,7 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.PropertyToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelUtil;
 
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -172,7 +173,7 @@ public abstract class DataModelPage {
 		typeText.setText(getModelType());
 		nameText.setText(getModelName());
 
-		IndexContainer ic = IndexContainer.getContainer(editor.getProject());
+		IndexContainer ic = IndexContainer.getContainer(editor.getProject(), new ProgressMonitorDialog(null));
 
 		table.removeAll();
 		for (PropertyToken prop : getProperties()) {

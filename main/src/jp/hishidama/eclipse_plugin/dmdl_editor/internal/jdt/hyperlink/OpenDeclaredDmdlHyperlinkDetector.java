@@ -10,6 +10,7 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -21,12 +22,10 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 // @see org.eclipse.jdt.internal.ui.javaeditor.JavaElementHyperlinkDetector
-public class OpenDeclaredDmdlHyperlinkDetector extends
-		AbstractHyperlinkDetector {
+public class OpenDeclaredDmdlHyperlinkDetector extends AbstractHyperlinkDetector {
 
 	@Override
-	public IHyperlink[] detectHyperlinks(ITextViewer textViewer,
-			IRegion region, boolean canShowMultipleHyperlinks) {
+	public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
 		ITextEditor editor = (ITextEditor) getAdapter(ITextEditor.class);
 		if (editor == null) {
 			return null;
@@ -37,8 +36,7 @@ public class OpenDeclaredDmdlHyperlinkDetector extends
 
 	public IHyperlink[] detectHyperlinks(ITextEditor editor, int offset) {
 		IEditorInput input = editor.getEditorInput();
-		IJavaElement element = (IJavaElement) input
-				.getAdapter(IJavaElement.class);
+		IJavaElement element = (IJavaElement) input.getAdapter(IJavaElement.class);
 
 		IDocument document = editor.getDocumentProvider().getDocument(input);
 		IRegion word = findWord(document, offset);
@@ -63,18 +61,15 @@ public class OpenDeclaredDmdlHyperlinkDetector extends
 				break;
 			case IJavaElement.FIELD:
 				String fieldName = code.getElementName();
-				String fieldSnakeName = fieldName.substring(0, 1).toUpperCase()
-						+ fieldName.substring(1);
-				IHyperlink[] fr = detectPropertyHyperlinks(code,
-						fieldSnakeName, word);
+				String fieldSnakeName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+				IHyperlink[] fr = detectPropertyHyperlinks(code, fieldSnakeName, word);
 				if (fr != null) {
 					return fr;
 				}
 				break;
 			case IJavaElement.METHOD:
 				String methodSnakeName = cutMethodName(code.getElementName());
-				IHyperlink[] mr = detectPropertyHyperlinks(code,
-						methodSnakeName, word);
+				IHyperlink[] mr = detectPropertyHyperlinks(code, methodSnakeName, word);
 				if (mr != null) {
 					return mr;
 				}
@@ -142,12 +137,10 @@ public class OpenDeclaredDmdlHyperlinkDetector extends
 			return null;
 		}
 		IProject project = type.getJavaProject().getProject();
-		return new IHyperlink[] { new DMDLHyperlink(project, model.getToken(),
-				word) };
+		return new IHyperlink[] { new DMDLHyperlink(project, model.getToken(), word) };
 	}
 
-	private IHyperlink[] detectPropertyHyperlinks(IJavaElement code,
-			String name, IRegion word) {
+	private IHyperlink[] detectPropertyHyperlinks(IJavaElement code, String name, IRegion word) {
 		IType type = (IType) code.getParent();
 		ModelIndex model = findModel(type);
 		if (model == null) {
@@ -158,13 +151,12 @@ public class OpenDeclaredDmdlHyperlinkDetector extends
 			return null;
 		}
 		IProject project = code.getJavaProject().getProject();
-		return new IHyperlink[] { new DMDLHyperlink(project,
-				property.getToken(), word) };
+		return new IHyperlink[] { new DMDLHyperlink(project, property.getToken(), word) };
 	}
 
 	private static ModelIndex findModel(IType type) {
 		IProject project = type.getJavaProject().getProject();
-		IndexContainer ic = IndexContainer.getContainer(project);
+		IndexContainer ic = IndexContainer.getContainer(project, new ProgressMonitorDialog(null));
 		if (ic == null) {
 			return null;
 		}

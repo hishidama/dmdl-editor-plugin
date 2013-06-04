@@ -25,16 +25,13 @@ public class PositionUtil {
 						}
 						return name;
 					} else {
-						IndexContainer ic = IndexContainer
-								.getContainer(project);
+						IndexContainer ic = IndexContainer.getContainer(project, null);
 						if (ic != null) {
 							ModelIndex index = ic.findModel(name);
 							if (index != null) {
 								ModelToken model = index.getToken();
-								String file = index.getFile().getFullPath()
-										.lastSegment();
-								return model.getQualifiedName() + " (" + file
-										+ ")";
+								String file = index.getFile().getFullPath().lastSegment();
+								return model.getQualifiedName() + " (" + file + ")";
 							}
 						}
 						return null;
@@ -43,26 +40,20 @@ public class PositionUtil {
 				case REF_PROPERTY_NAME: {
 					WordToken ref = word.getReferenceWord();
 					if (ref != null) {
-						IndexContainer ic = IndexContainer
-								.getContainer(project);
+						IndexContainer ic = IndexContainer.getContainer(project, null);
 						PropertyToken prop = (PropertyToken) ref.getParent();
 						return prop.getQualifiedName(ic);
 					} else {
 						DMDLToken model = word.findRefModelToken();
 						if (model instanceof WordToken) {
-							IndexContainer ic = IndexContainer
-									.getContainer(project);
+							IndexContainer ic = IndexContainer.getContainer(project, null);
 							if (ic != null) {
-								String modelName = ((WordToken) model)
-										.getText();
-								PropertyIndex index = ic.findProperty(
-										modelName, word.getText());
+								String modelName = ((WordToken) model).getText();
+								PropertyIndex index = ic.findProperty(modelName, word.getText());
 								if (index != null) {
 									PropertyToken p = index.getToken();
-									String file = index.getFile().getFullPath()
-											.lastSegment();
-									return p.getQualifiedName(ic) + " (" + file
-											+ ")";
+									String file = index.getFile().getFullPath().lastSegment();
+									return p.getQualifiedName(ic) + " (" + file + ")";
 								}
 							}
 						}
@@ -71,7 +62,7 @@ public class PositionUtil {
 					return null;
 				}
 			} else if (token instanceof PropertyToken) {
-				IndexContainer ic = IndexContainer.getContainer(project);
+				IndexContainer ic = IndexContainer.getContainer(project, null);
 				PropertyToken prop = (PropertyToken) token;
 				return prop.getQualifiedName(ic);
 			} else if (token instanceof ModelToken) {
@@ -123,8 +114,7 @@ public class PositionUtil {
 						}
 						return new NamePair(name, null);
 					} else {
-						IndexContainer ic = IndexContainer
-								.getContainer(project);
+						IndexContainer ic = IndexContainer.getContainer(project, null);
 						if (ic != null) {
 							ModelIndex index = ic.findModel(name);
 							if (index != null) {
@@ -143,17 +133,13 @@ public class PositionUtil {
 					} else {
 						DMDLToken model = word.findRefModelToken();
 						if (model instanceof WordToken) {
-							IndexContainer ic = IndexContainer
-									.getContainer(project);
+							IndexContainer ic = IndexContainer.getContainer(project, null);
 							if (ic != null) {
-								String modelName = ((WordToken) model)
-										.getText();
-								PropertyIndex index = ic.findProperty(
-										modelName, word.getText());
+								String modelName = ((WordToken) model).getText();
+								PropertyIndex index = ic.findProperty(modelName, word.getText());
 								if (index != null) {
 									PropertyToken prop = index.getToken();
-									return new NamePair(modelName,
-											prop.getPropertyName());
+									return new NamePair(modelName, prop.getPropertyName());
 								}
 							}
 						}

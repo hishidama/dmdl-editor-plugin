@@ -17,16 +17,18 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.eclipse.ui.progress.WorkbenchJob;
 
 public class DMDLErrorCheckHandler extends AbstractHandler {
 
@@ -50,14 +52,14 @@ public class DMDLErrorCheckHandler extends AbstractHandler {
 			}
 		}
 
-		execute(list, true, true);
+		execute(list, true, true, new ProgressMonitorDialog(null));
 		return null;
 	}
 
-	public void execute(IProject project, boolean createIndex, boolean checkMark) {
+	public void execute(IProject project, boolean createIndex, boolean checkMark, IRunnableContext runner) {
 		FileList list = new FileList();
 		search(list, project);
-		execute(list, createIndex, checkMark);
+		execute(list, createIndex, checkMark, runner);
 	}
 
 	public DMDLErrorCheckTask createTask(IFolder folder) {
@@ -104,21 +106,22 @@ public class DMDLErrorCheckHandler extends AbstractHandler {
 		}
 	}
 
-	private void execute(FileList projects, boolean createIndex, boolean checkMark) {
+	private void execute(FileList projects, boolean createIndex, boolean checkMark, IRunnableContext runner) {
 		final DMDLErrorCheckTask task = new DMDLErrorCheckTask(projects, createIndex, checkMark);
-		WorkbenchJob job = new WorkbenchJob("DMDL create index") {
-			@Override
-			public IStatus runInUIThread(IProgressMonitor monitor) {
-				try {
-					task.run(monitor);
-				} catch (InvocationTargetException e) {
-					return new Status(Status.WARNING, Activator.PLUGIN_ID, "DMDL error check error.", e);
-				} catch (InterruptedException e) {
-					return Status.CANCEL_STATUS;
-				}
-				return Status.OK_STATUS;
+		// IWorkbench workbench = PlatformUI.getWorkbench();
+		// IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
+		try {
+			if (runner != null) {
+				runner.run(true, true, task);
+			} else {
+				task.run(new NullProgressMonitor());
 			}
-		};
-		job.schedule();
+		} catch (InvocationTargetException e) {
+			IStatus status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, "DMDL error check error.", e);
+			Activator.getDefault().getLog().log(status);
+			ErrorDialog.openError(null, "error", status.getMessage(), status);
+		} catch (InterruptedException e) {
+			// return Status.CANCEL_STATUS;
+		}
 	}
 }

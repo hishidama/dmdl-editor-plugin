@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.operation.IRunnableContext;
 
 public class IndexContainer {
 	static final QualifiedName KEY = new QualifiedName(Activator.PLUGIN_ID, "IndexContainer.index");
@@ -72,12 +73,13 @@ public class IndexContainer {
 		return ic;
 	}
 
-	public static IndexContainer getContainer(IProject project) {
+	public static IndexContainer getContainer(IProject project, IRunnableContext runner) {
 		try {
 			IndexContainer ic = (IndexContainer) project.getSessionProperty(KEY);
 			if (ic == null) {
 				DMDLErrorCheckHandler handler = new DMDLErrorCheckHandler();
-				handler.execute(project, true, false); // create IndexContainer
+				handler.execute(project, true, false, runner); // create
+																// IndexContainer
 				ic = (IndexContainer) project.getSessionProperty(KEY);
 			}
 			return ic;

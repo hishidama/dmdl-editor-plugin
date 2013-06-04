@@ -98,16 +98,6 @@
             id="dmdl-editor-plugin.compile-command"
             name="DMDL compile">
       </command>
-      <command
-            categoryId="dmdl-editor-plugin.category"
-            id="dmdl-editor-plugin.attributeWizard-command"
-            name="DMDL add/remove attribute">
-      </command>
-      <command
-            categoryId="dmdl-editor-plugin.category"
-            id="dmdl-editor-plugin.newimpexp-command"
-            name="DMDL new importer/exporter class">
-      </command>
 
       <category
             id="dmdl-editor-plugin.jdt.category"
@@ -136,14 +126,6 @@
       <handler
             class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.compile.DMDLCompileHandler"
             commandId="dmdl-editor-plugin.compile-command">
-      </handler>
-      <handler
-            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.AttributeWizardHandler"
-            commandId="dmdl-editor-plugin.attributeWizard-command">
-      </handler>
-      <handler
-            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.NewImporterExporterHandler"
-            commandId="dmdl-editor-plugin.newimpexp-command">
       </handler>
 
       <handler
@@ -190,15 +172,33 @@
                   label="Compile"
                   style="push">
             </command>
+            <separator
+                  name="beginNewWizard"
+                  visible="true">
+            </separator>
             <command
-                  commandId="dmdl-editor-plugin.attributeWizard-command"
-                  label="Add/Remove attribute"
+                  commandId="org.eclipse.ui.newWizard"
                   style="push">
+               <parameter
+                     name="newWizardId"
+                     value="dmdl-editor-plugin.wizard.new-datamodel">
+               </parameter>
             </command>
             <command
-                  commandId="dmdl-editor-plugin.newimpexp-command"
-                  label="New importer/exporter class"
+                  commandId="org.eclipse.ui.newWizard"
                   style="push">
+               <parameter
+                     name="newWizardId"
+                     value="dmdl-editor-plugin.wizard.attribute">
+               </parameter>
+            </command>
+            <command
+                  commandId="org.eclipse.ui.newWizard"
+                  style="push">
+               <parameter
+                     name="newWizardId"
+                     value="dmdl-editor-plugin.wizard.new-importer-exporter">
+               </parameter>
             </command>
          </menu>
       </menuContribution>
@@ -217,6 +217,34 @@
                   icon="icons/hishidama16.gif"
                   style="push"
                   tooltip="DMDL compile">
+            </command>
+            <separator
+                  name="beginNewWizard"
+                  visible="true">
+            </separator>
+            <command
+                  commandId="org.eclipse.ui.newWizard"
+                  style="push">
+               <parameter
+                     name="newWizardId"
+                     value="dmdl-editor-plugin.wizard.new-datamodel">
+               </parameter>
+            </command>
+            <command
+                  commandId="org.eclipse.ui.newWizard"
+                  style="push">
+               <parameter
+                     name="newWizardId"
+                     value="dmdl-editor-plugin.wizard.attribute">
+               </parameter>
+            </command>
+            <command
+                  commandId="org.eclipse.ui.newWizard"
+                  style="push">
+               <parameter
+                     name="newWizardId"
+                     value="dmdl-editor-plugin.wizard.new-importer-exporter">
+               </parameter>
             </command>
          </toolbar>
       </menuContribution>
@@ -297,20 +325,32 @@
       <wizard
             category="dmdl-editor-plugin.wizard-category"
             class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.NewDataModelWizard"
+            icon="icons/new_model.gif"
             id="dmdl-editor-plugin.wizard.new-datamodel"
             name="New DataModel">
+         <description>
+            データモデルを新規に作成します。
+         </description>
       </wizard>
       <wizard
             category="dmdl-editor-plugin.wizard-category"
             class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.AttributeWizard"
+            icon="icons/newannotation_wiz.gif"
             id="dmdl-editor-plugin.wizard.attribute"
             name="Add/Remove attribute of DataModel">
+         <description>
+            データモデルに属性（@directio.csv等）を追加/削除します。
+         </description>
       </wizard>
       <wizard
             category="dmdl-editor-plugin.wizard-category"
             class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.NewImporterExporterWizard"
+            icon="icons/newclass_wiz.gif"
             id="dmdl-editor-plugin.wizard.new-importer-exporter"
             name="New Importer/Exporter class">
+         <description>
+            データモデルからImporter/Exporterクラスを生成します。
+         </description>
       </wizard>
    </extension>
 

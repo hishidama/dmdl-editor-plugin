@@ -47,16 +47,17 @@ Eclipseの「新規ソフトウェアのインストール」で更新サイト�
         * ファイルを指定してエラーチェックをした場合は、Asakusa Frameworkのbuild.propertiesに定義されているディレクトリーを対象とする。
             * 別ファイルにあるデータモデルを使用してる場合は そのファイルも同時にチェックしないとエラーになるので、まとめてチェックする。
     * プロパティーによってbuild.propertiesおよびAsakusa Framework本体のDMDLコンパイルに必要なjarファイルを指定できる。
-        * デフォルトではAsakusa Framework0.4のDirect I/OとWindGateを対象にしている。
+        * デフォルトではAsakusa Framework0.4～0.5のDirect I/OとWindGateを対象にしている。
+            * Asakusa Frameworkのバージョンは、pom.xmlの中を見て判断している。
 * DMDLのデータモデルおよびプロパティーをウィザードで新規作成することが出来る。
-    * メニューバーの「ファイル」→「新規」の新規ウィザードで「DMDL Editor」→「New DataModel」。
+    * コンテキストメニューの「DMDL Editor」→「New DataModel」でウィザードが開く。あるいはメニューバーの「ファイル」→「新規」やツールバー。
 * DMDLの属性（@directio.csvとか）の追加/削除が出来る。
-    * コンテキストメニューの「DMDL Editor」→「Add/Remove attribute」でウィザードが開く。
+    * コンテキストメニューの「DMDL Editor」→「Add/Remove attribute of DataModel」でウィザードが開く。あるいはメニューバーの「ファイル」→「新規」やツールバー。
 * DMDLからJavaソースの生成（コンパイル）が出来る。
     * コンテキストメニューの「DMDL Editor」→「compile」でコンパイルを行う。
     * エラーチェックと同様のプロパティーを使ってコンパイル対象を決定している。
 * DMDLからImporter/Exporterの雛形クラスを作成することが出来る。
-    * コンテキストメニューの「DMDL Editor」→「New importer/exporter class」でウィザードが開く。
+    * コンテキストメニューの「DMDL Editor」→「New importer/exporter class」でウィザードが開く。あるいはメニューバーの「ファイル」→「新規」やツールバー。
         * DMDLのコンパイルによってスケルトンクラス（AbstractHogeCsvInputDescription等）が作られていることが前提。（無いと、生成されたクラスがコンパイルエラーになる）
 * JavaソースからDMDLへのハイパーリンクが使える。
     * データモデルクラスのクラス名・メソッド名をCtrlキーを押しながらクリックすると、定義元のDMDLへジャンプする。

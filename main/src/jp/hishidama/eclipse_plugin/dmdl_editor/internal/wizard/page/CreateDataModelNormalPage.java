@@ -6,6 +6,7 @@ import java.util.Map;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.WordToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelInfo;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelProperty;
+import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelUtil;
 import jp.hishidama.eclipse_plugin.util.StringUtil;
 
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
@@ -93,6 +94,12 @@ class DataModelNormalRow extends DataModelRow {
 
 	@Override
 	public String validate() {
+		if (StringUtil.nonEmpty(name)) {
+			String message = DataModelUtil.validateName("プロパティー名", name);
+			if (message != null) {
+				return message;
+			}
+		}
 		if (StringUtil.isEmpty(refModelName)) {
 			if (StringUtil.isEmpty(name)) {
 				return "プロパティー名は必須です。";

@@ -93,6 +93,12 @@ class DataModelJoinRow extends DataModelRow {
 
 	@Override
 	public String validate() {
+		if (StringUtil.nonEmpty(name)) {
+			String message = DataModelUtil.validateName("プロパティー名", name);
+			if (message != null) {
+				return message;
+			}
+		}
 		if (StringUtil.isEmpty(refModelName)) {
 			return "結合元データモデルは必須です。";
 		}
@@ -104,6 +110,11 @@ public class CreateDataModelJoinPage extends CreateDataModelPage<DataModelJoinRo
 
 	public CreateDataModelJoinPage() {
 		super("CreateDataModelNormalPage", "結合データモデルの作成", "結合データモデルのプロパティーを定義して下さい。（結合キーは次ページで定義します）");
+	}
+
+	@Override
+	protected String getSourceLabelText() {
+		return "結合元データモデルの候補";
 	}
 
 	@Override

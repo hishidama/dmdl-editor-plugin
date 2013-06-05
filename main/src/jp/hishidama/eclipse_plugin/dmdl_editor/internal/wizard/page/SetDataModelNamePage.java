@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.dialog.DmdlFileSelectionDialog;
+import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelUtil;
 import jp.hishidama.eclipse_plugin.util.FileUtil;
 
 import org.eclipse.core.resources.IFile;
@@ -159,11 +160,21 @@ public class SetDataModelNamePage extends WizardPage {
 			return;
 		}
 
-		if (text.getText().trim().isEmpty()) {
+		String name = text.getText().trim();
+		if (name.isEmpty()) {
 			if (setError) {
 				setErrorMessage("データモデル名を入力して下さい。");
 			}
 			return;
+		}
+		{
+			String message = DataModelUtil.validateName("データモデル名", name);
+			if (message != null) {
+				if (setError) {
+					setErrorMessage(message);
+				}
+				return;
+			}
 		}
 
 		int checked = 0;

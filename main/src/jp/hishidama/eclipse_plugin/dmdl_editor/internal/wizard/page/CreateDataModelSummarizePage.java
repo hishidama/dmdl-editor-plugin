@@ -5,6 +5,7 @@ import java.util.Map;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelInfo;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelProperty;
+import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelUtil;
 import jp.hishidama.eclipse_plugin.util.StringUtil;
 
 import org.eclipse.jface.viewers.CheckboxCellEditor;
@@ -119,6 +120,12 @@ class DataModelSummarizeRow extends DataModelRow {
 		if (StringUtil.isEmpty(name) && StringUtil.isEmpty(refProperty)) {
 			return "プロパティー名は必須です。";
 		}
+		if (StringUtil.nonEmpty(name)) {
+			String message = DataModelUtil.validateName("プロパティー名", name);
+			if (message != null) {
+				return message;
+			}
+		}
 		if (StringUtil.isEmpty(sumType)) {
 			return "集約関数は必須です。";
 		}
@@ -133,6 +140,11 @@ public class CreateDataModelSummarizePage extends CreateDataModelPage<DataModelS
 
 	public CreateDataModelSummarizePage() {
 		super("CreateDataModelNormalPage", "集計データモデルの作成", "集計データモデルを定義して下さい。");
+	}
+
+	@Override
+	protected String getSourceLabelText() {
+		return "集計対象データモデルの候補";
 	}
 
 	@Override

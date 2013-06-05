@@ -51,7 +51,9 @@ public class DMDLTextEditor extends TextEditor implements IPropertyChangeListene
 	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
 		// フォールディングの為のViewerを作成
 		IOverviewRuler overviewRuler = getOverviewRuler();
-		ISourceViewer viewer = foldingManager.createSourceViewer(parent, ruler, overviewRuler, styles);
+		boolean overviewRulerVisible = isOverviewRulerVisible();
+		ISourceViewer viewer = foldingManager.createSourceViewer(parent, ruler, overviewRuler, overviewRulerVisible,
+				styles);
 		getSourceViewerDecorationSupport(viewer);
 		return viewer;
 	}

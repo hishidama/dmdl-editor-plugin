@@ -34,20 +34,18 @@ public class FoldingManager {
 	 * @param parent
 	 * @param ruler
 	 * @param overviewRuler
+	 * @param showsAnnotationOverview
 	 * @param styles
 	 * @return ProjectionViewer
 	 */
-	public ISourceViewer createSourceViewer(Composite parent,
-			IVerticalRuler ruler, IOverviewRuler overviewRuler, int styles) {
-		viewer = new ProjectionViewer(parent, ruler, overviewRuler, true,
-				styles);
+	public ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, IOverviewRuler overviewRuler,
+			boolean showsAnnotationOverview, int styles) {
+		viewer = new ProjectionViewer(parent, ruler, overviewRuler, showsAnnotationOverview, styles);
 		return viewer;
 	}
 
-	public void install(IAnnotationAccess annotationAccess,
-			ISharedTextColors sharedColors) {
-		projectionSupport = new ProjectionSupport(viewer, annotationAccess,
-				sharedColors);
+	public void install(IAnnotationAccess annotationAccess, ISharedTextColors sharedColors) {
+		projectionSupport = new ProjectionSupport(viewer, annotationAccess, sharedColors);
 		projectionSupport.install();
 		viewer.doOperation(ProjectionViewer.TOGGLE);
 	}
@@ -70,8 +68,7 @@ public class FoldingManager {
 			if (viewer == null) {
 				return;
 			}
-			ProjectionAnnotationModel model = viewer
-					.getProjectionAnnotationModel();
+			ProjectionAnnotationModel model = viewer.getProjectionAnnotationModel();
 			if (model == null) {
 				return;
 			}
@@ -83,13 +80,12 @@ public class FoldingManager {
 			applyFolding(document, models, model);
 		} catch (Exception e) {
 			ILog log = Activator.getDefault().getLog();
-			log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,
-					"updateFolding error.", e));
+			log.log(new Status(Status.WARNING, Activator.PLUGIN_ID, "updateFolding error.", e));
 		}
 	}
 
-	protected void applyFolding(IDocument document, ModelList models,
-			ProjectionAnnotationModel model) throws BadLocationException {
+	protected void applyFolding(IDocument document, ModelList models, ProjectionAnnotationModel model)
+			throws BadLocationException {
 		if (models == null) {
 			return;
 		}
@@ -100,8 +96,7 @@ public class FoldingManager {
 		}
 	}
 
-	protected void applyFolding(IDocument document, ModelToken modelToken,
-			ProjectionAnnotationModel model) {
+	protected void applyFolding(IDocument document, ModelToken modelToken, ProjectionAnnotationModel model) {
 		for (DMDLToken token : modelToken.getBody()) {
 			if (token instanceof BlockToken) {
 				applyFolding(document, (BlockToken) token, model);
@@ -111,8 +106,7 @@ public class FoldingManager {
 		}
 	}
 
-	protected void applyFolding(IDocument document, BlockToken token,
-			ProjectionAnnotationModel model) {
+	protected void applyFolding(IDocument document, BlockToken token, ProjectionAnnotationModel model) {
 		int start = token.getStart();
 		int end = token.getEnd();
 		loop: while (end < document.getLength()) {
@@ -145,8 +139,7 @@ public class FoldingManager {
 		applyFolding(document, start, end, model);
 	}
 
-	protected void applyFolding(IDocument document, CommentToken token,
-			ProjectionAnnotationModel model) {
+	protected void applyFolding(IDocument document, CommentToken token, ProjectionAnnotationModel model) {
 		if (!token.isBlock()) {
 			return;
 		}
@@ -181,8 +174,7 @@ public class FoldingManager {
 		applyFolding(document, start, end, model);
 	}
 
-	protected void applyFolding(IDocument document, int start, int end,
-			ProjectionAnnotationModel model) {
+	protected void applyFolding(IDocument document, int start, int end, ProjectionAnnotationModel model) {
 		try {
 			int line0 = document.getLineOfOffset(start);
 			int line1 = document.getLineOfOffset(end - 1);

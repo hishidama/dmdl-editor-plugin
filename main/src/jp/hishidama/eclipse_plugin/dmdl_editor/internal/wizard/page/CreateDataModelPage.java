@@ -18,8 +18,10 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ICellModifier;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
@@ -45,6 +47,8 @@ public abstract class CreateDataModelPage<R extends DataModelRow> extends Wizard
 
 	protected DataModelTreeViewer sourceViewer;
 	protected TableViewer tableViewer;
+	private Button copyButton;
+	private Button referenceButton;
 
 	public CreateDataModelPage(String pageName, String pageTitle, String pageDescription) {
 		super(pageName);
@@ -97,6 +101,13 @@ public abstract class CreateDataModelPage<R extends DataModelRow> extends Wizard
 			sourceViewer = new DataModelTreeViewer(composite, SWT.BORDER | SWT.MULTI);
 			GridData grid = new GridData(GridData.FILL_BOTH);
 			sourceViewer.getTree().setLayoutData(grid);
+			sourceViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+				@Override
+				public void selectionChanged(SelectionChangedEvent event) {
+					ITreeSelection selection = (ITreeSelection) event.getSelection();
+					doSelectionChange(selection);
+				}
+			});
 		}
 		{
 			Composite column = new Composite(composite, SWT.NONE);
@@ -112,6 +123,7 @@ public abstract class CreateDataModelPage<R extends DataModelRow> extends Wizard
 						doCopy();
 					}
 				});
+				copyButton = button;
 			}
 			if (visibleReference()) {
 				Button button = new Button(column, SWT.NONE);
@@ -124,6 +136,7 @@ public abstract class CreateDataModelPage<R extends DataModelRow> extends Wizard
 						doReference();
 					}
 				});
+				referenceButton = button;
 			}
 		}
 		{
@@ -193,6 +206,7 @@ public abstract class CreateDataModelPage<R extends DataModelRow> extends Wizard
 			}
 		}
 
+		doSelectionChange(null);
 		validate(false);
 		setControl(composite);
 	}
@@ -374,7 +388,39 @@ public abstract class CreateDataModelPage<R extends DataModelRow> extends Wizard
 		list.set(s, tr);
 	}
 
+	protected void doSelectionChange(ITreeSelection selection) {
+		boolean copy = false;
+		boolean refe = false;
+
+		if (selection != null) {
+			for (@SuppressWarnings("unchecked")
+			Iterator<DMDLTreeData> i = selection.iterator(); i.hasNext();) {
+				DMDLTreeData data = i.next();
+				Object obj = data.getData();
+				if (obj instanceof DataModelInfo) {
+					DataModelInfo info = (DataModelInfo) obj;
+					copy |= enableCopy(info, null);
+					refe |= enableReference(info, null);
+				} else if (obj instanceof DataModelProperty) {
+					DataModelInfo info = (DataModelInfo) data.getParent().getData();
+					DataModelProperty prop = (DataModelProperty) obj;
+					copy |= enableCopy(info, prop);
+					refe |= enableReference(info, prop);
+				}
+			}
+		}
+
+		copyButton.setEnabled(copy);
+		if (referenceButton != null) {
+			referenceButton.setEnabled(refe);
+		}
+	}
+
 	protected abstract String getCopyToolTipText();
+
+	protected boolean enableCopy(DataModelInfo info, DataModelProperty prop) {
+		return true;
+	}
 
 	protected void doCopy() {
 		ITreeSelection selection = sourceViewer.getSelection();
@@ -430,6 +476,10 @@ public abstract class CreateDataModelPage<R extends DataModelRow> extends Wizard
 		return null; // do override
 	}
 
+	protected boolean enableReference(DataModelInfo info, DataModelProperty prop) {
+		return false; // do override
+	}
+
 	protected void doReference() {
 		ITreeSelection selection = sourceViewer.getSelection();
 		if (selection.isEmpty()) {
@@ -456,7 +506,9 @@ public abstract class CreateDataModelPage<R extends DataModelRow> extends Wizard
 		validate(true);
 	}
 
-	protected abstract R newReferenceRow(DataModelInfo info, DataModelProperty prop);
+	protected R newReferenceRow(DataModelInfo info, DataModelProperty prop) {
+		return null; // do override
+	}
 
 	protected final int addToList(int index, R row) {
 		if (index < 0) {

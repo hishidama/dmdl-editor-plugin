@@ -143,6 +143,11 @@ public class CreateDataModelJoinPage extends CreateDataModelPage<DataModelJoinRo
 	}
 
 	@Override
+	protected boolean enableReference(DataModelInfo info, DataModelProperty prop) {
+		return info != null;
+	}
+
+	@Override
 	protected DataModelJoinRow newReferenceRow(DataModelInfo info, DataModelProperty prop) {
 		DataModelJoinRow row = new DataModelJoinRow();
 		row.refModelName = info.getName();

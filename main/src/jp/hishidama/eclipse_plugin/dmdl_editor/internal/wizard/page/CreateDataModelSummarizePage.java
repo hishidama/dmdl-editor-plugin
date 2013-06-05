@@ -174,11 +174,6 @@ public class CreateDataModelSummarizePage extends CreateDataModelPage<DataModelS
 	}
 
 	@Override
-	protected DataModelSummarizeRow newReferenceRow(DataModelInfo info, DataModelProperty prop) {
-		return null;
-	}
-
-	@Override
 	protected String validateOther() {
 		String refModelName = null;
 		for (DataModelSummarizeRow row : defineList) {

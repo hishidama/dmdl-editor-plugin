@@ -167,6 +167,11 @@ public class CreateDataModelJoinKeyPage extends CreateDataModelPage<DataModelJoi
 		return "データモデルのプロパティーを結合キーにします。\n" + "例えばp1とp2をコピーすると、\n" + "joined model = src -> { ～ } % p1, p2\n" + "となります。";
 	}
 
+	@Override
+	protected boolean enableCopy(DataModelInfo info, DataModelProperty prop) {
+		return prop != null;
+	}
+
 	protected void doCopy(int index, Iterator<DMDLTreeData> iterator) {
 		DataModelJoinKey row = null;
 
@@ -197,11 +202,6 @@ public class CreateDataModelJoinKeyPage extends CreateDataModelPage<DataModelJoi
 	@Override
 	protected boolean visibleReference() {
 		return false;
-	}
-
-	@Override
-	protected DataModelJoinKey newReferenceRow(DataModelInfo info, DataModelProperty prop) {
-		return null;
 	}
 
 	@Override

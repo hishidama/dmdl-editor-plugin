@@ -149,6 +149,11 @@ public class CreateDataModelNormalPage extends CreateDataModelPage<DataModelNorm
 	}
 
 	@Override
+	protected boolean enableReference(DataModelInfo info, DataModelProperty prop) {
+		return info != null;
+	}
+
+	@Override
 	protected DataModelNormalRow newReferenceRow(DataModelInfo info, DataModelProperty prop) {
 		DataModelNormalRow row = new DataModelNormalRow();
 		row.refModelName = info.getName();

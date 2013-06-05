@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewerExtension2;
+import org.eclipse.jface.text.source.IOverviewRuler;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.MatchingCharacterPainter;
@@ -49,7 +50,8 @@ public class DMDLTextEditor extends TextEditor implements IPropertyChangeListene
 	@Override
 	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
 		// フォールディングの為のViewerを作成
-		ISourceViewer viewer = foldingManager.createSourceViewer(parent, ruler, fOverviewRuler, styles);
+		IOverviewRuler overviewRuler = getOverviewRuler();
+		ISourceViewer viewer = foldingManager.createSourceViewer(parent, ruler, overviewRuler, styles);
 		getSourceViewerDecorationSupport(viewer);
 		return viewer;
 	}

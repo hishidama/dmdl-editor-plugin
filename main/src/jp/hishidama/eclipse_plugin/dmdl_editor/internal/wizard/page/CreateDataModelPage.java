@@ -105,6 +105,7 @@ public abstract class CreateDataModelPage<R extends DataModelRow> extends Wizard
 				Button button = new Button(column, SWT.NONE);
 				button.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 				button.setText("copy->");
+				button.setToolTipText(getCopyToolTipText());
 				button.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
@@ -116,6 +117,7 @@ public abstract class CreateDataModelPage<R extends DataModelRow> extends Wizard
 				Button button = new Button(column, SWT.NONE);
 				button.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 				button.setText("reference->");
+				button.setToolTipText(getReferenceToolTipText());
 				button.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
@@ -372,6 +374,8 @@ public abstract class CreateDataModelPage<R extends DataModelRow> extends Wizard
 		list.set(s, tr);
 	}
 
+	protected abstract String getCopyToolTipText();
+
 	protected void doCopy() {
 		ITreeSelection selection = sourceViewer.getSelection();
 		if (selection.isEmpty()) {
@@ -420,6 +424,10 @@ public abstract class CreateDataModelPage<R extends DataModelRow> extends Wizard
 
 	protected boolean visibleReference() {
 		return true; // do override
+	}
+
+	protected String getReferenceToolTipText() {
+		return null; // do override
 	}
 
 	protected void doReference() {

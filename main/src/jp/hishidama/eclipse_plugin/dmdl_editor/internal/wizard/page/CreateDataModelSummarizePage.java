@@ -152,6 +152,12 @@ public class CreateDataModelSummarizePage extends CreateDataModelPage<DataModelS
 	}
 
 	@Override
+	protected String getCopyToolTipText() {
+		return "データモデルのプロパティーを集計対象にします。\n" + "例えばp1とp2をコピーすると、\n"
+				+ "summarized model = src => { any p1->p1; any p2->p2; }\n" + "となります。";
+	}
+
+	@Override
 	protected DataModelSummarizeRow newCopyRow(DataModelInfo info, DataModelProperty prop) {
 		DataModelSummarizeRow row = new DataModelSummarizeRow();
 		row.name = prop.getName();

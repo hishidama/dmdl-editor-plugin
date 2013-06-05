@@ -130,12 +130,22 @@ public class CreateDataModelNormalPage extends CreateDataModelPage<DataModelNorm
 	}
 
 	@Override
+	protected String getCopyToolTipText() {
+		return "データモデルのプロパティーをコピーします。\n" + "例えばp1とp2をコピーすると、\n" + "model = { p1:TYPE; p2:TYPE; };\n" + "となります。";
+	}
+
+	@Override
 	protected DataModelNormalRow newCopyRow(DataModelInfo info, DataModelProperty prop) {
 		DataModelNormalRow row = new DataModelNormalRow();
 		row.name = prop.getName();
 		row.description = prop.getDescription();
 		row.dataType = prop.getDataType();
 		return row;
+	}
+
+	@Override
+	protected String getReferenceToolTipText() {
+		return "データモデルの参照を作成します。\n" + "例えばm1とm2を参照すると、\n" + "model = m1 + m2;\n" + "となります。";
 	}
 
 	@Override

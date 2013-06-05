@@ -162,6 +162,11 @@ public class CreateDataModelJoinKeyPage extends CreateDataModelPage<DataModelJoi
 		return new DataModelJoinKey(tableViewer.getTable(), comboMap, indexMap);
 	}
 
+	@Override
+	protected String getCopyToolTipText() {
+		return "データモデルのプロパティーを結合キーにします。\n" + "例えばp1とp2をコピーすると、\n" + "joined model = src -> { ～ } % p1, p2\n" + "となります。";
+	}
+
 	protected void doCopy(int index, Iterator<DMDLTreeData> iterator) {
 		DataModelJoinKey row = null;
 

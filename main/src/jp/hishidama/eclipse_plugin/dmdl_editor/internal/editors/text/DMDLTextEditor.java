@@ -30,7 +30,7 @@ import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 public class DMDLTextEditor extends TextEditor implements IPropertyChangeListener {
-	private ColorManager colorManager = new ColorManager();
+	private ColorManager colorManager = new ColorManager(getSharedColors());
 
 	protected FoldingManager foldingManager = new FoldingManager();
 	private DMDLOutlinePage outlinePage;
@@ -84,7 +84,6 @@ public class DMDLTextEditor extends TextEditor implements IPropertyChangeListene
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 		store.removePropertyChangeListener(this);
 
-		colorManager.dispose();
 		super.dispose();
 	}
 

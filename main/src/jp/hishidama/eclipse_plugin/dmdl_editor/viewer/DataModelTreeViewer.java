@@ -9,13 +9,25 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
 
 public class DataModelTreeViewer extends TreeViewer {
 
 	public DataModelTreeViewer(Composite parent, int style) {
+		this(parent, style, false);
+	}
+
+	public DataModelTreeViewer(Composite parent, int style, boolean enableDrag) {
 		super(parent, style);
 		setLabelProvider(new DMDLLabelProvider());
+
+		if (enableDrag) {
+			int operations = DND.DROP_COPY | DND.DROP_DEFAULT;
+			Transfer[] transferTypes = { DMDLTreeDataTransfer.getInstance() };
+			addDragSupport(operations, transferTypes, new DMDLTreeDataDragListener(this));
+		}
 	}
 
 	public void setInputAll(IProject project) {

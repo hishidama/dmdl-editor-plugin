@@ -12,6 +12,7 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.dialog.DataModelPreviewDialog;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelInfo;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelProperty;
 import jp.hishidama.eclipse_plugin.dmdl_editor.viewer.DMDLTreeData;
+import jp.hishidama.eclipse_plugin.dmdl_editor.viewer.DMDLTreeDataTransfer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.viewer.DataModelTreeViewer;
 
 import org.eclipse.core.resources.IProject;
@@ -27,8 +28,14 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -98,7 +105,7 @@ public abstract class CreateDataModelPage<R extends DataModelRow> extends Wizard
 		}
 
 		{
-			sourceViewer = new DataModelTreeViewer(composite, SWT.BORDER | SWT.MULTI);
+			sourceViewer = new DataModelTreeViewer(composite, SWT.BORDER | SWT.MULTI, true);
 			GridData grid = new GridData(GridData.FILL_BOTH);
 			sourceViewer.getTree().setLayoutData(grid);
 			sourceViewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -228,6 +235,44 @@ public abstract class CreateDataModelPage<R extends DataModelRow> extends Wizard
 		tableViewer.setCellEditors(editors.toArray(new CellEditor[editors.size()]));
 		tableViewer.setColumnProperties(cprops.toArray(new String[cprops.size()]));
 		tableViewer.setCellModifier(new CellModifier());
+
+		int operations = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_DEFAULT;
+		Transfer[] transferTypes = { DMDLTreeDataTransfer.getInstance() };
+		tableViewer.addDropSupport(operations, transferTypes, new DropTargetAdapter() {
+			@Override
+			public void dragEnter(DropTargetEvent event) {
+				if (DMDLTreeDataTransfer.getInstance().isSupportedType(event.currentDataType)) {
+					ITreeSelection selection = (ITreeSelection) event.data;
+					if (selection == null) {
+						selection = sourceViewer.getSelection();
+					}
+					if (enableCopy(selection)) {
+						event.detail = DND.DROP_COPY;
+					} else {
+						event.detail = DND.DROP_NONE;
+					}
+				}
+			}
+
+			@Override
+			public void drop(DropTargetEvent event) {
+				if (DMDLTreeDataTransfer.getInstance().isSupportedType(event.currentDataType)) {
+					int index = -1;
+					{
+						DropTarget target = (DropTarget) event.widget;
+						Table table = (Table) target.getControl();
+						Point point = event.display.map(null, table, event.x, event.y);
+						TableItem item = table.getItem(point);
+						if (item != null) {
+							index = table.indexOf(item);
+						}
+					}
+
+					ITreeSelection selection = (ITreeSelection) event.data;
+					doCopy(selection, index);
+				}
+			}
+		});
 	}
 
 	protected abstract void defineColumns(Table table);
@@ -416,18 +461,42 @@ public abstract class CreateDataModelPage<R extends DataModelRow> extends Wizard
 		}
 	}
 
+	private boolean enableCopy(ITreeSelection selection) {
+		boolean copy = false;
+
+		for (@SuppressWarnings("unchecked")
+		Iterator<DMDLTreeData> i = selection.iterator(); i.hasNext();) {
+			DMDLTreeData data = i.next();
+			Object obj = data.getData();
+			if (obj instanceof DataModelInfo) {
+				DataModelInfo info = (DataModelInfo) obj;
+				copy |= enableCopy(info, null);
+			} else if (obj instanceof DataModelProperty) {
+				DataModelInfo info = (DataModelInfo) data.getParent().getData();
+				DataModelProperty prop = (DataModelProperty) obj;
+				copy |= enableCopy(info, prop);
+			}
+		}
+
+		return copy;
+	}
+
 	protected abstract String getCopyToolTipText();
 
 	protected boolean enableCopy(DataModelInfo info, DataModelProperty prop) {
 		return true;
 	}
 
-	protected void doCopy() {
+	private void doCopy() {
 		ITreeSelection selection = sourceViewer.getSelection();
 		if (selection.isEmpty()) {
 			return;
 		}
 		int index = tableViewer.getTable().getSelectionIndex();
+		doCopy(selection, index);
+	}
+
+	protected void doCopy(ITreeSelection selection, int index) {
 		@SuppressWarnings("unchecked")
 		Iterator<DMDLTreeData> iterator = selection.iterator();
 		doCopy(index, iterator);

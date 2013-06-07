@@ -48,11 +48,12 @@ public abstract class SetAttributePage extends WizardPage {
 		GridData compositeGrid = new GridData(GridData.FILL_HORIZONTAL);
 		composite.setLayoutData(compositeGrid);
 		{
+			createDefaultButtonField(composite);
+
 			{
 				Label label = new Label(composite, SWT.NONE);
 				label.setText("モデルの属性");
-				modelText = new Text(composite, SWT.BORDER | SWT.MULTI
-						| SWT.V_SCROLL);
+				modelText = new Text(composite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 				modelText.setText(nonNull(getSetting(SETTINGS_MODEL_ATTR)));
 				GridData data = new GridData(GridData.FILL_HORIZONTAL);
 				data.heightHint = 18 * 9;
@@ -67,8 +68,7 @@ public abstract class SetAttributePage extends WizardPage {
 			{
 				Label label = new Label(composite, SWT.NONE);
 				label.setText("プロパティーの属性");
-				propertyText = new Text(composite, SWT.BORDER | SWT.MULTI
-						| SWT.V_SCROLL);
+				propertyText = new Text(composite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 				propertyText.setText(nonNull(getSetting(SETTINGS_PROP_ATTR)));
 				GridData data = new GridData(GridData.FILL_HORIZONTAL);
 				data.heightHint = 18 * 4;
@@ -79,42 +79,6 @@ public abstract class SetAttributePage extends WizardPage {
 						validate();
 					}
 				});
-			}
-			{
-				Label label = new Label(composite, SWT.NONE);
-				label.setText("属性のデフォルトを設定");
-				Composite field = new Composite(composite, SWT.NONE);
-				field.setLayout(new FillLayout(SWT.HORIZONTAL));
-				{
-					Button button = new Button(field, SWT.PUSH);
-					button.setText("directio.csv");
-					button.addSelectionListener(new SelectionAdapter() {
-						@Override
-						public void widgetSelected(SelectionEvent e) {
-							setDefaultAttribute(AttributeType.DIRECTIO_CSV);
-						}
-					});
-				}
-				{
-					Button button = new Button(field, SWT.PUSH);
-					button.setText("windgate.csv");
-					button.addSelectionListener(new SelectionAdapter() {
-						@Override
-						public void widgetSelected(SelectionEvent e) {
-							setDefaultAttribute(AttributeType.WINDGATE_CSV);
-						}
-					});
-				}
-				{
-					Button button = new Button(field, SWT.PUSH);
-					button.setText("windgate.jdbc");
-					button.addSelectionListener(new SelectionAdapter() {
-						@Override
-						public void widgetSelected(SelectionEvent e) {
-							setDefaultAttribute(AttributeType.WINDGATE_JDBC);
-						}
-					});
-				}
 			}
 		}
 		{
@@ -127,6 +91,43 @@ public abstract class SetAttributePage extends WizardPage {
 		validate();
 
 		setControl(parent0);
+	}
+
+	private void createDefaultButtonField(Composite composite) {
+		Label label = new Label(composite, SWT.NONE);
+		label.setText("属性のデフォルトを設定");
+		Composite field = new Composite(composite, SWT.NONE);
+		field.setLayout(new FillLayout(SWT.HORIZONTAL));
+		{
+			Button button = new Button(field, SWT.PUSH);
+			button.setText("directio.csv");
+			button.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					setDefaultAttribute(AttributeType.DIRECTIO_CSV);
+				}
+			});
+		}
+		{
+			Button button = new Button(field, SWT.PUSH);
+			button.setText("windgate.csv");
+			button.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					setDefaultAttribute(AttributeType.WINDGATE_CSV);
+				}
+			});
+		}
+		{
+			Button button = new Button(field, SWT.PUSH);
+			button.setText("windgate.jdbc");
+			button.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					setDefaultAttribute(AttributeType.WINDGATE_JDBC);
+				}
+			});
+		}
 	}
 
 	protected abstract void createNoteArea(Group group);
@@ -145,8 +146,7 @@ public abstract class SetAttributePage extends WizardPage {
 	protected abstract String getDefaultPropertyAttribute(AttributeType type);
 
 	private void validate() {
-		boolean complete = !modelText.getText().trim().isEmpty()
-				|| !propertyText.getText().trim().isEmpty();
+		boolean complete = !modelText.getText().trim().isEmpty() || !propertyText.getText().trim().isEmpty();
 		setPageComplete(complete);
 	}
 

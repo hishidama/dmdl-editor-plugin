@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,12 +15,15 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaProject;
 import org.osgi.framework.Bundle;
 
 public class DmdlParserWrapper {
+	private static final String CALLER_CLASS = "jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker.DmdlParserCaller";
+
 	public DmdlParserWrapper(IJavaProject project) {
 		initClassLoader(project);
 	}
@@ -40,11 +44,10 @@ public class DmdlParserWrapper {
 		findMyClassPath(parserClassList, "resource/dmdlparser-caller.jar");
 
 		ILog log = Activator.getDefault().getLog();
-		log.log(new Status(Status.INFO, Activator.PLUGIN_ID,
-				"DmdlParser caller classpath=" + parserClassList));
+		log.log(new Status(IStatus.INFO, Activator.PLUGIN_ID, MessageFormat.format("DmdlParser caller classpath={0}",
+				parserClassList)));
 
-		parserLoader = URLClassLoader.newInstance(parserClassList
-				.toArray(new URL[parserClassList.size()]));
+		parserLoader = URLClassLoader.newInstance(parserClassList.toArray(new URL[parserClassList.size()]));
 	}
 
 	protected void findClassPath(List<URL> list, IJavaProject javaProject) {
@@ -63,8 +66,7 @@ public class DmdlParserWrapper {
 			return url;
 		} catch (Exception e) {
 			ILog log = Activator.getDefault().getLog();
-			log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,
-					"DMDLMarker#findMyClassPath() error.", e));
+			log.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, "DmdlParser#findMyClassPath() error.", e));
 			return null;
 		}
 	}
@@ -76,21 +78,19 @@ public class DmdlParserWrapper {
 				Object[] arr = { f.getLocationURI(), f.getCharset() };
 				files.add(arr);
 			} catch (Exception e) {
-				ILog log = Activator.getDefault().getLog();
-				log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,
-						"DMDLMarker#parse(" + f + ") error.", e));
+				String message = MessageFormat.format("DmdlParser#parse({0}) error.", f);
+				IStatus status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, message, e);
+				Activator.getDefault().getLog().log(status);
 			}
 		}
 		try {
-			Class<?> c = parserLoader
-					.loadClass("jp.hishidama.eclipse_plugin.dmdl_editor.editors.marker.DmdlParserCaller");
+			Class<?> c = parserLoader.loadClass(CALLER_CLASS);
 			Object caller = c.newInstance();
 			Method method = c.getMethod("parse", List.class);
 			@SuppressWarnings("unchecked")
 			List<Object[]> list = (List<Object[]>) method.invoke(caller, files);
 
-			List<ParseErrorInfo> result = new ArrayList<ParseErrorInfo>(
-					list.size());
+			List<ParseErrorInfo> result = new ArrayList<ParseErrorInfo>(list.size());
 			for (Object[] r : list) {
 				ParseErrorInfo pe = new ParseErrorInfo();
 				pe.file = (URI) r[0];
@@ -103,14 +103,10 @@ public class DmdlParserWrapper {
 				result.add(pe);
 			}
 			return result;
-		} catch (Exception e) {
-			ILog log = Activator.getDefault().getLog();
-			log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,
-					"DMDLMarker#parse(" + parserClassList + ") error.", e));
-		} catch (Error e) {
-			ILog log = Activator.getDefault().getLog();
-			log.log(new Status(Status.WARNING, Activator.PLUGIN_ID,
-					"DMDLMarker#parse(" + parserClassList + ") error.", e));
+		} catch (Throwable e) {
+			String message = MessageFormat.format("DmdlParser#parse({0}) error.", parserClassList);
+			IStatus status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, message, e);
+			Activator.getDefault().getLog().log(status);
 		}
 		return null;
 	}

@@ -31,6 +31,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
@@ -212,6 +213,18 @@ public class DMDLCompileTask implements IWorkspaceRunnable {
 				monitor.worked(1);
 			}
 			launch.terminate();
+
+			for (IProcess process : launch.getProcesses()) {
+				int r = process.getExitValue();
+				if (r != 0) {
+					String message = MessageFormat.format(
+							"DMDL compile failed. exitValue={0},\nconfig={1},\nclassPath={2}", r,
+							config.getAttributes(),
+							Arrays.toString(new DmdlClasspathProvider().computeUnresolvedClasspath(config)));
+					IStatus status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, message, null);
+					Activator.getDefault().getLog().log(status);
+				}
+			}
 		} finally {
 			monitor.done();
 		}

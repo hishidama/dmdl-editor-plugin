@@ -141,7 +141,7 @@ public class CreateDataModelJoinPage extends CreateDataModelPage<DataModelJoinRo
 		DataModelJoinRow row = new DataModelJoinRow();
 		row.name = prop.getName();
 		row.description = prop.getDescription();
-		row.refModelName = info.getName();
+		row.refModelName = info.getModelName();
 		row.refProperty = prop.getName();
 		row.info = info;
 		row.prop = prop;
@@ -161,7 +161,7 @@ public class CreateDataModelJoinPage extends CreateDataModelPage<DataModelJoinRo
 	@Override
 	protected DataModelJoinRow newReferenceRow(DataModelInfo info, DataModelProperty prop) {
 		DataModelJoinRow row = new DataModelJoinRow();
-		row.refModelName = info.getName();
+		row.refModelName = info.getModelName();
 		return row;
 	}
 
@@ -255,7 +255,7 @@ public class CreateDataModelJoinPage extends CreateDataModelPage<DataModelJoinRo
 			if (info == null) {
 				info = DataModelUtil.findModel(project, modelName);
 				if (info == null) {
-					info = new DataModelInfo(modelName, null, null, null);
+					info = new DataModelInfo(modelName, null, null);
 				}
 			}
 			DMDLTreeData.Model model = new DMDLTreeData.Model(project, null, info);

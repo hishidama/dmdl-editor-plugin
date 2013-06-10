@@ -1,7 +1,6 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.style.DMScanner.AttrType;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.index.IndexContainer;
 
 public abstract class DMDLToken {
 
@@ -111,16 +110,20 @@ public abstract class DMDLToken {
 		return null;
 	}
 
-	public String getModelType() {
-		if (parentToken != null) {
-			return parentToken.getModelType();
+	public String findRefModelName() {
+		DMDLToken token = findRefModelToken();
+		if (token == null) {
+			return null;
+		}
+		if (token instanceof WordToken) {
+			return ((WordToken) token).getText();
 		}
 		return null;
 	}
 
-	public String getDataType(IndexContainer ic) {
+	public String getModelType() {
 		if (parentToken != null) {
-			return parentToken.getDataType(ic);
+			return parentToken.getModelType();
 		}
 		return null;
 	}

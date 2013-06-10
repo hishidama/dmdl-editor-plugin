@@ -23,6 +23,10 @@ public class StringUtil {
 		return sb.toString();
 	}
 
+	public static String toLowerCamelCase(String name) {
+		return toFirstLower(toCamelCase(name));
+	}
+
 	public static String toFirstUpper(String s) {
 		if (s == null) {
 			return null;
@@ -31,6 +35,16 @@ public class StringUtil {
 			return s;
 		}
 		return Character.toUpperCase(s.charAt(0)) + s.substring(1);
+	}
+
+	public static String toFirstLower(String s) {
+		if (s == null) {
+			return null;
+		}
+		if (s.length() < 1) {
+			return s;
+		}
+		return Character.toLowerCase(s.charAt(0)) + s.substring(1);
 	}
 
 	public static String replace(String s, String modelName, String propName, String propDesc) {

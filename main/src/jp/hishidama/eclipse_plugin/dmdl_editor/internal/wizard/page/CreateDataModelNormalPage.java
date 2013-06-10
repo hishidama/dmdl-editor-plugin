@@ -163,7 +163,7 @@ public class CreateDataModelNormalPage extends CreateDataModelPage<DataModelNorm
 	@Override
 	protected DataModelNormalRow newReferenceRow(DataModelInfo info, DataModelProperty prop) {
 		DataModelNormalRow row = new DataModelNormalRow();
-		row.refModelName = info.getName();
+		row.refModelName = info.getModelName();
 		return row;
 	}
 

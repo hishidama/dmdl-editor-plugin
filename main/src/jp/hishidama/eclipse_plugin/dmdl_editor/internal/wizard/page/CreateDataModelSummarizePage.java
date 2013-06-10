@@ -175,7 +175,7 @@ public class CreateDataModelSummarizePage extends CreateDataModelPage<DataModelS
 		row.name = prop.getName();
 		row.description = prop.getDescription();
 		row.sumType = "any";
-		row.refModelName = info.getName();
+		row.refModelName = info.getModelName();
 		row.refProperty = prop.getName();
 		return row;
 	}

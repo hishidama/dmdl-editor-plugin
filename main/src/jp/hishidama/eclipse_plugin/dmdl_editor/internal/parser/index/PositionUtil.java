@@ -5,6 +5,9 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.PropertyToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.WordToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelInfo;
+import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelProperty;
+import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelUtil;
 
 import org.eclipse.core.resources.IProject;
 
@@ -21,18 +24,19 @@ public class PositionUtil {
 					if (ref != null) {
 						ModelToken model = ref.getModelToken();
 						if (model != null) {
-							return model.getQualifiedName();
+							String qname = DataModelUtil.getQualifiedModelName(model.getModelName(),
+									model.getDescription(), model.getModelType());
+							return qname;
 						}
 						return name;
 					} else {
-						IndexContainer ic = IndexContainer.getContainer(project, null);
-						if (ic != null) {
-							ModelIndex index = ic.findModel(name);
-							if (index != null) {
-								ModelToken model = index.getToken();
-								String file = index.getFile().getFullPath().lastSegment();
-								return model.getQualifiedName() + " (" + file + ")";
-							}
+						IndexContainer ic = IndexContainer.getContainer(project);
+						DataModelInfo model = ic.getModel(name);
+						if (model != null) {
+							String file = model.getFile().getFullPath().lastSegment();
+							String qname = DataModelUtil.getQualifiedModelName(model.getModelName(),
+									model.getModelDescription(), model.getModelType());
+							return qname + " (" + file + ")";
 						}
 						return null;
 					}
@@ -40,21 +44,21 @@ public class PositionUtil {
 				case REF_PROPERTY_NAME: {
 					WordToken ref = word.getReferenceWord();
 					if (ref != null) {
-						IndexContainer ic = IndexContainer.getContainer(project, null);
 						PropertyToken prop = (PropertyToken) ref.getParent();
-						return prop.getQualifiedName(ic);
+						return getQualifiedName(project, prop);
 					} else {
 						DMDLToken model = word.findRefModelToken();
 						if (model instanceof WordToken) {
-							IndexContainer ic = IndexContainer.getContainer(project, null);
-							if (ic != null) {
-								String modelName = ((WordToken) model).getText();
-								PropertyIndex index = ic.findProperty(modelName, word.getText());
-								if (index != null) {
-									PropertyToken p = index.getToken();
-									String file = index.getFile().getFullPath().lastSegment();
-									return p.getQualifiedName(ic) + " (" + file + ")";
-								}
+							IndexContainer ic = IndexContainer.getContainer(project);
+							String modelName = ((WordToken) model).getText();
+							DataModelProperty index = ic.getProperty(modelName, word.getText());
+							if (index != null) {
+								String file = index.getFile().getFullPath().lastSegment();
+								String pname = index.getName();
+								String type = DataModelUtil.getResolvedDataType(project, modelName, pname);
+								String qname = DataModelUtil.getQualifiedPropertyName(pname, index.getDescription(),
+										type);
+								return qname + " (" + file + ")";
 							}
 						}
 					}
@@ -62,18 +66,26 @@ public class PositionUtil {
 					return null;
 				}
 			} else if (token instanceof PropertyToken) {
-				IndexContainer ic = IndexContainer.getContainer(project, null);
 				PropertyToken prop = (PropertyToken) token;
-				return prop.getQualifiedName(ic);
+				return getQualifiedName(project, prop);
 			} else if (token instanceof ModelToken) {
 				ModelToken model = (ModelToken) token;
-				return model.getQualifiedName();
+				String qname = DataModelUtil.getQualifiedModelName(model.getModelName(), model.getDescription(),
+						model.getModelType());
+				return qname;
 			} else if (token instanceof CommentToken) {
 				return null;
 			}
 			token = token.getParent();
 		}
 		return null;
+	}
+
+	private static String getQualifiedName(IProject project, PropertyToken prop) {
+		String pname = prop.getName();
+		String modelName = prop.getModelToken().getModelName();
+		String type = DataModelUtil.getResolvedDataType(project, modelName, pname);
+		return DataModelUtil.getQualifiedPropertyName(pname, prop.getPropertyDescription(), type);
 	}
 
 	public static class NamePair {
@@ -114,13 +126,10 @@ public class PositionUtil {
 						}
 						return new NamePair(name, null);
 					} else {
-						IndexContainer ic = IndexContainer.getContainer(project, null);
-						if (ic != null) {
-							ModelIndex index = ic.findModel(name);
-							if (index != null) {
-								ModelToken model = index.getToken();
-								return new NamePair(model.getModelName(), null);
-							}
+						IndexContainer ic = IndexContainer.getContainer(project);
+						DataModelInfo info = ic.getModel(name);
+						if (info != null) {
+							return new NamePair(info.getModelName(), null);
 						}
 						return null;
 					}
@@ -133,14 +142,11 @@ public class PositionUtil {
 					} else {
 						DMDLToken model = word.findRefModelToken();
 						if (model instanceof WordToken) {
-							IndexContainer ic = IndexContainer.getContainer(project, null);
-							if (ic != null) {
-								String modelName = ((WordToken) model).getText();
-								PropertyIndex index = ic.findProperty(modelName, word.getText());
-								if (index != null) {
-									PropertyToken prop = index.getToken();
-									return new NamePair(modelName, prop.getPropertyName());
-								}
+							IndexContainer ic = IndexContainer.getContainer(project);
+							String modelName = ((WordToken) model).getText();
+							DataModelProperty prop = ic.getProperty(modelName, word.getText());
+							if (prop != null) {
+								return new NamePair(modelName, prop.getName());
 							}
 						}
 					}

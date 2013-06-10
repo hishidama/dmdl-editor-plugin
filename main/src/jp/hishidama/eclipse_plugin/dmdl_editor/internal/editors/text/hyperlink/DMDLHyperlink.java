@@ -16,25 +16,13 @@ public class DMDLHyperlink implements IHyperlink {
 	private DMDLTextEditor editor;
 	private DMDLToken token;
 
-	private IProject project;
-	private IRegion region;
-
 	public DMDLHyperlink(DMDLTextEditor editor, DMDLToken token) {
 		this.editor = editor;
 		this.token = token;
 	}
 
-	public DMDLHyperlink(IProject project, DMDLToken token, IRegion region) {
-		this.project = project;
-		this.token = token;
-		this.region = region;
-	}
-
 	@Override
 	public IRegion getHyperlinkRegion() {
-		if (region != null) {
-			return region;
-		}
 		int offset = token.getStart();
 		int length = token.getLength();
 		return new Region(offset, length);
@@ -52,10 +40,6 @@ public class DMDLHyperlink implements IHyperlink {
 
 	@Override
 	public void open() {
-		if (project != null) {
-			DMDLHyperlinkUtil.gotoPosition(project, token);
-			return;
-		}
 		WordToken target = token.getReferenceWord();
 		if (target != null) {
 			int offset = target.getStart();
@@ -65,8 +49,7 @@ public class DMDLHyperlink implements IHyperlink {
 			IProject project = editor.getProject();
 			NamePair name = PositionUtil.getName(project, token);
 			if (name != null) {
-				DMDLHyperlinkUtil.gotoPosition(project, name.getModelName(),
-						name.getPropertyName());
+				DMDLHyperlinkUtil.gotoPosition(project, name.getModelName(), name.getPropertyName());
 			}
 		}
 	}

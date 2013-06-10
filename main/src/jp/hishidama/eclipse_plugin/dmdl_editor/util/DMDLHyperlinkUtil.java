@@ -1,11 +1,7 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.util;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.index.Index;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.index.IndexContainer;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.DMDLToken;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.PropertyToken;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -27,25 +23,6 @@ import org.eclipse.ui.ide.IGotoMarker;
  */
 public class DMDLHyperlinkUtil {
 
-	public static boolean gotoPosition(IProject project, DMDLToken token) {
-		assert project != null;
-
-		for (; token != null; token = token.getParent()) {
-			if (token instanceof ModelToken) {
-				ModelToken model = (ModelToken) token;
-				return gotoPosition(project, model.getModelName(), null);
-			} else if (token instanceof PropertyToken) {
-				PropertyToken prop = (PropertyToken) token;
-				ModelToken model = prop.getModelToken();
-				if (model == null) {
-					return false;
-				}
-				return gotoPosition(project, model.getModelName(), prop.getName());
-			}
-		}
-		return false;
-	}
-
 	/**
 	 * 指定された名前の場所へ移動する（ファイルを開く）.
 	 *
@@ -64,22 +41,19 @@ public class DMDLHyperlinkUtil {
 			return false;
 		}
 
-		IndexContainer ic = IndexContainer.getContainer(project, null);
-		if (ic == null) {
-			return false;
-		}
+		IndexContainer ic = IndexContainer.getContainer(project);
 
-		Index index;
+		DataModelPosition index;
 		if (propertyName == null) {
-			index = ic.findModel(modelName);
+			index = ic.getModel(modelName);
 		} else {
-			index = ic.findProperty(modelName, propertyName);
+			index = ic.getProperty(modelName, propertyName);
 		}
 
 		return gotoPosition(index);
 	}
 
-	private static boolean gotoPosition(Index index) {
+	public static boolean gotoPosition(DataModelPosition index) {
 		if (index != null) {
 			return gotoPosition(index.getFile(), index.getOffset(), index.getEnd());
 		}

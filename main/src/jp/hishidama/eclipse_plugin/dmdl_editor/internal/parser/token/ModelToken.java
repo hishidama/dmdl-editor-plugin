@@ -201,27 +201,6 @@ public class ModelToken extends DMDLBodyToken {
 		return null;
 	}
 
-	public String getQualifiedName() {
-		StringBuilder sb = new StringBuilder(64);
-
-		String desc = getDescription();
-		if (desc != null) {
-			sb.append(desc);
-			sb.append(" ");
-		}
-
-		String type = getModelType();
-		if (type != null) {
-			sb.append(type);
-			sb.append(" ");
-		}
-
-		String name = getModelName();
-		sb.append(name);
-
-		return sb.toString();
-	}
-
 	public List<PropertyToken> getOwnPropertyList() {
 		List<PropertyToken> list = new ArrayList<PropertyToken>();
 		getOwnPropertyList(list, this);

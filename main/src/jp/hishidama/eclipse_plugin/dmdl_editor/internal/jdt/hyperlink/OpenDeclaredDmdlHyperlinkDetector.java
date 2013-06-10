@@ -1,16 +1,15 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.internal.jdt.hyperlink;
 
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.hyperlink.DMDLHyperlink;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.index.IndexContainer;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.index.ModelIndex;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.index.PropertyIndex;
+import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelInfo;
+import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelProperty;
+import jp.hishidama.eclipse_plugin.util.StringUtil;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -128,38 +127,33 @@ public class OpenDeclaredDmdlHyperlinkDetector extends AbstractHyperlinkDetector
 		} else if (name.endsWith("AsString")) {
 			name = name.substring(0, name.length() - 8);
 		}
-		return name;
+		return StringUtil.toFirstLower(name);
 	}
 
 	private IHyperlink[] detectModelHyperlinks(IType type, IRegion word) {
-		ModelIndex model = findModel(type);
+		DataModelInfo model = findModel(type);
 		if (model == null) {
 			return null;
 		}
-		IProject project = type.getJavaProject().getProject();
-		return new IHyperlink[] { new DMDLHyperlink(project, model.getToken(), word) };
+		return new IHyperlink[] { new DeclaredDmdlHyperlink(model, word) };
 	}
 
 	private IHyperlink[] detectPropertyHyperlinks(IJavaElement code, String name, IRegion word) {
 		IType type = (IType) code.getParent();
-		ModelIndex model = findModel(type);
+		DataModelInfo model = findModel(type);
 		if (model == null) {
 			return null;
 		}
-		PropertyIndex property = model.getPropertySnake(name);
-		if (property == null) {
+		DataModelProperty prop = model.getProperty(name);
+		if (prop == null) {
 			return null;
 		}
-		IProject project = code.getJavaProject().getProject();
-		return new IHyperlink[] { new DMDLHyperlink(project, property.getToken(), word) };
+		return new IHyperlink[] { new DeclaredDmdlHyperlink(prop, word) };
 	}
 
-	private static ModelIndex findModel(IType type) {
+	private static DataModelInfo findModel(IType type) {
 		IProject project = type.getJavaProject().getProject();
-		IndexContainer ic = IndexContainer.getContainer(project, new ProgressMonitorDialog(null));
-		if (ic == null) {
-			return null;
-		}
-		return ic.findModelSnake(type.getElementName());
+		IndexContainer ic = IndexContainer.getContainer(project);
+		return ic.getModel(type.getElementName());
 	}
 }

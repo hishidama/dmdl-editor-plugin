@@ -4,12 +4,11 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.index.IndexContainer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.PropertyToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelUtil;
 
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -173,14 +172,16 @@ public abstract class DataModelPage {
 		typeText.setText(getModelType());
 		nameText.setText(getModelName());
 
-		IndexContainer ic = IndexContainer.getContainer(editor.getProject(), new ProgressMonitorDialog(null));
-
 		table.removeAll();
 		for (PropertyToken prop : getProperties()) {
 			TableItem item = new TableItem(table, SWT.NONE);
 			item.setText(0, decodeDescription(nonNull(prop.getPropertyDescription())));
 			item.setText(1, prop.getPropertyName());
-			item.setText(2, nonNull(prop.getDataType(ic)));
+			IProject project = editor.getProject();
+			String modelName = prop.getModelToken().getModelName();
+			String propertyName = prop.getName();
+			String type = DataModelUtil.getResolvedDataType(project, modelName, propertyName);
+			item.setText(2, nonNull(type));
 		}
 	}
 

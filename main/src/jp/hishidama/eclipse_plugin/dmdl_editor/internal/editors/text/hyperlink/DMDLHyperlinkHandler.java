@@ -17,14 +17,12 @@ public class DMDLHyperlinkHandler extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		DMDLMultiPageEditor multiEditor = (DMDLMultiPageEditor) HandlerUtil
-				.getActiveEditor(event);
+		DMDLMultiPageEditor multiEditor = (DMDLMultiPageEditor) HandlerUtil.getActiveEditor(event);
 		DMDLTextEditor editor = (DMDLTextEditor) multiEditor.getActiveEditor();
 		DMDLDocument document = editor.getDocument();
 		ModelList models = document.getModelList();
 
-		ITextSelection selection = (ITextSelection) editor
-				.getSelectionProvider().getSelection();
+		ITextSelection selection = (ITextSelection) editor.getSelectionProvider().getSelection();
 		int offset = selection.getOffset();
 		DMDLToken token = models.getTokenByOffset(offset);
 		if (token != null && token instanceof WordToken) {

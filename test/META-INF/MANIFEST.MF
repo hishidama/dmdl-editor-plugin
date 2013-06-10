@@ -4,6 +4,11 @@ Bundle-Name: dmdl-editor-test
 Bundle-SymbolicName: dmdl-editor-test
 Bundle-Version: 1.0.1.qualifier
 Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.resources,
  org.eclipse.jface.text
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActiRequire-Bundle: org.eclipse.core.runtime,
+ org.eclipse.jface.text
+Import-Package: org.eclipse.jface.text.contentassist
+

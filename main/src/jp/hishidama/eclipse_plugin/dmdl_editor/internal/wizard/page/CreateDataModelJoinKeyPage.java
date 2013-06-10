@@ -109,7 +109,7 @@ public class CreateDataModelJoinKeyPage extends CreateDataModelPage<DataModelJoi
 		} else {
 			for (DMDLTreeData data : input) {
 				DataModelInfo info = (DataModelInfo) data.getData();
-				String modelName = info.getName();
+				String modelName = info.getModelName();
 
 				List<DMDLTreeData> children = data.getChildren();
 				if (children == null) {
@@ -181,7 +181,7 @@ public class CreateDataModelJoinKeyPage extends CreateDataModelPage<DataModelJoi
 			if (obj instanceof DataModelProperty) {
 				DataModelInfo info = (DataModelInfo) data.getParent().getData();
 				DataModelProperty p = (DataModelProperty) obj;
-				String modelName = info.getName();
+				String modelName = info.getModelName();
 				if (row == null) {
 					row = newCopyRow(null, null);
 				}
@@ -218,7 +218,7 @@ public class CreateDataModelJoinKeyPage extends CreateDataModelPage<DataModelJoi
 	protected void setGenerator(DataModelTextGenerator gen, TableItem[] items) {
 		for (DMDLTreeData data : input) {
 			DataModelInfo info = (DataModelInfo) data.getData();
-			String modelName = info.getName();
+			String modelName = info.getModelName();
 			if ((Boolean) data.getOtherData()) {
 				List<DMDLTreeData> children = data.getChildren();
 				for (DMDLTreeData c : children) {

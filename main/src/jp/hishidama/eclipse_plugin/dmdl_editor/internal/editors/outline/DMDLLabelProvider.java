@@ -1,11 +1,12 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.outline;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.DMDLMultiPageEditor;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.index.IndexContainer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.PropertyToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DMDLImages;
+import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelUtil;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.ViewerCell;
@@ -46,8 +47,10 @@ public class DMDLLabelProvider extends StyledCellLabelProvider {
 	protected void update(ViewerCell cell, PropertyToken prop) {
 		StyledString styledString = new StyledString(prop.getPropertyName());
 
-		IndexContainer ic = IndexContainer.getContainer(editor.getProject(), null);
-		String type = prop.getDataType(ic);
+		IProject project = editor.getProject();
+		String modelName = prop.getModelToken().getModelName();
+		String propertyName = prop.getName();
+		String type = DataModelUtil.getResolvedDataType(project, modelName, propertyName);
 		if (type != null) {
 			styledString.append(" : " + type, StyledString.DECORATIONS_STYLER);
 		}

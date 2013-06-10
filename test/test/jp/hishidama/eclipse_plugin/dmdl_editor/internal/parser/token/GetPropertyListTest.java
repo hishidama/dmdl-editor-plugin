@@ -1,6 +1,6 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,10 +8,8 @@ import java.util.List;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.DMDLSimpleParser;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.StringScanner;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.DMDLBodyToken;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelList;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.PropertyToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.index.IndexContainer;
+import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelFile;
 
 import org.junit.Test;
 
@@ -21,10 +19,10 @@ import org.junit.Test;
 @SuppressWarnings("unchecked")
 public class GetPropertyListTest {
 
-	protected static final String[] TYPES = { "BYTE", "SHORT", "INT", "LONG",
-			"FLOAT", "DOUBLE", "DECIMAL", "BOOLEAN", "TEXT", "DATE", "DATETIME" };
-	protected static final String[] SUM_TYPES = { "LONG", "LONG", "LONG",
-			"LONG", "DOUBLE", "DOUBLE", "DECIMAL", null, null, null, null };
+	protected static final String[] TYPES = { "BYTE", "SHORT", "INT", "LONG", "FLOAT", "DOUBLE", "DECIMAL", "BOOLEAN",
+			"TEXT", "DATE", "DATETIME" };
+	protected static final String[] SUM_TYPES = { "LONG", "LONG", "LONG", "LONG", "DOUBLE", "DOUBLE", "DECIMAL", null,
+			null, null, null };
 
 	@Test
 	public void simple() {
@@ -109,26 +107,22 @@ public class GetPropertyListTest {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		ModelList models = parser.parse(new StringScanner(actual));
 
-		List<Property> expected1 = Arrays.asList(prop("v1", "INT"),
-				prop("v2", "TEXT"));
+		List<Property> expected1 = Arrays.asList(prop("v1", "INT"), prop("v2", "TEXT"));
 		assertProperties(models, expected1, expected1);
 	}
 
 	@Test
 	public void ref_simple2() {
 		String actual1 = "simple1={\n" + "  v1 : INT;\n" + "  v2 : TEXT" + "};";
-		String actual2 = "simple2={\n" + "  v3 : LONG;\n" + "  v4 : BOOLEAN"
-				+ "};";
+		String actual2 = "simple2={\n" + "  v3 : LONG;\n" + "  v4 : BOOLEAN" + "};";
 		String actual3 = "ref1 = simple1 + simple2;";
 		String actual = actual1 + "\n" + actual2 + "\n" + actual3;
 
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		ModelList models = parser.parse(new StringScanner(actual));
 
-		List<Property> expected1 = Arrays.asList(prop("v1", "INT"),
-				prop("v2", "TEXT"));
-		List<Property> expected2 = Arrays.asList(prop("v3", "LONG"),
-				prop("v4", "BOOLEAN"));
+		List<Property> expected1 = Arrays.asList(prop("v1", "INT"), prop("v2", "TEXT"));
+		List<Property> expected2 = Arrays.asList(prop("v3", "LONG"), prop("v4", "BOOLEAN"));
 		List<Property> expected3 = new ArrayList<Property>(expected1);
 		expected3.addAll(expected2);
 		assertProperties(models, expected1, expected2, expected3);
@@ -143,8 +137,7 @@ public class GetPropertyListTest {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		ModelList models = parser.parse(new StringScanner(actual));
 
-		List<Property> expected1 = Arrays.asList(prop("v1", "INT"),
-				prop("v2", "TEXT"));
+		List<Property> expected1 = Arrays.asList(prop("v1", "INT"), prop("v2", "TEXT"));
 		List<Property> expected2 = Arrays.asList(prop("v3", "INT"));
 		assertProperties(models, expected1, expected2);
 	}
@@ -152,91 +145,72 @@ public class GetPropertyListTest {
 	@Test
 	public void ref_simple4() {
 		String actual1 = "simple1={\n" + "  v1 : INT;\n" + "  v2 : TEXT" + "};";
-		String actual2 = "simple2={\n" + "  v3 : LONG;\n" + "  v4 : BOOLEAN"
-				+ "};";
+		String actual2 = "simple2={\n" + "  v3 : LONG;\n" + "  v4 : BOOLEAN" + "};";
 		String actual3 = "ref1 = simple1 -> { v1->v6; } + simple2;";
 		String actual = actual1 + "\n" + actual2 + "\n" + actual3;
 
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		ModelList models = parser.parse(new StringScanner(actual));
 
-		List<Property> expected1 = Arrays.asList(prop("v1", "INT"),
-				prop("v2", "TEXT"));
-		List<Property> expected2 = Arrays.asList(prop("v3", "LONG"),
-				prop("v4", "BOOLEAN"));
-		List<Property> expected3 = Arrays.asList(prop("v6", "INT"),
-				prop("v3", "LONG"), prop("v4", "BOOLEAN"));
+		List<Property> expected1 = Arrays.asList(prop("v1", "INT"), prop("v2", "TEXT"));
+		List<Property> expected2 = Arrays.asList(prop("v3", "LONG"), prop("v4", "BOOLEAN"));
+		List<Property> expected3 = Arrays.asList(prop("v6", "INT"), prop("v3", "LONG"), prop("v4", "BOOLEAN"));
 		assertProperties(models, expected1, expected2, expected3);
 	}
 
 	@Test
 	public void ref_simple5() {
 		String actual1 = "simple1={\n" + "  v1 : INT;\n" + "  v2 : TEXT" + "};";
-		String actual2 = "simple2={\n" + "  v3 : LONG;\n" + "  v4 : BOOLEAN"
-				+ "};";
+		String actual2 = "simple2={\n" + "  v3 : LONG;\n" + "  v4 : BOOLEAN" + "};";
 		String actual3 = "ref1 = simple1 + simple2 -> { v4->v6; };";
 		String actual = actual1 + "\n" + actual2 + "\n" + actual3;
 
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		ModelList models = parser.parse(new StringScanner(actual));
 
-		List<Property> expected1 = Arrays.asList(prop("v1", "INT"),
-				prop("v2", "TEXT"));
-		List<Property> expected2 = Arrays.asList(prop("v3", "LONG"),
-				prop("v4", "BOOLEAN"));
-		List<Property> expected3 = Arrays.asList(prop("v1", "INT"),
-				prop("v2", "TEXT"), prop("v6", "BOOLEAN"));
+		List<Property> expected1 = Arrays.asList(prop("v1", "INT"), prop("v2", "TEXT"));
+		List<Property> expected2 = Arrays.asList(prop("v3", "LONG"), prop("v4", "BOOLEAN"));
+		List<Property> expected3 = Arrays.asList(prop("v1", "INT"), prop("v2", "TEXT"), prop("v6", "BOOLEAN"));
 		assertProperties(models, expected1, expected2, expected3);
 	}
 
 	@Test
 	public void ref_simple6() {
 		String actual1 = "simple1={\n" + "  v1 : INT;\n" + "  v2 : TEXT" + "};";
-		String actual2 = "simple2={\n" + "  v3 : LONG;\n" + "  v4 : BOOLEAN"
-				+ "};";
+		String actual2 = "simple2={\n" + "  v3 : LONG;\n" + "  v4 : BOOLEAN" + "};";
 		String actual3 = "ref1 = simple1->{v1->v6;} + simple2 -> { v3 -> v7 ; };";
 		String actual = actual1 + "\n" + actual2 + "\n" + actual3;
 
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		ModelList models = parser.parse(new StringScanner(actual));
 
-		List<Property> expected1 = Arrays.asList(prop("v1", "INT"),
-				prop("v2", "TEXT"));
-		List<Property> expected2 = Arrays.asList(prop("v3", "LONG"),
-				prop("v4", "BOOLEAN"));
-		List<Property> expected3 = Arrays.asList(prop("v6", "INT"),
-				prop("v7", "LONG"));
+		List<Property> expected1 = Arrays.asList(prop("v1", "INT"), prop("v2", "TEXT"));
+		List<Property> expected2 = Arrays.asList(prop("v3", "LONG"), prop("v4", "BOOLEAN"));
+		List<Property> expected3 = Arrays.asList(prop("v6", "INT"), prop("v7", "LONG"));
 		assertProperties(models, expected1, expected2, expected3);
 	}
 
 	@Test
 	public void join1() {
-		String actual1 = "simple1={\n" + "  v1 : INT;\n" + "  v2 : TEXT;\n"
-				+ "  v3 : LONG;\n" + "};";
-		String actual2 = "simple2={\n" + "  v1 : INT;\n" + "  a2 : BOOLEAN;\n"
-				+ "  a3 : TEXT;\n" + "};";
+		String actual1 = "simple1={\n" + "  v1 : INT;\n" + "  v2 : TEXT;\n" + "  v3 : LONG;\n" + "};";
+		String actual2 = "simple2={\n" + "  v1 : INT;\n" + "  a2 : BOOLEAN;\n" + "  a3 : TEXT;\n" + "};";
 		String actual3 = "joined join1 = simple1  % v1 + simple2 % v1;";
 		String actual = actual1 + "\n" + actual2 + "\n" + actual3;
 
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		ModelList models = parser.parse(new StringScanner(actual));
 
-		List<Property> expected1 = Arrays.asList(prop("v1", "INT"),
-				prop("v2", "TEXT"), prop("v3", "LONG"));
-		List<Property> expected2 = Arrays.asList(prop("v1", "INT"),
+		List<Property> expected1 = Arrays.asList(prop("v1", "INT"), prop("v2", "TEXT"), prop("v3", "LONG"));
+		List<Property> expected2 = Arrays.asList(prop("v1", "INT"), prop("a2", "BOOLEAN"), prop("a3", "TEXT"));
+		List<Property> expected3 = Arrays.asList(prop("v1", "INT"), prop("v2", "TEXT"), prop("v3", "LONG"),
 				prop("a2", "BOOLEAN"), prop("a3", "TEXT"));
-		List<Property> expected3 = Arrays.asList(prop("v1", "INT"),
-				prop("v2", "TEXT"), prop("v3", "LONG"), prop("a2", "BOOLEAN"),
-				prop("a3", "TEXT"));
 		assertProperties(models, expected1, expected2, expected3);
 	}
 
 	@Test
 	public void join2() {
-		String actual1 = "simple1={\n" + "  v1 : INT;\n" + "  v2 : TEXT;\n"
-				+ "  v3 : LONG;\n" + "};";
-		String actual2 = "simple2={\n" + "  a1 : INT;\n" + "  a2 : BOOLEAN;\n"
-				+ "  a3 : TEXT;\n" + "};";
+		String actual1 = "simple1={\n" + "  v1 : INT;\n" + "  v2 : TEXT;\n" + "  v3 : LONG;\n" + "};";
+		String actual2 = "simple2={\n" + "  a1 : INT;\n" + "  a2 : BOOLEAN;\n" + "  a3 : TEXT;\n" + "};";
 		String actual3 = "joined join1 = simple1 -> { v1->key; v2->v2; }  % key\n"
 				+ "+ simple2 -> { a1->key; a3->a3; }% key;";
 		String actual = actual1 + "\n" + actual2 + "\n" + actual3;
@@ -244,19 +218,24 @@ public class GetPropertyListTest {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		ModelList models = parser.parse(new StringScanner(actual));
 
-		List<Property> expected1 = Arrays.asList(prop("v1", "INT"),
-				prop("v2", "TEXT"), prop("v3", "LONG"));
-		List<Property> expected2 = Arrays.asList(prop("a1", "INT"),
-				prop("a2", "BOOLEAN"), prop("a3", "TEXT"));
-		List<Property> expected3 = Arrays.asList(prop("key", "INT"),
-				prop("v2", "TEXT"), prop("a3", "TEXT"));
+		List<Property> expected1 = Arrays.asList(prop("v1", "INT"), prop("v2", "TEXT"), prop("v3", "LONG"));
+		List<Property> expected2 = Arrays.asList(prop("a1", "INT"), prop("a2", "BOOLEAN"), prop("a3", "TEXT"));
+		List<Property> expected3 = Arrays.asList(prop("key", "INT"), prop("v2", "TEXT"), prop("a3", "TEXT"));
 		assertProperties(models, expected1, expected2, expected3);
 	}
 
 	// assertion
 
-	protected void assertProperties(ModelList actual,
-			List<Property>... expected) {
+	protected void assertProperties(ModelList actual, List<Property>... expected) {
+		IndexContainer ic = new IndexContainer(null);
+		@SuppressWarnings("serial")
+		DataModelFile f = new DataModelFile("junit") {
+		};
+		ic.addFile(f);
+		for (ModelToken model : actual.getNamedModelList()) {
+			ic.initialize(f, model);
+		}
+
 		assertEquals(expected.length, actual.getBody().size());
 		for (int i = 0; i < expected.length; i++) {
 			List<Property> list = expected[i];
@@ -267,8 +246,11 @@ public class GetPropertyListTest {
 			for (int j = 0; j < list.size(); j++) {
 				Property ex = list.get(j);
 				PropertyToken ac = props.get(j);
-				assertEquals("prop=" + ac, ex.name, ac.getName());
-				assertEquals("prop=" + ac, ex.type, ac.getDataType(null));
+				String pname = ac.getName();
+				assertEquals("prop=" + ac, ex.name, pname);
+				String mname = ac.getModelToken().getModelName();
+				String type = ic.getResolvedDataType(mname, pname);
+				assertEquals("prop=" + ac, ex.type, type);
 			}
 		}
 	}

@@ -45,8 +45,8 @@ public class DMDLLabelProvider extends LabelProvider {
 		}
 		if (obj instanceof DataModelInfo) {
 			DataModelInfo info = (DataModelInfo) obj;
-			String name = info.getName();
-			String desc = info.getDescription();
+			String name = info.getModelName();
+			String desc = info.getModelDescription();
 			String title = (desc != null) ? MessageFormat.format("{0} : {1}", name, desc) : name;
 			return title;
 		}

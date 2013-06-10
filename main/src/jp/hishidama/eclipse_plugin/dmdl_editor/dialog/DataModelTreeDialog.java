@@ -63,7 +63,7 @@ public abstract class DataModelTreeDialog extends EditDialog {
 				Object obj = data.getData();
 				if (obj instanceof DataModelInfo) {
 					DataModelInfo info = (DataModelInfo) obj;
-					if (info.getName().equals(name)) {
+					if (info.getModelName().equals(name)) {
 						this.treeData = data;
 						tree.getTree().setSelection(item);
 						return;
@@ -89,7 +89,7 @@ public abstract class DataModelTreeDialog extends EditDialog {
 		treeData = data;
 		if (obj instanceof DataModelInfo) {
 			DataModelInfo info = (DataModelInfo) obj;
-			name = info.getName();
+			name = info.getModelName();
 		}
 		return true;
 	}

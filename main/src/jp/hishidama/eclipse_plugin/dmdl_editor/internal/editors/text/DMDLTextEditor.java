@@ -4,6 +4,7 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.outline.DMDLOutlinePage;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.folding.FoldingManager;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.style.ColorManager;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.index.IndexContainer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelList;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.PropertyToken;
@@ -195,6 +196,9 @@ public class DMDLTextEditor extends TextEditor implements IPropertyChangeListene
 		DMDLDocument document = getDocument();
 		ModelList models = document.getModelList();
 		// models = new DMDLSimpleParser().parse(document);
+
+		IndexContainer ic = IndexContainer.getContainer(getProject());
+		ic.refresh(getFile(), models);
 
 		// フォールディング範囲を最新状態に更新する
 		foldingManager.updateFolding(document, models);

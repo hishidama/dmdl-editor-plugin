@@ -14,8 +14,7 @@ import org.eclipse.jface.text.hyperlink.IHyperlink;
 public class DMDLHyperlinkDetector extends AbstractHyperlinkDetector {
 
 	@Override
-	public IHyperlink[] detectHyperlinks(ITextViewer textViewer,
-			IRegion region, boolean canShowMultipleHyperlinks) {
+	public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
 		DMDLDocument document = (DMDLDocument) textViewer.getDocument();
 		ModelList models = document.getModelList();
 		// if (models == null) {

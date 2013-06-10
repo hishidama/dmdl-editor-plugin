@@ -3,11 +3,11 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.viewer;
 import java.util.ArrayList;
 import java.util.List;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelFile;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelInfo;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelProperty;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelUtil;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 
 public abstract class DMDLTreeData {
@@ -43,10 +43,10 @@ public abstract class DMDLTreeData {
 	public abstract List<DMDLTreeData> getChildren();
 
 	public static class File extends DMDLTreeData {
-		private IFile file;
+		private DataModelFile file;
 		private List<DMDLTreeData> children;
 
-		public File(IFile file) {
+		public File(DataModelFile file) {
 			super(file.getProject(), null);
 			this.file = file;
 		}
@@ -64,7 +64,7 @@ public abstract class DMDLTreeData {
 		@Override
 		public List<DMDLTreeData> getChildren() {
 			if (children == null) {
-				List<DataModelInfo> list = DataModelUtil.getModels(file);
+				List<DataModelInfo> list = DataModelUtil.getModels(file.getFile());
 				children = new ArrayList<DMDLTreeData>(list.size());
 				for (DataModelInfo info : list) {
 					children.add(new Model(project, this, info));
@@ -96,7 +96,7 @@ public abstract class DMDLTreeData {
 		@Override
 		public List<DMDLTreeData> getChildren() {
 			if (children == null) {
-				String modelName = info.getName();
+				String modelName = info.getModelName();
 				List<DataModelProperty> list = DataModelUtil.getModelProperties(project, modelName);
 				if (list == null) {
 					return null;

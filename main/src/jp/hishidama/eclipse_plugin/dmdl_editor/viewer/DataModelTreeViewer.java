@@ -3,9 +3,9 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.viewer;
 import java.util.ArrayList;
 import java.util.List;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelFile;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelUtil;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -33,9 +33,9 @@ public class DataModelTreeViewer extends TreeViewer {
 	public void setInputAll(IProject project) {
 		setContentProvider(new DMDLTreeContentProvider());
 
-		List<IFile> files = DataModelUtil.getDmdlFiles(project);
+		List<DataModelFile> files = DataModelUtil.getDmdlFiles(project);
 		List<DMDLTreeData> list = new ArrayList<DMDLTreeData>(files.size());
-		for (IFile file : files) {
+		for (DataModelFile file : files) {
 			list.add(new DMDLTreeData.File(file));
 		}
 		setInput(list);

@@ -7,8 +7,14 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.viewer.DataModelTreeViewer;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 
 public abstract class DataModelTreeDialog extends EditDialog {
@@ -29,9 +35,26 @@ public abstract class DataModelTreeDialog extends EditDialog {
 
 	@Override
 	protected void createFields(Composite composite) {
-		tree = createDataModelTreeField(composite, "data model");
+		final Text filter = createTextField(composite, "filter :");
+		filter.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				tree.setFilterText(filter.getText().trim());
+			}
+		});
+
+		tree = createDataModelTreeField(composite, "data model :");
 		tree.setInputAll(project);
 		tree.expandToLevel(getInitialExpandLevel());
+
+		Button button = new Button(composite, SWT.PUSH);
+		button.setText("expand all");
+		button.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				tree.expandAll();
+			}
+		});
 	}
 
 	private DataModelTreeViewer createDataModelTreeField(Composite composite, String label) {

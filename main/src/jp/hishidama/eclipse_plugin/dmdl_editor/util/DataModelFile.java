@@ -1,6 +1,7 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,6 +103,10 @@ public class DataModelFile extends DataModelPosition {
 
 	public void clearModels() {
 		models = null;
+	}
+
+	public void setModelsEmpty() {
+		models = Collections.emptyList();
 	}
 
 	public void addModel(DataModelInfo info) {

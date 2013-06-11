@@ -11,7 +11,11 @@ import org.eclipse.swt.widgets.Shell;
 public class DmdlModelPropertySelectionDialog extends DataModelTreeDialog {
 
 	public DmdlModelPropertySelectionDialog(Shell parentShell, IProject project) {
-		super(parentShell, project, "データモデル/プロパティー選択");
+		this(parentShell, project, "データモデル/プロパティー選択");
+	}
+
+	public DmdlModelPropertySelectionDialog(Shell parentShell, IProject project, String windowTitle) {
+		super(parentShell, project, windowTitle);
 	}
 
 	@Override

@@ -96,8 +96,13 @@ public class IndexContainer implements Serializable {
 
 	private void initialize(DataModelFile f, DMDLSimpleParser parser) {
 		ModelList models = getModels(f.getFile(), parser);
-		for (ModelToken model : models.getNamedModelList()) {
-			initialize(f, model);
+		List<ModelToken> mlist = models.getNamedModelList();
+		if (mlist.isEmpty()) {
+			f.setModelsEmpty();
+		} else {
+			for (ModelToken model : mlist) {
+				initialize(f, model);
+			}
 		}
 		addFile(f, true);
 	}
@@ -134,7 +139,12 @@ public class IndexContainer implements Serializable {
 			f.addModel(info);
 		}
 
-		for (PropertyToken token : model.getPropertyList()) {
+		List<PropertyToken> plist = model.getPropertyList();
+		if (plist.isEmpty()) {
+			info.setPropertyEmpty();
+			return;
+		}
+		for (PropertyToken token : plist) {
 			String pname = token.getName();
 			String pdesc = token.getPropertyDescription();
 

@@ -7,6 +7,7 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelFile;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelInfo;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelProperty;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelUtil;
+import jp.hishidama.eclipse_plugin.util.StringUtil;
 
 import org.eclipse.core.resources.IProject;
 
@@ -14,6 +15,7 @@ public abstract class DMDLTreeData {
 	private DMDLTreeData parent;
 	protected final IProject project;
 	private Object otherData = null;
+	private boolean filterSelected = true;
 
 	public DMDLTreeData(IProject project, DMDLTreeData parent) {
 		this.project = project;
@@ -38,6 +40,47 @@ public abstract class DMDLTreeData {
 		return otherData;
 	}
 
+	public boolean setFilter(String filter) {
+		filterSelected = isSelect(filter);
+		return filterSelected;
+	}
+
+	public boolean isFilterSelected() {
+		return filterSelected;
+	}
+
+	private boolean isSelect(String filter) {
+		boolean r = isSelect(getText(), filter) || isSelect(getText2(), filter);
+		r |= childSelect(filter);
+		return r;
+	}
+
+	private boolean childSelect(String filter) {
+		List<DMDLTreeData> cs = getChildren();
+		if (cs == null) {
+			return false;
+		}
+		boolean r = false;
+		for (DMDLTreeData c : cs) {
+			r |= c.setFilter(filter);
+		}
+		return r;
+	}
+
+	protected abstract String getText();
+
+	protected abstract String getText2();
+
+	private static boolean isSelect(String s, String filter) {
+		if (s == null) {
+			return false;
+		}
+		if (StringUtil.isEmpty(filter)) {
+			return true;
+		}
+		return s.contains(filter);
+	}
+
 	public abstract boolean hasChildren();
 
 	public abstract List<DMDLTreeData> getChildren();
@@ -54,6 +97,16 @@ public abstract class DMDLTreeData {
 		@Override
 		public Object getData() {
 			return file;
+		}
+
+		@Override
+		protected String getText() {
+			return file.getFilePath();
+		}
+
+		@Override
+		protected String getText2() {
+			return null;
 		}
 
 		@Override
@@ -86,6 +139,16 @@ public abstract class DMDLTreeData {
 		@Override
 		public Object getData() {
 			return info;
+		}
+
+		@Override
+		protected String getText() {
+			return info.getModelName();
+		}
+
+		@Override
+		protected String getText2() {
+			return DataModelUtil.decodeDescription(info.getModelDescription());
 		}
 
 		@Override
@@ -130,6 +193,16 @@ public abstract class DMDLTreeData {
 		@Override
 		public Object getData() {
 			return property;
+		}
+
+		@Override
+		protected String getText() {
+			return property.getName();
+		}
+
+		@Override
+		protected String getText2() {
+			return DataModelUtil.decodeDescription(property.getDescription());
 		}
 
 		@Override

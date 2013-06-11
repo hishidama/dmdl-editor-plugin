@@ -38,9 +38,17 @@ public class DataModelUtil {
 	}
 
 	public static List<DataModelProperty> getModelProperties(IProject project, String modelName) {
-		DataModelInfo info = findModel(project, modelName);
+		if (project == null) {
+			return null;
+		}
+		IndexContainer ic = IndexContainer.getContainer(project);
+		DataModelInfo info = ic.getModel(modelName);
 		if (info == null) {
 			return null;
+		}
+		if (info.isPropertiesNull()) {
+			ic.refresh(info.getFile(), null);
+			info = ic.getModel(modelName);
 		}
 		return info.getProperties();
 	}

@@ -2,6 +2,7 @@ package jp.hishidama.eclipse_plugin.dialog;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -131,9 +132,7 @@ public abstract class EditDialog extends Dialog {
 	}
 
 	protected void initializeTree(Tree tree) {
-		GridData data = new GridData(GridData.FILL_HORIZONTAL);
-		data.widthHint = 128 * 3;
-		data.heightHint = 128 * 2;
+		GridData data = GridDataFactory.fillDefaults().hint(128 * 3, 128 * 2).span(2, 1).create();
 		tree.setLayoutData(data);
 
 		tree.addSelectionListener(new SelectionAdapter() {

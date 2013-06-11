@@ -9,11 +9,15 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelUtil;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
 
 public class DataModelTreeViewer extends TreeViewer {
+
+	private DataModelFilter viewerFilter;
 
 	public DataModelTreeViewer(Composite parent, int style) {
 		this(parent, style, false);
@@ -49,5 +53,29 @@ public class DataModelTreeViewer extends TreeViewer {
 	@Override
 	public ITreeSelection getSelection() {
 		return (ITreeSelection) super.getSelection();
+	}
+
+	protected static class DataModelFilter extends ViewerFilter {
+
+		@Override
+		public boolean select(Viewer viewer, Object parentElement, Object element) {
+			DMDLTreeData data = (DMDLTreeData) element;
+			return data.isFilterSelected();
+		}
+	}
+
+	public void setFilterText(String filter) {
+		@SuppressWarnings("unchecked")
+		List<DMDLTreeData> input = (List<DMDLTreeData>) getInput();
+		for (DMDLTreeData data : input) {
+			data.setFilter(filter);
+		}
+
+		if (viewerFilter == null) {
+			viewerFilter = new DataModelFilter();
+			addFilter(viewerFilter);
+		} else {
+			refresh();
+		}
 	}
 }

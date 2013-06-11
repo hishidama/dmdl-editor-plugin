@@ -43,7 +43,8 @@ public class JumpDataModelHandler extends AbstractHandler {
 		}
 
 		if (project != null) {
-			DmdlModelPropertySelectionDialog dialog = new DmdlModelPropertySelectionDialog(null, project);
+			DmdlModelPropertySelectionDialog dialog = new DmdlModelPropertySelectionDialog(null, project,
+					"ジャンプ先 データモデル/プロパティー の選択");
 			if (dialog.open() == Window.OK) {
 				DataModelPosition index = dialog.getSelectedDataModel();
 				if (index != null) {

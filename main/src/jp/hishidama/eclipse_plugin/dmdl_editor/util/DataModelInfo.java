@@ -1,6 +1,7 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,10 @@ public class DataModelInfo extends DataModelPosition {
 		return type;
 	}
 
+	public boolean isPropertiesNull() {
+		return properties == null;
+	}
+
 	public List<DataModelProperty> getProperties() {
 		if (properties == null) {
 			properties = DataModelUtil.getModelProperties(getProject(), getModelName());
@@ -50,6 +55,10 @@ public class DataModelInfo extends DataModelPosition {
 			}
 		}
 		return properties;
+	}
+
+	public void setPropertyEmpty() {
+		properties = Collections.emptyList();
 	}
 
 	public void addProperty(DataModelProperty prop) {

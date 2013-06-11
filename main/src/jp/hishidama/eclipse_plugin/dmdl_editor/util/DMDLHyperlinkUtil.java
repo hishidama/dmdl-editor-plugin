@@ -14,7 +14,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.ui.ide.IGotoMarker;
 
 /**
  * DMDLハイパーリンクユーティリティー.
@@ -72,8 +71,7 @@ public class DMDLHyperlinkUtil {
 				IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
 				IWorkbenchPage page = window.getActivePage();
 				IEditorPart editor = IDE.openEditor(page, file);
-				IGotoMarker target = (IGotoMarker) editor.getAdapter(IGotoMarker.class);
-				target.gotoMarker(marker);
+				IDE.gotoMarker(editor, marker);
 				return true;
 			} finally {
 				marker.delete();

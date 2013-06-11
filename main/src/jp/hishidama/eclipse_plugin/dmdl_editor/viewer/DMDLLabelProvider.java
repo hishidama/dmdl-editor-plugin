@@ -3,10 +3,10 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.viewer;
 import java.text.MessageFormat;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DMDLImages;
+import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelFile;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelInfo;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelProperty;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
@@ -19,7 +19,7 @@ public class DMDLLabelProvider extends LabelProvider {
 			obj = ((DMDLTreeData) element).getData();
 		}
 
-		if (obj instanceof IFile) {
+		if (obj instanceof DataModelFile) {
 			return DMDLImages.getDmdlFileImage();
 		}
 		if (obj instanceof DataModelInfo) {
@@ -39,9 +39,9 @@ public class DMDLLabelProvider extends LabelProvider {
 			obj = ((DMDLTreeData) element).getData();
 		}
 
-		if (obj instanceof IFile) {
-			IFile file = (IFile) obj;
-			return file.getProjectRelativePath().toPortableString();
+		if (obj instanceof DataModelFile) {
+			DataModelFile file = (DataModelFile) obj;
+			return file.getFilePath();
 		}
 		if (obj instanceof DataModelInfo) {
 			DataModelInfo info = (DataModelInfo) obj;

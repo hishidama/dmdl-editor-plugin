@@ -1,5 +1,6 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.dialog;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelFile;
 import jp.hishidama.eclipse_plugin.dmdl_editor.viewer.DMDLTreeData;
 
 import org.eclipse.core.resources.IFile;
@@ -20,8 +21,8 @@ public class DmdlFileSelectionDialog extends DataModelTreeDialog {
 	public IFile getSelectedFile() {
 		for (DMDLTreeData data = getSelectionData(); data != null; data = data.getParent()) {
 			Object obj = data.getData();
-			if (obj instanceof IFile) {
-				return (IFile) obj;
+			if (obj instanceof DataModelFile) {
+				return ((DataModelFile) obj).getFile();
 			}
 		}
 		return null;

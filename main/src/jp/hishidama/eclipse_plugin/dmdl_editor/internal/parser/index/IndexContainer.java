@@ -95,14 +95,20 @@ public class IndexContainer implements Serializable {
 	}
 
 	private void initialize(DataModelFile f, DMDLSimpleParser parser) {
-		DocumentManager dm = DMDLFileUtil.getDocument(f.getFile());
+		ModelList models = getModels(f.getFile(), parser);
+		for (ModelToken model : models.getNamedModelList()) {
+			initialize(f, model);
+		}
+		addFile(f, true);
+	}
+
+	private ModelList getModels(IFile file, DMDLSimpleParser parser) {
+		DocumentManager dm = DMDLFileUtil.getDocument(file);
 		try {
 			IDocument document = dm.getDocument();
 			DocumentScanner scanner = new DocumentScanner(document);
 			ModelList models = parser.parse(scanner);
-			for (ModelToken model : models.getNamedModelList()) {
-				initialize(f, model);
-			}
+			return models;
 		} finally {
 			try {
 				dm.close();
@@ -110,7 +116,6 @@ public class IndexContainer implements Serializable {
 				e.printStackTrace();
 			}
 		}
-		addFile(f, true);
 	}
 
 	public void addFile(DataModelFile file, boolean put) {
@@ -156,6 +161,11 @@ public class IndexContainer implements Serializable {
 	}
 
 	public void refresh(IFile file, ModelList models) {
+		if (models == null) {
+			DMDLSimpleParser parser = new DMDLSimpleParser();
+			models = getModels(file, parser);
+		}
+
 		DataModelFile f = getFileFromMap(file);
 		if (f == null) {
 			f = new DataModelFile(file);

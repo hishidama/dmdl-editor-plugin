@@ -1,6 +1,6 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.internal.handler;
 
-import jp.hishidama.eclipse_plugin.dmdl_editor.dialog.DmdlModelPropertySelectionDialog;
+import jp.hishidama.eclipse_plugin.dmdl_editor.dialog.DmdlAnySelectionDialog;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DMDLHyperlinkUtil;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelPosition;
 import jp.hishidama.eclipse_plugin.util.FileUtil;
@@ -43,8 +43,7 @@ public class JumpDataModelHandler extends AbstractHandler {
 		}
 
 		if (project != null) {
-			DmdlModelPropertySelectionDialog dialog = new DmdlModelPropertySelectionDialog(null, project,
-					"ジャンプ先 データモデル/プロパティー の選択");
+			DmdlAnySelectionDialog dialog = new DmdlAnySelectionDialog(null, project, "ジャンプ先 データモデル/プロパティー の選択");
 			if (dialog.open() == Window.OK) {
 				DataModelPosition index = dialog.getSelectedDataModel();
 				if (index != null) {

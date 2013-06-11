@@ -82,12 +82,12 @@ class DataModelNormalRow extends DataModelRow {
 			if (0 <= n && n < DATA_TYPE.length) {
 				this.dataType = DATA_TYPE[n];
 			}
-			return false;
+			return true;
 		}
 		if (property.equals(TP_REF_MODEL)) {
 			String text = ((String) value).trim();
 			this.refModelName = text;
-			return false;
+			return true;
 		}
 		throw new UnsupportedOperationException(MessageFormat.format("property={0}", property));
 	}

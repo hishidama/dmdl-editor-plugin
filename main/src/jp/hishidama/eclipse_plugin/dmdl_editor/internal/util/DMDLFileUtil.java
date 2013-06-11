@@ -14,7 +14,6 @@ import java.util.Set;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.DMDLMultiPageEditor;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.DMDLDocument;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.DMDLSimpleParser;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.DocumentScanner;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelList;
@@ -182,13 +181,15 @@ public class DMDLFileUtil {
 		}
 	}
 
-	public static DMDLDocument openEditor(IFile file) {
+	public static DMDLMultiPageEditor openEditor(IFile file) {
 		if (file.exists()) {
 			try {
 				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 				IEditorPart part = IDE.openEditor(page, file);
 				if (part instanceof DMDLMultiPageEditor) {
-					return ((DMDLMultiPageEditor) part).getDocument();
+					DMDLMultiPageEditor editor = (DMDLMultiPageEditor) part;
+					editor.refresh();
+					return editor;
 				}
 				return null;
 			} catch (Exception e) {

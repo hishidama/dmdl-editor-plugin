@@ -86,4 +86,8 @@ public class DMDLMultiPageEditor extends FormEditor {
 	public DMDLDocument getDocument() {
 		return editor.getDocument();
 	}
+
+	public void refresh() {
+		editor.refresh();
+	}
 }

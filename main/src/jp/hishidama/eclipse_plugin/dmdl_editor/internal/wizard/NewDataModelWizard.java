@@ -6,9 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.DMDLDocument;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.index.IndexContainer;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelList;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.util.DMDLFileUtil;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.CreateDataModelJoinKeyPage;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.CreateDataModelJoinPage;
@@ -220,12 +218,9 @@ public class NewDataModelWizard extends Wizard implements IWorkbenchWizard {
 			sb.append(text);
 			FileUtil.save(file, sb.toString());
 		}
-		ModelList models = null;
-		DMDLDocument doc = DMDLFileUtil.openEditor(file);
-		if (doc != null) {
-			models = doc.getModelList();
+		if (DMDLFileUtil.openEditor(file) == null) {
+			IndexContainer ic = IndexContainer.getContainer(project);
+			ic.refresh(file, null);
 		}
-		IndexContainer ic = IndexContainer.getContainer(project);
-		ic.refresh(file, models);
 	}
 }

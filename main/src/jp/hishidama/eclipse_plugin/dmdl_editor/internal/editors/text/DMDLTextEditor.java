@@ -12,6 +12,7 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.WordToken;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.IDocument;
@@ -28,6 +29,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.ui.texteditor.IDocumentProvider;
+import org.eclipse.ui.texteditor.IDocumentProviderExtension;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 public class DMDLTextEditor extends TextEditor implements IPropertyChangeListener {
@@ -189,6 +192,17 @@ public class DMDLTextEditor extends TextEditor implements IPropertyChangeListene
 	public void doSave(IProgressMonitor progressMonitor) {
 		super.doSave(progressMonitor);
 
+		update();
+	}
+
+	public void refresh() {
+		IDocumentProvider provider = getDocumentProvider();
+		IDocumentProviderExtension extension = (IDocumentProviderExtension) provider;
+		try {
+			extension.synchronize(getEditorInput());
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
 		update();
 	}
 

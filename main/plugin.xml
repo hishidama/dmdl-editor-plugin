@@ -98,6 +98,11 @@
             id="dmdl-editor-plugin.compile-command"
             name="DMDL compile">
       </command>
+      <command
+            categoryId="dmdl-editor-plugin.category"
+            id="dmdl-editor-plugin.jump-datamodel-command"
+            name="jump DataModel">
+      </command>
 
       <category
             id="dmdl-editor-plugin.jdt.category"
@@ -126,6 +131,10 @@
       <handler
             class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.compile.DMDLCompileHandler"
             commandId="dmdl-editor-plugin.compile-command">
+      </handler>
+      <handler
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.handler.JumpDataModelHandler"
+            commandId="dmdl-editor-plugin.jump-datamodel-command">
       </handler>
 
       <handler
@@ -210,13 +219,19 @@
                   commandId="dmdl-editor-plugin.errorcheck-command"
                   icon="icons/hishidama16.gif"
                   style="push"
-                  tooltip="DMDL create index / error check">
+                  tooltip="DMDLEditorプラグイン内で使用するインデックスの作成およびDMDLのエラーチェックを行います。">
             </command>
             <command
                   commandId="dmdl-editor-plugin.compile-command"
                   icon="icons/hishidama16.gif"
                   style="push"
-                  tooltip="DMDL compile">
+                  tooltip="Asakusa FrameworkのDMDLコンパイラーを起動してJavaクラスを生成します。">
+            </command>
+            <command
+                  commandId="dmdl-editor-plugin.jump-datamodel-command"
+                  icon="icons/hishidama16.gif"
+                  style="push"
+                  tooltip="データモデルの選択ダイアログを開き、選択されたデータモデルへジャンプします。">
             </command>
             <separator
                   name="beginNewWizard"

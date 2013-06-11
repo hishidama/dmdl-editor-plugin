@@ -7,9 +7,9 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.viewer.DMDLTreeData;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.swt.widgets.Shell;
 
-public class DataModelSelectionDialog extends DataModelTreeDialog {
+public class DmdlModelSelectionDialog extends DataModelTreeDialog {
 
-	public DataModelSelectionDialog(Shell parentShell, IProject project) {
+	public DmdlModelSelectionDialog(Shell parentShell, IProject project) {
 		super(parentShell, project, "データモデル選択");
 	}
 

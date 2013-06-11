@@ -81,23 +81,7 @@ public class IndexContainer implements Serializable {
 
 			for (IFile file : files) {
 				cancelCheck(monitor);
-				DataModelFile f = createFile(file);
-
-				DocumentManager dm = DMDLFileUtil.getDocument(file);
-				try {
-					IDocument document = dm.getDocument();
-					DocumentScanner scanner = new DocumentScanner(document);
-					ModelList models = parser.parse(scanner);
-					for (ModelToken model : models.getNamedModelList()) {
-						initialize(f, model);
-					}
-				} finally {
-					try {
-						dm.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
+				initialize(file, parser);
 				monitor.worked(1);
 			}
 		} finally {
@@ -105,14 +89,35 @@ public class IndexContainer implements Serializable {
 		}
 	}
 
-	private DataModelFile createFile(IFile file) {
+	private void initialize(IFile file, DMDLSimpleParser parser) {
 		DataModelFile f = new DataModelFile(file);
-		addFile(f);
-		return f;
+		initialize(f, parser);
 	}
 
-	public void addFile(DataModelFile file) {
+	private void initialize(DataModelFile f, DMDLSimpleParser parser) {
+		DocumentManager dm = DMDLFileUtil.getDocument(f.getFile());
+		try {
+			IDocument document = dm.getDocument();
+			DocumentScanner scanner = new DocumentScanner(document);
+			ModelList models = parser.parse(scanner);
+			for (ModelToken model : models.getNamedModelList()) {
+				initialize(f, model);
+			}
+		} finally {
+			try {
+				dm.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		addFile(f, true);
+	}
+
+	public void addFile(DataModelFile file, boolean put) {
 		fileMap.put(file.getFilePath(), file);
+		if (modelMap != null && put) {
+			putMap(file);
+		}
 	}
 
 	public void initialize(DataModelFile f, ModelToken model) {
@@ -151,8 +156,15 @@ public class IndexContainer implements Serializable {
 	}
 
 	public void refresh(IFile file, ModelList models) {
-		DataModelFile f = getFile(file);
-		if (f != null) {
+		DataModelFile f = getFileFromMap(file);
+		if (f == null) {
+			f = new DataModelFile(file);
+		}
+		refresh(f, models);
+	}
+
+	private void refresh(DataModelFile f, ModelList models) {
+		if (!f.isModelsNull()) {
 			for (DataModelInfo info : f.getModels()) {
 				String modelName = info.getModelName();
 				if (modelMap != null) {
@@ -163,12 +175,11 @@ public class IndexContainer implements Serializable {
 				}
 			}
 			f.clearModels();
-		} else {
-			f = createFile(file);
 		}
 		for (ModelToken model : models.getNamedModelList()) {
 			initialize(f, model);
 		}
+		addFile(f, true);
 		save();
 	}
 
@@ -177,7 +188,28 @@ public class IndexContainer implements Serializable {
 	}
 
 	public DataModelFile getFile(IFile file) {
+		DataModelFile f = getFileFromMap(file);
+		if (f == null) {
+			f = new DataModelFile(file);
+			addFile(f, false);
+		}
+		return f;
+	}
+
+	private DataModelFile getFileFromMap(IFile file) {
 		return fileMap.get(file.getProjectRelativePath().toPortableString());
+	}
+
+	public List<DataModelInfo> getModels(IFile file) {
+		DataModelFile f = getFileFromMap(file);
+		if (f == null) {
+			f = new DataModelFile(file);
+		}
+		if (f.isModelsNull()) {
+			DMDLSimpleParser parser = new DMDLSimpleParser();
+			initialize(f, parser);
+		}
+		return f.getModels();
 	}
 
 	public DataModelInfo getModel(String modelName) {
@@ -185,12 +217,7 @@ public class IndexContainer implements Serializable {
 			modelMap = new HashMap<String, DataModelInfo>();
 			camelMap = new HashMap<String, DataModelInfo>();
 			for (DataModelFile file : fileMap.values()) {
-				for (DataModelInfo info : file.getModels()) {
-					String mname = info.getModelName();
-					modelMap.put(mname, info);
-					String cname = StringUtil.toCamelCase(mname);
-					camelMap.put(cname, info);
-				}
+				putMap(file);
 			}
 		}
 
@@ -199,6 +226,15 @@ public class IndexContainer implements Serializable {
 			return info;
 		}
 		return camelMap.get(modelName);
+	}
+
+	private void putMap(DataModelFile file) {
+		for (DataModelInfo info : file.getModels()) {
+			String mname = info.getModelName();
+			modelMap.put(mname, info);
+			String cname = StringUtil.toCamelCase(mname);
+			camelMap.put(cname, info);
+		}
 	}
 
 	public DataModelProperty getProperty(String modelName, String propertyName) {

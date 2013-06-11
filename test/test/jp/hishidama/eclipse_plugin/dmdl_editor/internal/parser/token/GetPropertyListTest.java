@@ -231,7 +231,7 @@ public class GetPropertyListTest {
 		@SuppressWarnings("serial")
 		DataModelFile f = new DataModelFile("junit") {
 		};
-		ic.addFile(f);
+		ic.addFile(f, false);
 		for (ModelToken model : actual.getNamedModelList()) {
 			ic.initialize(f, model);
 		}

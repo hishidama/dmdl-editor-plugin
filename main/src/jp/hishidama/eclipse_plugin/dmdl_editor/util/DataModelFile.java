@@ -86,6 +86,10 @@ public class DataModelFile extends DataModelPosition {
 		return filePath;
 	}
 
+	public boolean isModelsNull() {
+		return models == null;
+	}
+
 	public List<DataModelInfo> getModels() {
 		if (models == null) {
 			models = DataModelUtil.getModels(getFile());

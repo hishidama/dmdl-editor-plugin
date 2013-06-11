@@ -13,14 +13,6 @@ import org.eclipse.core.resources.IProject;
 
 public class DataModelUtil {
 
-	public static DataModelInfo findModel(IProject project, String modelName) {
-		if (project == null) {
-			return null;
-		}
-		IndexContainer ic = IndexContainer.getContainer(project);
-		return ic.getModel(modelName);
-	}
-
 	public static List<DataModelFile> getDmdlFiles(IProject project) {
 		if (project == null) {
 			return null;
@@ -34,21 +26,15 @@ public class DataModelUtil {
 			return null;
 		}
 		IndexContainer ic = IndexContainer.getContainer(file.getProject());
-		DataModelFile f = ic.getFile(file);
-		if (f == null) {
-			return null;
-		}
-		return f.getModels();
+		return ic.getModels(file);
 	}
 
-	public static String getModelClass(IProject project, String modelName) {
-		Properties properties = BuildPropertiesUtil.getBuildProperties(project);
-		String pack = BuildPropertiesUtil.getModelgenPackage(properties);
-		if (pack == null) {
+	public static DataModelInfo findModel(IProject project, String modelName) {
+		if (project == null) {
 			return null;
 		}
-		String sname = StringUtil.toCamelCase(modelName);
-		return pack + ".dmdl.model." + sname;
+		IndexContainer ic = IndexContainer.getContainer(project);
+		return ic.getModel(modelName);
 	}
 
 	public static List<DataModelProperty> getModelProperties(IProject project, String modelName) {
@@ -62,6 +48,16 @@ public class DataModelUtil {
 	public static String getResolvedDataType(IProject project, String modelName, String propertyName) {
 		IndexContainer ic = IndexContainer.getContainer(project);
 		return ic.getResolvedDataType(modelName, propertyName);
+	}
+
+	public static String getModelClass(IProject project, String modelName) {
+		Properties properties = BuildPropertiesUtil.getBuildProperties(project);
+		String pack = BuildPropertiesUtil.getModelgenPackage(properties);
+		if (pack == null) {
+			return null;
+		}
+		String sname = StringUtil.toCamelCase(modelName);
+		return pack + ".dmdl.model." + sname;
 	}
 
 	public static String validateName(String title, String name) {

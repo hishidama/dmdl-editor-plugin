@@ -11,6 +11,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreePath;
@@ -50,6 +51,8 @@ public class JumpDataModelHandler extends AbstractHandler {
 					DMDLHyperlinkUtil.gotoPosition(index);
 				}
 			}
+		} else {
+			MessageDialog.openInformation(null, "information", "プロジェクトを選択して下さい。");
 		}
 
 		return null;

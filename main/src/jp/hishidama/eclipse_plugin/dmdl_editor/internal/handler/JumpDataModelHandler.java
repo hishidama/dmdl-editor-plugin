@@ -11,6 +11,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
@@ -40,6 +41,10 @@ public class JumpDataModelHandler extends AbstractHandler {
 					project = ((IResource) segment).getProject();
 					break;
 				}
+				if (segment instanceof IJavaElement) {
+					project = ((IJavaElement) segment).getJavaProject().getProject();
+					break;
+				}
 			}
 		}
 
@@ -52,7 +57,7 @@ public class JumpDataModelHandler extends AbstractHandler {
 				}
 			}
 		} else {
-			MessageDialog.openInformation(null, "information", "プロジェクトを選択して下さい。");
+			MessageDialog.openInformation(null, "information", "プロジェクト（内のファイル）を選択して下さい。");
 		}
 
 		return null;

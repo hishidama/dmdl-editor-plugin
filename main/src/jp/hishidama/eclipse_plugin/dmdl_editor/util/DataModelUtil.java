@@ -18,6 +18,7 @@ public class DataModelUtil {
 			return null;
 		}
 		IndexContainer ic = IndexContainer.getContainer(project);
+		ic.refreshFileList();
 		return ic.getFiles();
 	}
 

@@ -6,11 +6,14 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.viewer.DMDLTreeData;
 import jp.hishidama.eclipse_plugin.dmdl_editor.viewer.DataModelTreeViewer;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
@@ -35,6 +38,10 @@ public abstract class DataModelTreeDialog extends EditDialog {
 
 	@Override
 	protected void createFields(Composite composite) {
+		Text ptext = createTextField(composite, "project :");
+		ptext.setText(project.getName());
+		ptext.setEditable(false);
+
 		final Text filter = createTextField(composite, "filter :");
 		filter.addModifyListener(new ModifyListener() {
 			@Override
@@ -47,14 +54,33 @@ public abstract class DataModelTreeDialog extends EditDialog {
 		tree.setInputAll(project);
 		tree.expandToLevel(getInitialExpandLevel());
 
-		Button button = new Button(composite, SWT.PUSH);
-		button.setText("expand all");
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				tree.expandAll();
+		Composite field = new Composite(composite, SWT.NONE);
+		{
+			GridData grid = GridDataFactory.swtDefaults().span(2, 1).grab(true, false).create();
+			field.setLayoutData(grid);
+			field.setLayout(new FillLayout(SWT.HORIZONTAL));
+
+			{
+				Button button = new Button(field, SWT.PUSH);
+				button.setText("expand all");
+				button.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						tree.expandAll();
+					}
+				});
 			}
-		});
+			{
+				Button button = new Button(field, SWT.PUSH);
+				button.setText("collapse all");
+				button.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						tree.collapseAll();
+					}
+				});
+			}
+		}
 	}
 
 	private DataModelTreeViewer createDataModelTreeField(Composite composite, String label) {

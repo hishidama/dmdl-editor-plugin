@@ -170,6 +170,17 @@ public class IndexContainer implements Serializable {
 		}
 	}
 
+	public void refreshFileList() {
+		List<IFile> list = DMDLFileUtil.getDmdlFiles(project);
+		for (IFile file : list) {
+			String key = file.getProjectRelativePath().toPortableString();
+			if (!fileMap.containsKey(key)) {
+				DataModelFile f = new DataModelFile(file);
+				addFile(f, false);
+			}
+		}
+	}
+
 	public void refresh(IFile file, ModelList models) {
 		if (models == null) {
 			DMDLSimpleParser parser = new DMDLSimpleParser();

@@ -1,5 +1,6 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.format.DMDLContentFormatter;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelUtil;
 import jp.hishidama.eclipse_plugin.util.StringUtil;
 
@@ -143,6 +144,8 @@ public class DataModelTextGenerator {
 		all.append(sb);
 		all.append(";\n");
 
-		return all.toString();
+		DMDLContentFormatter formatter = new DMDLContentFormatter();
+		String text = formatter.format(all.toString());
+		return text;
 	}
 }

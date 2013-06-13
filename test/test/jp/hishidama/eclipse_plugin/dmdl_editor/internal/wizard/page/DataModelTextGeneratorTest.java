@@ -17,7 +17,7 @@ public class DataModelTextGeneratorTest {
 		String r = gen.getText();
 		List<String> e = new ArrayList<String>();
 		e.add("n = {");
-		e.add("  p1 : INT;");
+		e.add("    p1 : INT;");
 		e.add("};");
 		assertEqualsList(e, r);
 	}
@@ -31,9 +31,8 @@ public class DataModelTextGeneratorTest {
 		String r = gen.getText();
 		List<String> e = new ArrayList<String>();
 		e.add("n = {");
-		e.add("  p1 : INT;");
-		e.add("");
-		e.add("  p2 : TEXT;");
+		e.add("    p1 : INT;");
+		e.add("    p2 : TEXT;");
 		e.add("};");
 		assertEqualsList(e, r);
 	}
@@ -49,11 +48,12 @@ public class DataModelTextGeneratorTest {
 		List<String> e = new ArrayList<String>();
 		e.add("\"あいう\"");
 		e.add("n = {");
-		e.add("  \"ぴー1\"");
-		e.add("  p1 : INT;");
 		e.add("");
-		e.add("  \"ぴー2\"");
-		e.add("  p2 : TEXT;");
+		e.add("    \"ぴー1\"");
+		e.add("    p1 : INT;");
+		e.add("");
+		e.add("    \"ぴー2\"");
+		e.add("    p2 : TEXT;");
 		e.add("};");
 		assertEqualsList(e, r);
 	}
@@ -77,7 +77,8 @@ public class DataModelTextGeneratorTest {
 		gen.appendRefProperty("r2");
 		String r = gen.getText();
 		List<String> e = new ArrayList<String>();
-		e.add("n = r1 + r2;");
+		e.add("n = r1");
+		e.add("+ r2;");
 		assertEqualsList(e, r);
 	}
 
@@ -91,8 +92,10 @@ public class DataModelTextGeneratorTest {
 		String r = gen.getText();
 		List<String> e = new ArrayList<String>();
 		e.add("n = {");
-		e.add("  p1 : INT;");
-		e.add("} + r1 + r2;");
+		e.add("    p1 : INT;");
+		e.add("}");
+		e.add("+ r1");
+		e.add("+ r2;");
 		assertEqualsList(e, r);
 	}
 
@@ -105,9 +108,11 @@ public class DataModelTextGeneratorTest {
 		gen.appendRefProperty("r2");
 		String r = gen.getText();
 		List<String> e = new ArrayList<String>();
-		e.add("n = r1 + {");
-		e.add("  p1 : INT;");
-		e.add("} + r2;");
+		e.add("n = r1");
+		e.add("+ {");
+		e.add("    p1 : INT;");
+		e.add("}");
+		e.add("+ r2;");
 		assertEqualsList(e, r);
 	}
 
@@ -120,8 +125,10 @@ public class DataModelTextGeneratorTest {
 		gen.appendProperty("p1", null, "INT");
 		String r = gen.getText();
 		List<String> e = new ArrayList<String>();
-		e.add("n = r1 + r2 + {");
-		e.add("  p1 : INT;");
+		e.add("n = r1");
+		e.add("+ r2");
+		e.add("+ {");
+		e.add("    p1 : INT;");
 		e.add("};");
 		assertEqualsList(e, r);
 	}
@@ -135,7 +142,7 @@ public class DataModelTextGeneratorTest {
 		String r = gen.getText();
 		List<String> e = new ArrayList<String>();
 		e.add("summarized s = f => {");
-		e.add("  any s1 -> p1;");
+		e.add("    any s1 -> p1;");
 		e.add("};");
 		assertEqualsList(e, r);
 	}
@@ -150,9 +157,8 @@ public class DataModelTextGeneratorTest {
 		String r = gen.getText();
 		List<String> e = new ArrayList<String>();
 		e.add("summarized s = f => {");
-		e.add("  any s1 -> p1;");
-		e.add("");
-		e.add("  sum s2 -> p2;");
+		e.add("    any s1 -> p1;");
+		e.add("    sum s2 -> p2;");
 		e.add("};");
 		assertEqualsList(e, r);
 	}
@@ -167,7 +173,7 @@ public class DataModelTextGeneratorTest {
 		String r = gen.getText();
 		List<String> e = new ArrayList<String>();
 		e.add("summarized s = f => {");
-		e.add("  any s1 -> p1;");
+		e.add("    any s1 -> p1;");
 		e.add("} % p1;");
 		assertEqualsList(e, r);
 	}
@@ -184,9 +190,8 @@ public class DataModelTextGeneratorTest {
 		String r = gen.getText();
 		List<String> e = new ArrayList<String>();
 		e.add("summarized s = f => {");
-		e.add("  any s1 -> p1;");
-		e.add("");
-		e.add("  sum s2 -> p2;");
+		e.add("    any s1 -> p1;");
+		e.add("    sum s2 -> p2;");
 		e.add("} % p1, p2;");
 		assertEqualsList(e, r);
 	}
@@ -203,11 +208,12 @@ public class DataModelTextGeneratorTest {
 		String r = gen.getText();
 		List<String> e = new ArrayList<String>();
 		e.add("summarized s = f => {");
-		e.add("  \"きー\"");
-		e.add("  any s1 -> p1;");
 		e.add("");
-		e.add("  \"合計\"");
-		e.add("  sum s2 -> p2;");
+		e.add("    \"きー\"");
+		e.add("    any s1 -> p1;");
+		e.add("");
+		e.add("    \"合計\"");
+		e.add("    sum s2 -> p2;");
 		e.add("} % p1, p2;");
 		assertEqualsList(e, r);
 	}
@@ -221,7 +227,7 @@ public class DataModelTextGeneratorTest {
 		String r = gen.getText();
 		List<String> e = new ArrayList<String>();
 		e.add("joined j = f -> {");
-		e.add("  s1 -> p1;");
+		e.add("    s1 -> p1;");
 		e.add("};");
 		assertEqualsList(e, r);
 	}
@@ -236,9 +242,8 @@ public class DataModelTextGeneratorTest {
 		String r = gen.getText();
 		List<String> e = new ArrayList<String>();
 		e.add("joined j = f -> {");
-		e.add("  s1 -> p1;");
-		e.add("");
-		e.add("  s2 -> p2;");
+		e.add("    s1 -> p1;");
+		e.add("    s2 -> p2;");
 		e.add("};");
 		assertEqualsList(e, r);
 	}
@@ -254,11 +259,11 @@ public class DataModelTextGeneratorTest {
 		String r = gen.getText();
 		List<String> e = new ArrayList<String>();
 		e.add("joined j = f -> {");
-		e.add("  s1 -> p1;");
-		e.add("");
-		e.add("  s2 -> p2;");
-		e.add("} + f2 -> {");
-		e.add("  s3 -> p3;");
+		e.add("    s1 -> p1;");
+		e.add("    s2 -> p2;");
+		e.add("}");
+		e.add("+ f2 -> {");
+		e.add("    s3 -> p3;");
 		e.add("};");
 		assertEqualsList(e, r);
 	}
@@ -275,13 +280,12 @@ public class DataModelTextGeneratorTest {
 		String r = gen.getText();
 		List<String> e = new ArrayList<String>();
 		e.add("joined j = f -> {");
-		e.add("  s1 -> p1;");
-		e.add("");
-		e.add("  s2 -> p2;");
-		e.add("} + f2 -> {");
-		e.add("  s3 -> p3;");
-		e.add("");
-		e.add("  s4 -> p4;");
+		e.add("    s1 -> p1;");
+		e.add("    s2 -> p2;");
+		e.add("}");
+		e.add("+ f2 -> {");
+		e.add("    s3 -> p3;");
+		e.add("    s4 -> p4;");
 		e.add("};");
 		assertEqualsList(e, r);
 	}
@@ -296,7 +300,7 @@ public class DataModelTextGeneratorTest {
 		String r = gen.getText();
 		List<String> e = new ArrayList<String>();
 		e.add("joined j = f -> {");
-		e.add("  s1 -> p1;");
+		e.add("    s1 -> p1;");
 		e.add("} % p1;");
 		assertEqualsList(e, r);
 	}
@@ -313,9 +317,8 @@ public class DataModelTextGeneratorTest {
 		String r = gen.getText();
 		List<String> e = new ArrayList<String>();
 		e.add("joined j = f -> {");
-		e.add("  s1 -> p1;");
-		e.add("");
-		e.add("  s2 -> p2;");
+		e.add("    s1 -> p1;");
+		e.add("    s2 -> p2;");
 		e.add("} % p1, p2;");
 		assertEqualsList(e, r);
 	}
@@ -333,11 +336,11 @@ public class DataModelTextGeneratorTest {
 		String r = gen.getText();
 		List<String> e = new ArrayList<String>();
 		e.add("joined j = f -> {");
-		e.add("  s1 -> p1;");
-		e.add("");
-		e.add("  s2 -> p2;");
-		e.add("} % p1 + f2 -> {");
-		e.add("  s3 -> p3;");
+		e.add("    s1 -> p1;");
+		e.add("    s2 -> p2;");
+		e.add("} % p1");
+		e.add("+ f2 -> {");
+		e.add("    s3 -> p3;");
 		e.add("} % p3;");
 		assertEqualsList(e, r);
 	}
@@ -358,13 +361,12 @@ public class DataModelTextGeneratorTest {
 		String r = gen.getText();
 		List<String> e = new ArrayList<String>();
 		e.add("joined j = f -> {");
-		e.add("  s1 -> p1;");
-		e.add("");
-		e.add("  s2 -> p2;");
-		e.add("} % p1, p2 + f2 -> {");
-		e.add("  s3 -> p3;");
-		e.add("");
-		e.add("  s4 -> p4;");
+		e.add("    s1 -> p1;");
+		e.add("    s2 -> p2;");
+		e.add("} % p1, p2");
+		e.add("+ f2 -> {");
+		e.add("    s3 -> p3;");
+		e.add("    s4 -> p4;");
 		e.add("} % p3, p4;");
 		assertEqualsList(e, r);
 	}
@@ -390,7 +392,8 @@ public class DataModelTextGeneratorTest {
 		gen.appendRefProperty("f2");
 		String r = gen.getText();
 		List<String> e = new ArrayList<String>();
-		e.add("joined j = f1 + f2;");
+		e.add("joined j = f1");
+		e.add("+ f2;");
 		assertEqualsList(e, r);
 	}
 
@@ -433,7 +436,8 @@ public class DataModelTextGeneratorTest {
 		gen.appendKey(null, "s2");
 		String r = gen.getText();
 		List<String> e = new ArrayList<String>();
-		e.add("joined j = f1 % s1 + f2 % s2;");
+		e.add("joined j = f1 % s1");
+		e.add("+ f2 % s2;");
 		assertEqualsList(e, r);
 	}
 
@@ -452,7 +456,8 @@ public class DataModelTextGeneratorTest {
 		gen.appendKey(null, "s4");
 		String r = gen.getText();
 		List<String> e = new ArrayList<String>();
-		e.add("joined j = f1 % s1, s2 + f2 % s3, s4;");
+		e.add("joined j = f1 % s1, s2");
+		e.add("+ f2 % s3, s4;");
 		assertEqualsList(e, r);
 	}
 
@@ -465,7 +470,7 @@ public class DataModelTextGeneratorTest {
 		String r = gen.getText();
 		List<String> e = new ArrayList<String>();
 		e.add("projective n = {");
-		e.add("  p1 : INT;");
+		e.add("    p1 : INT;");
 		e.add("};");
 		assertEqualsList(e, r);
 	}

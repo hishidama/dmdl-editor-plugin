@@ -13,8 +13,7 @@ public class FormattingHandler extends AbstractHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		IEditorPart editor = HandlerUtil.getActiveEditor(event);
-		ITextOperationTarget target = (ITextOperationTarget) editor
-				.getAdapter(ITextOperationTarget.class);
+		ITextOperationTarget target = (ITextOperationTarget) editor.getAdapter(ITextOperationTarget.class);
 		target.doOperation(ISourceViewer.FORMAT);
 		return null;
 	}

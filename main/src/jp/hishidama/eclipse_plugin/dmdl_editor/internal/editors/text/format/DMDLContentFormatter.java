@@ -7,6 +7,9 @@ import java.util.Map;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.DMDLDocument;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.preference.PreferenceConst;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.DMDLSimpleParser;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.DMDLSimpleScanner;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.StringScanner;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.AnnotationToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ArgumentToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ArgumentsToken;
@@ -32,7 +35,8 @@ import org.eclipse.jface.text.formatter.IContentFormatter;
 import org.eclipse.jface.text.formatter.IFormattingStrategy;
 
 public class DMDLContentFormatter implements IContentFormatter {
-	protected DMDLDocument document;
+	private DMDLDocument document;
+	private String srcText;
 	protected int start;
 	protected int end;
 	protected int changeStart;
@@ -44,18 +48,37 @@ public class DMDLContentFormatter implements IContentFormatter {
 
 	@Override
 	public void format(IDocument document, IRegion region) {
-		init();
-
 		DMDLDocument doc = (DMDLDocument) document;
 		this.document = doc;
 		ModelList models = doc.getModelList();
 
-		this.start = region.getOffset();
 		int length = region.getLength();
+		String text = getFormattedText(models, region.getOffset(), length);
+		try {
+			document.replace(start, length, text); // TODO start,length
+		} catch (BadLocationException e) {
+			ILog log = Activator.getDefault().getLog();
+			log.log(new Status(Status.WARNING, Activator.PLUGIN_ID, "DMDLContentFormatter bad location.", e));
+		}
+	}
+
+	public String format(String src) {
+		this.srcText = src;
+		DMDLSimpleParser parser = new DMDLSimpleParser();
+		DMDLSimpleScanner scanner = new StringScanner(src);
+		ModelList models = parser.parse(scanner);
+
+		return getFormattedText(models, 0, src.length());
+	}
+
+	private String getFormattedText(ModelList models, int start, int length) {
+		init();
+
+		this.start = start;
 		this.end = start + length;
 
 		changeStart = -1;
-		sb = new StringBuilder(length);
+		sb = new StringBuilder(length * 2);
 		prevText = null;
 		defaultFormatter.format(models);
 
@@ -64,12 +87,7 @@ public class DMDLContentFormatter implements IContentFormatter {
 		}
 
 		String text = sb.toString();
-		try {
-			document.replace(start, length, text); // TODO start,length
-		} catch (BadLocationException e) {
-			ILog log = Activator.getDefault().getLog();
-			log.log(new Status(Status.WARNING, Activator.PLUGIN_ID, "DMDLContentFormatter bad location.", e));
-		}
+		return text;
 	}
 
 	protected Map<String, Object> simulate = null;
@@ -82,10 +100,14 @@ public class DMDLContentFormatter implements IContentFormatter {
 	}
 
 	private void init() {
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		try {
+			IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 
-		INDENT_ARGUMENT = space(getInt(store, PreferenceConst.FORMAT_INDENT_ARGUMENT));
-		INDENT_PROPERTY = space(getInt(store, PreferenceConst.FORMAT_INDENT_PROPERTY));
+			INDENT_ARGUMENT = space(getInt(store, PreferenceConst.FORMAT_INDENT_ARGUMENT));
+			INDENT_PROPERTY = space(getInt(store, PreferenceConst.FORMAT_INDENT_PROPERTY));
+		} catch (Exception e) {
+			// do nothing
+		}
 	}
 
 	private int getInt(IPreferenceStore store, String key) {
@@ -259,7 +281,7 @@ public class DMDLContentFormatter implements IContentFormatter {
 	protected int countLf(int start, int end) {
 		String prepare;
 		try {
-			prepare = document.get(start, end - start);
+			prepare = getText(start, end);
 		} catch (BadLocationException e) {
 			return 0;
 		}
@@ -271,6 +293,16 @@ public class DMDLContentFormatter implements IContentFormatter {
 			}
 		}
 		return n;
+	}
+
+	private String getText(int start, int end) throws BadLocationException {
+		if (document != null) {
+			return document.get(start, end - start);
+		}
+		if (srcText != null) {
+			return srcText.substring(start, end);
+		}
+		throw new IllegalStateException();
 	}
 
 	protected TokenFormatter<ArgumentsToken> argumentsFormatter = new TokenFormatter<ArgumentsToken>() {

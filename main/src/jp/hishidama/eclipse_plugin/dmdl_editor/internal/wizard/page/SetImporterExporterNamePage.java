@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.util.BuildPropertiesUtil;
+import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DmdlCompilerProperties;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.WizardPage;
@@ -149,11 +148,11 @@ public class SetImporterExporterNamePage extends WizardPage {
 		setPageComplete(true);
 	}
 
-	public void setProperties(Properties properties) {
+	public void setProperties(DmdlCompilerProperties properties) {
 		if (properties != null && packageText.getText().isEmpty()) {
 			String s = getSetting(SETTINGS_PACKAGE, null);
 			if (s == null) {
-				s = BuildPropertiesUtil.getPackageDefault(properties);
+				s = properties.getPackageDefault();
 				packageText.setText(nonNull(s));
 			}
 		}

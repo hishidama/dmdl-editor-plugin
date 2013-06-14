@@ -4,8 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.Arrays;
-import java.util.Properties;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DmdlCompilerProperties;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.marker.DMDLErrorCheckHandler;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.marker.DMDLErrorCheckTask;
@@ -37,8 +37,6 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Display;
 
 public class DMDLCompileTask implements IWorkspaceRunnable {
 	private IProject project;
@@ -74,43 +72,34 @@ public class DMDLCompileTask implements IWorkspaceRunnable {
 			monitor.subTask("create arguments");
 			checkCancel(monitor);
 
-			Properties properties = BuildPropertiesUtil.getBuildProperties(project);
-			if (properties == null) {
-				Display.getDefault().syncExec(new Runnable() {
-					@Override
-					public void run() {
-						String file = BuildPropertiesUtil.getBuildPropertiesFileName(project);
-						MessageDialog.openWarning(null, "DMDL compile", MessageFormat.format(
-								"プロジェクト内にAsakusa Frameworkのbuild.propertiesが見つからない為、DMDLをコンパイルできません。\n"
-										+ "プロジェクトのプロパティーでbuild.propertiesの場所を指定して下さい。\n\n" + "現在指定されているパス={0}", file));
-					}
-				});
+			DmdlCompilerProperties bp = BuildPropertiesUtil.getBuildProperties(project, true);
+			if (bp == null) {
 				return null;
 			}
 
 			monitor.worked(1);
 			StringBuilder sb = new StringBuilder(256);
 			{
-				String value = getValue(properties, "asakusa.dmdl.dir");
+				String value = getValue(bp.getDmdlDir(), "asakusa.dmdl.dir");
 				this.source = value;
 				IFile file = FileUtil.getFile(project, value);
 				append(sb, "-source", FileUtil.getLocation(file), true);
 				monitor.worked(1);
 			}
 			{
-				String value = getValue(properties, "asakusa.modelgen.output");
+				String value = getValue(bp.getModelgenOutput(), "asakusa.modelgen.output");
 				this.output = value;
 				IFile file = FileUtil.getFile(project, value);
 				append(sb, "-output", FileUtil.getLocation(file), true);
 				monitor.worked(1);
 			}
 			{
-				String value = getValue(properties, "asakusa.modelgen.package");
+				String value = getValue(bp.getModelgenPackage(), "asakusa.modelgen.package");
 				append(sb, "-package", value, false);
 				monitor.worked(1);
 			}
 			{
-				String charset = properties.getProperty("asakusa.dmdl.encoding");
+				String charset = bp.getDmdlEncoding();
 				if (charset == null) {
 					charset = project.getDefaultCharset(true);
 					if (charset == null) {
@@ -127,8 +116,7 @@ public class DMDLCompileTask implements IWorkspaceRunnable {
 		}
 	}
 
-	private String getValue(Properties properties, String key) throws CoreException {
-		String value = properties.getProperty(key);
+	private String getValue(String value, String key) throws CoreException {
 		if (value == null) {
 			IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, MessageFormat.format(
 					"not found property of build.properties. key={0}", key));

@@ -22,4 +22,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: resource/dmdlparser-caller.jar,
  plugin.jar
 Export-Package: jp.hishidama.eclipse_plugin.dmdl_editor.dialog,
- jp.hishidama.eclipse_plugin.dmdl_editor.util
+ jp.hishidama.eclipse_plugin.dmdl_editor.extension,
+ jp.hishidama.eclipse_plugin.dmdl_editor.util,
+ jp.hishidama.eclipse_plugin.util

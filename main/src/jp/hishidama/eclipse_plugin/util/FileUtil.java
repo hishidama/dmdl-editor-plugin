@@ -3,10 +3,14 @@ package jp.hishidama.eclipse_plugin.util;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.text.MessageFormat;
+import java.util.Properties;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
 
@@ -160,6 +164,63 @@ public class FileUtil {
 				is.close();
 			} catch (IOException e) {
 				e.printStackTrace();
+			}
+		}
+	}
+
+	public static Properties loadProperties(IProject project, String fname) throws IOException {
+		if (fname == null) {
+			throw new FileNotFoundException("null");
+		}
+
+		IFile file = null;
+		try {
+			file = project.getFile(fname);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (file == null || !file.exists()) {
+			IStatus status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, MessageFormat.format(
+					"not found property file. file={0}", fname));
+			Activator.getDefault().getLog().log(status);
+			throw new FileNotFoundException(fname);
+		}
+
+		InputStream is = null;
+		Reader reader = null;
+		try {
+			is = file.getContents();
+			String cs;
+			try {
+				cs = file.getCharset();
+			} catch (Exception e) {
+				cs = "UTF-8";
+			}
+			reader = new InputStreamReader(is, cs);
+			Properties p = new Properties();
+			p.load(reader);
+			return p;
+		} catch (CoreException e) {
+			Activator.getDefault().getLog().log(e.getStatus());
+			throw new IOException(e);
+		} catch (IOException e) {
+			IStatus status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, MessageFormat.format(
+					"property file read error. file={0}", fname), e);
+			Activator.getDefault().getLog().log(status);
+			throw e;
+		} finally {
+			if (reader != null) {
+				try {
+					reader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			} else if (is != null) {
+				try {
+					is.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

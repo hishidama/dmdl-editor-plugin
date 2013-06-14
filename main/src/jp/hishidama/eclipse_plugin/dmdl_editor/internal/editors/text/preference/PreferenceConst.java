@@ -24,8 +24,10 @@ public interface PreferenceConst {
 	public static final String FORMAT_INDENT_ARGUMENT = "DMDLEditor.Formatter.indentArgument";
 	public static final String FORMAT_INDENT_PROPERTY = "DMDLEditor.Formatter.indentProperty";
 
+	public static final String CONFIGURATION_NAME = "DMDLEditor.Configuration.name";
+
 	// DmdlParser
 	public static final String PARSER_BUILD_PROPERTIES = "DMDLEditor.Parser.buildProperties";
-	public static final String PARSER_JAR_FILES = "DMDLEditor.Parser.jarFiles";
-	public static final String PARSER_JAR_CHECKED = "DMDLEditor.Parser.jarChecked";
+	public static final String PARSER_JAR_FILE_COUNT = "DMDLEditor.Parser.jarFile.count";
+	public static final String PARSER_JAR_FILE = "DMDLEditor.Parser.jarFile.";
 }

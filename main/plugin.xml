@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension-point id="dmdlEditorConfiguration" name="DMDLEditor configuration" schema="schema/dmdlEditorConfiguration.exsd"/>
 
    <extension
          point="org.eclipse.ui.editors">
@@ -49,8 +50,8 @@
       </page>
       <page
             category="dmdl-editor-plugin.page"
-            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.property.DMDLErrorCheckPropertyPage"
-            id="dmdl-editor-plugin.errorcheck.page"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.property.DMDLClassPathPropertyPage"
+            id="dmdl-editor-plugin.classpath.page"
             name="Parser">
          <enabledWhen>
             <or>
@@ -367,6 +368,15 @@
             データモデルからImporter/Exporterクラスを生成します。
          </description>
       </wizard>
+   </extension>
+   <extension
+         point="jp.hishidama.eclipse_plugin.dmdl_editor.dmdlEditorConfiguration">
+      <classpath
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.AsakusaFramework04Configration">
+      </classpath>
+      <classpath
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.AsakusaFramework05Configration">
+      </classpath>
    </extension>
 
 </plugin>

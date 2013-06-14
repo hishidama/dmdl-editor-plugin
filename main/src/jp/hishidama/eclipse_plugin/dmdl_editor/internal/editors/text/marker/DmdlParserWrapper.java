@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
+import jp.hishidama.eclipse_plugin.util.StringUtil;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -19,6 +20,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.Bundle;
 
 public class DmdlParserWrapper {
@@ -45,12 +48,13 @@ public class DmdlParserWrapper {
 
 		ILog log = Activator.getDefault().getLog();
 		log.log(new Status(IStatus.INFO, Activator.PLUGIN_ID, MessageFormat.format("DmdlParser caller classpath={0}",
-				parserClassList)));
+				StringUtil.toString(parserClassList))));
 
 		parserLoader = URLClassLoader.newInstance(parserClassList.toArray(new URL[parserClassList.size()]));
 	}
 
 	protected void findClassPath(List<URL> list, IJavaProject javaProject) {
+		ParserClassUtil.getProjectClassPath(list, javaProject);
 		IProject project = javaProject.getProject();
 		ParserClassUtil.getClassPath(list, project);
 	}
@@ -83,13 +87,18 @@ public class DmdlParserWrapper {
 				Activator.getDefault().getLog().log(status);
 			}
 		}
+		String taskName = "DMDLパーサーのロード中";
 		try {
 			Class<?> c = parserLoader.loadClass(CALLER_CLASS);
+			taskName = "DMDLパーサーの準備中";
 			Object caller = c.newInstance();
+			taskName = "DMDLパーサーのメソッド準備中";
 			Method method = c.getMethod("parse", List.class);
+			taskName = "DMDLパーサーの実行中";
 			@SuppressWarnings("unchecked")
 			List<Object[]> list = (List<Object[]>) method.invoke(caller, files);
 
+			taskName = "DMDLパーサーの実行結果のまとめ中";
 			List<ParseErrorInfo> result = new ArrayList<ParseErrorInfo>(list.size());
 			for (Object[] r : list) {
 				ParseErrorInfo pe = new ParseErrorInfo();
@@ -103,10 +112,27 @@ public class DmdlParserWrapper {
 				result.add(pe);
 			}
 			return result;
-		} catch (Throwable e) {
-			String message = MessageFormat.format("DmdlParser#parse({0}) error.", parserClassList);
-			IStatus status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, message, e);
-			Activator.getDefault().getLog().log(status);
+		} catch (final Throwable e) {
+			{
+				String message = MessageFormat.format("DmdlParser#parse() error. classpath={0}",
+						StringUtil.toString(parserClassList));
+				IStatus status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, message, e);
+				Activator.getDefault().getLog().log(status);
+			}
+			final String taskName0 = taskName;
+			Display.getDefault().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					Throwable t = e;
+					while (t.getCause() != null) {
+						t = t.getCause();
+					}
+					IStatus status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, MessageFormat.format(
+							"DmdlParser#parse() error.\nexception={0}\nmessage={1}", t.getClass().getName(),
+							t.getMessage()), t);
+					ErrorDialog.openError(null, "error", taskName0 + "にエラーが発生しました。", status);
+				}
+			});
 		}
 		return null;
 	}

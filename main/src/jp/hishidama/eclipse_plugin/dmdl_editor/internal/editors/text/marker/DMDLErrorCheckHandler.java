@@ -1,8 +1,8 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.marker;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Properties;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DmdlCompilerProperties;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.marker.DMDLErrorCheckTask.FileList;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.util.BuildPropertiesUtil;
@@ -74,8 +74,11 @@ public class DMDLErrorCheckHandler extends AbstractHandler {
 		}
 		IFolder folder = null;
 		{
-			Properties properties = BuildPropertiesUtil.getBuildProperties(project);
-			String dir = BuildPropertiesUtil.getDmdlDir(properties);
+			DmdlCompilerProperties bp = BuildPropertiesUtil.getBuildProperties(project, true);
+			if (bp == null) {
+				return;
+			}
+			String dir = bp.getDmdlDir();
 			if (dir != null) {
 				folder = FileUtil.getFolder(project, dir);
 			}

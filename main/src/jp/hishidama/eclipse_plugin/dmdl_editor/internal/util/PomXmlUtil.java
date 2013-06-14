@@ -52,6 +52,10 @@ public class PomXmlUtil {
 		}
 	}
 
+	public static String getAsakusaFrameworkVersion(String text) {
+		return getValue(text, "asakusafw.version");
+	}
+
 	public static String getValue(String text, String tag) {
 		int n = text.indexOf("<" + tag + ">");
 		if (n < 0) {

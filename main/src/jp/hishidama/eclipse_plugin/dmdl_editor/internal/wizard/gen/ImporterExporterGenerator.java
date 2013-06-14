@@ -1,12 +1,6 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.gen;
 
-import java.util.Properties;
-
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
-
+import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DmdlCompilerProperties;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.util.BuildPropertiesUtil;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.ImporterExporterType;
@@ -14,13 +8,18 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.SetImporterE
 import jp.hishidama.eclipse_plugin.util.FileUtil;
 import jp.hishidama.eclipse_plugin.util.StringUtil;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
+
 public abstract class ImporterExporterGenerator extends ClassGenerator {
 
 	protected SetImporterExporterMethodPage page;
 	protected IProject project;
 	protected ModelToken model;
 	protected String dir;
-	protected Properties properties;
+	protected DmdlCompilerProperties properties;
 
 	public static ImporterExporterGenerator get(ImporterExporterType type) {
 		switch (type) {
@@ -41,8 +40,8 @@ public abstract class ImporterExporterGenerator extends ClassGenerator {
 		}
 	}
 
-	public void generate(IProject project, Properties properties, SetImporterExporterMethodPage page, ModelToken model,
-			String dir, String packageName, String className, boolean open) throws CoreException {
+	public void generate(IProject project, DmdlCompilerProperties properties, SetImporterExporterMethodPage page,
+			ModelToken model, String dir, String packageName, String className, boolean open) throws CoreException {
 		this.properties = properties;
 		this.page = page;
 		this.project = project;
@@ -68,11 +67,11 @@ public abstract class ImporterExporterGenerator extends ClassGenerator {
 
 	@Override
 	protected void initialize() {
-		properties = BuildPropertiesUtil.getBuildProperties(project);
+		properties = BuildPropertiesUtil.getBuildProperties(project, true);
 	}
 
 	protected String getGeneratedClassName(String middle, String simpleName) {
-		String pack = BuildPropertiesUtil.getModelgenPackage(properties);
+		String pack = properties.getModelgenPackage();
 
 		StringBuilder sb = new StringBuilder(64);
 		sb.append(pack);

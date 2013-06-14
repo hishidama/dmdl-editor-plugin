@@ -3,6 +3,7 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.property;
 import static jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.preference.PreferenceConst.PARSER_BUILD_PROPERTIES;
 import jp.hishidama.eclipse_plugin.dialog.NewVariableEntryDialog;
 import jp.hishidama.eclipse_plugin.dialog.ProjectFileSelectionDialog;
+import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DMDLEditorConfiguration;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.marker.ParserClassUtil;
 
@@ -11,6 +12,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ISelection;
@@ -31,7 +33,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PropertyPage;
 
-public class DMDLErrorCheckPropertyPage extends PropertyPage {
+public class DMDLClassPathPropertyPage extends PropertyPage {
 
 	private Text buildProperties;
 	private CheckboxTableViewer viewer;
@@ -39,11 +41,12 @@ public class DMDLErrorCheckPropertyPage extends PropertyPage {
 
 	@Override
 	protected Control createContents(Composite parent) {
-		setTitle("Dmdl Parser settings");
+		setTitle("Dmdl Parser(Compiler) settings");
 		final IProject project = getProject();
 
 		Composite composite = new Composite(parent, SWT.NONE);
 		{
+			composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 			GridLayout layout = new GridLayout();
 			layout.numColumns = 3; // 列数
 			composite.setLayout(layout);
@@ -54,7 +57,7 @@ public class DMDLErrorCheckPropertyPage extends PropertyPage {
 
 			buildProperties = new Text(composite, SWT.SINGLE | SWT.BORDER);
 			buildProperties.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-			String value = DMDLPropertyUtil.getValue(project, PARSER_BUILD_PROPERTIES);
+			String value = DMDLPropertyPageUtil.getValue(project, PARSER_BUILD_PROPERTIES);
 			if (value != null) {
 				buildProperties.setText(value);
 			}
@@ -82,24 +85,25 @@ public class DMDLErrorCheckPropertyPage extends PropertyPage {
 		}
 		{ // クラスパス一覧
 			Label label = new Label(composite, SWT.NONE);
-			label.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
+			label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 			label.setText("jar files (classpath):");
 
 			{
 				Composite rows = new Composite(composite, SWT.NONE);
 				{
+					rows.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 					GridLayout layout = new GridLayout(1, false);
 					layout.marginWidth = 0;
 					layout.marginHeight = 0;
 					layout.horizontalSpacing = 0;
 					layout.verticalSpacing = 0;
 					rows.setLayout(layout);
-					rows.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 				}
 				{
 					viewer = CheckboxTableViewer.newCheckList(rows, SWT.BORDER | SWT.MULTI);
 					Table table = viewer.getTable();
-					table.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+					GridData tableGrid = GridDataFactory.fillDefaults().minSize(380, 20 * 9).hint(512, 20 * 9).create();
+					table.setLayoutData(tableGrid);
 					table.setLinesVisible(true);
 					ParserClassUtil.initTable(viewer, project);
 					viewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -237,7 +241,7 @@ public class DMDLErrorCheckPropertyPage extends PropertyPage {
 	public boolean performOk() {
 		IProject project = getProject();
 
-		DMDLPropertyUtil.setValue(project, PARSER_BUILD_PROPERTIES, buildProperties.getText());
+		DMDLPropertyPageUtil.setValue(project, PARSER_BUILD_PROPERTIES, buildProperties.getText());
 		ParserClassUtil.save(viewer, project);
 
 		return true;
@@ -260,11 +264,21 @@ public class DMDLErrorCheckPropertyPage extends PropertyPage {
 
 	@Override
 	protected void performDefaults() {
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-		buildProperties.setText(store.getString(PARSER_BUILD_PROPERTIES));
+		IProject project = getProject();
+		buildProperties.setText(getDefaultBuildPropertiesPath(project));
 
-		ParserClassUtil.initTableDefault(viewer, getProject());
+		ParserClassUtil.initTableDefault(viewer, project);
 
 		super.performDefaults();
+	}
+
+	private String getDefaultBuildPropertiesPath(IProject project) {
+		DMDLEditorConfiguration c = DMDLPropertyPageUtil.getConfiguration(project);
+		if (c != null) {
+			return c.getDefaultBuildPropertiesPath();
+		}
+
+		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		return store.getString(PARSER_BUILD_PROPERTIES);
 	}
 }

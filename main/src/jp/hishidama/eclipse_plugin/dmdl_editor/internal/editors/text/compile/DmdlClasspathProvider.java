@@ -22,23 +22,21 @@ public class DmdlClasspathProvider extends StandardClasspathProvider {
 	public static final String ID = "jp.hishidama.eclipse_plugin.dmdl_editor.dmdlClasspathProvider";
 
 	@Override
-	public IRuntimeClasspathEntry[] computeUnresolvedClasspath(
-			ILaunchConfiguration configuration) throws CoreException {
+	public IRuntimeClasspathEntry[] computeUnresolvedClasspath(ILaunchConfiguration configuration) throws CoreException {
 		List<IRuntimeClasspathEntry> results = new ArrayList<IRuntimeClasspathEntry>();
-		Collections.addAll(results,
-				super.computeUnresolvedClasspath(configuration));
+		Collections.addAll(results, super.computeUnresolvedClasspath(configuration));
 		getDmdlCompilerLibraries(results, configuration);
-		IRuntimeClasspathEntry[] r = results
-				.toArray(new IRuntimeClasspathEntry[results.size()]);
+		IRuntimeClasspathEntry[] r = results.toArray(new IRuntimeClasspathEntry[results.size()]);
 		return r;
 	}
 
-	private void getDmdlCompilerLibraries(List<IRuntimeClasspathEntry> results,
-			ILaunchConfiguration configuration) throws CoreException {
+	private void getDmdlCompilerLibraries(List<IRuntimeClasspathEntry> results, ILaunchConfiguration configuration)
+			throws CoreException {
 		IJavaProject javaProject = JavaRuntime.getJavaProject(configuration);
 		IProject project = javaProject.getProject();
 
 		List<URL> list = new ArrayList<URL>();
+		// ParserClassUtil.getProjectClassPath(list, javaProject);
 		ParserClassUtil.getClassPath(list, project);
 
 		for (URL url : list) {

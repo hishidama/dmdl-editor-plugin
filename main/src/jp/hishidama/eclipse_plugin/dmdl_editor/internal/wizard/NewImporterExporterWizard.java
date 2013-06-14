@@ -3,18 +3,18 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DmdlCompilerProperties;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.util.BuildPropertiesUtil;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.util.DMDLFileUtil;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.gen.ImporterExporterGenerator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.ImporterExporterType;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.SelectDataModelPage;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.SelectDataModelPage.ModelFile;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.SetImporterExporterMethodPage;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.SetImporterExporterNamePage;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.SelectDataModelPage.ModelFile;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -32,7 +32,7 @@ public class NewImporterExporterWizard extends Wizard implements IWorkbenchWizar
 	private SetImporterExporterNamePage namePage;
 	private List<SetImporterExporterMethodPage> methodPageList = new ArrayList<SetImporterExporterMethodPage>();
 
-	private Properties properties = null;
+	private DmdlCompilerProperties properties = null;
 
 	public NewImporterExporterWizard() {
 		setWindowTitle("Importer/Exporterクラスの作成");
@@ -102,7 +102,7 @@ public class NewImporterExporterWizard extends Wizard implements IWorkbenchWizar
 			if (properties == null) {
 				List<ModelFile> list = modelPage.getModelList();
 				IProject project = list.get(0).file.getProject();
-				properties = BuildPropertiesUtil.getBuildProperties(project);
+				properties = BuildPropertiesUtil.getBuildProperties(project, true);
 			}
 			namePage.setProperties(properties);
 		}
@@ -138,7 +138,7 @@ public class NewImporterExporterWizard extends Wizard implements IWorkbenchWizar
 		for (ModelFile mf : list) {
 			IProject project = mf.file.getProject();
 			if (properties == null) {
-				properties = BuildPropertiesUtil.getBuildProperties(project);
+				properties = BuildPropertiesUtil.getBuildProperties(project, true);
 			}
 			for (SetImporterExporterMethodPage page : methodPageList) {
 				String className = map.get(page.getType());

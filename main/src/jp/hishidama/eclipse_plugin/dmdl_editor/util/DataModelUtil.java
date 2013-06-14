@@ -2,8 +2,8 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.util;
 
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.Properties;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DmdlCompilerProperties;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.index.IndexContainer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.util.BuildPropertiesUtil;
 import jp.hishidama.eclipse_plugin.util.StringUtil;
@@ -60,8 +60,11 @@ public class DataModelUtil {
 	}
 
 	public static String getModelClass(IProject project, String modelName) {
-		Properties properties = BuildPropertiesUtil.getBuildProperties(project);
-		String pack = BuildPropertiesUtil.getModelgenPackage(properties);
+		DmdlCompilerProperties bp = BuildPropertiesUtil.getBuildProperties(project, false);
+		if (bp == null) {
+			return null;
+		}
+		String pack = bp.getModelgenPackage();
 		if (pack == null) {
 			return null;
 		}

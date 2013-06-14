@@ -1,5 +1,7 @@
 package jp.hishidama.eclipse_plugin.util;
 
+import java.util.List;
+
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelUtil;
 
 public class StringUtil {
@@ -94,5 +96,16 @@ public class StringUtil {
 
 	public static String escapeQuote(String s) {
 		return s.replaceAll("\"", "\\\"");
+	}
+
+	public static String toString(List<?> list) {
+		StringBuilder sb = new StringBuilder(512);
+		for (Object obj : list) {
+			if (sb.length() != 0) {
+				sb.append("\n");
+			}
+			sb.append(obj);
+		}
+		return sb.toString();
 	}
 }

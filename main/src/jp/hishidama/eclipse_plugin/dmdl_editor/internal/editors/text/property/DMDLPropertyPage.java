@@ -4,6 +4,7 @@ import java.util.List;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DMDLEditorConfiguration;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
+import jp.hishidama.eclipse_plugin.util.swt.CheckedTableUtil;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -11,11 +12,6 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -45,7 +41,6 @@ public class DMDLPropertyPage extends PropertyPage {
 		}
 		createTable(composite);
 
-		validate(false);
 		return composite;
 	}
 
@@ -55,41 +50,7 @@ public class DMDLPropertyPage extends PropertyPage {
 		table.setLayoutData(grid);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		table.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseDown(MouseEvent e) {
-				Point point = new Point(e.x, e.y);
-				TableItem item = table.getItem(point);
-				if (item == null) {
-					return;
-				}
-				int columns = table.getColumnCount();
-				for (int i = 0; i < columns; i++) {
-					if (item.getBounds(i).contains(point)) {
-						boolean checked = !item.getChecked();
-						item.setChecked(checked);
-						if (checked) {
-							resetChecked(item);
-						}
-						break;
-					}
-				}
-			}
-
-			private void resetChecked(TableItem checked) {
-				for (TableItem item : table.getItems()) {
-					if (item != checked) {
-						item.setChecked(false);
-					}
-				}
-			}
-		});
-		table.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				validate(true);
-			}
-		});
+		CheckedTableUtil.setSingleCheckedTable(table);
 
 		TableColumn col = new TableColumn(table, SWT.NONE);
 		col.setWidth(256);
@@ -115,24 +76,6 @@ public class DMDLPropertyPage extends PropertyPage {
 			if (name.equals(defaultName)) {
 				item.setChecked(true);
 			}
-		}
-	}
-
-	private void validate(boolean putError) {
-		int checked = 0;
-		for (TableItem item : table.getItems()) {
-			if (item.getChecked()) {
-				checked++;
-			}
-		}
-		if (checked == 1) {
-			setErrorMessage(null);
-			setValid(true);
-		} else {
-			if (putError) {
-				setErrorMessage("対象バージョンを1つだけ選択して下さい。");
-			}
-			setValid(false);
 		}
 	}
 
@@ -169,7 +112,6 @@ public class DMDLPropertyPage extends PropertyPage {
 				}
 			}
 		}
-		validate(true);
 
 		super.performDefaults();
 	}
@@ -185,11 +127,11 @@ public class DMDLPropertyPage extends PropertyPage {
 			}
 		}
 
-		if (name != null) {
-			IProject project = getProject();
-			DMDLPropertyPageUtil.setConfigurationName(project, name);
-			return true;
+		if (name == null) {
+			name = "";
 		}
-		return false;
+		IProject project = getProject();
+		DMDLPropertyPageUtil.setConfigurationName(project, name);
+		return true;
 	}
 }

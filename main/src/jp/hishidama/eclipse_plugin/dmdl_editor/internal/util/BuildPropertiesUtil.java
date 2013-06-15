@@ -31,7 +31,7 @@ public class BuildPropertiesUtil {
 			DMDLEditorConfiguration c = DMDLPropertyPageUtil.getConfiguration(project);
 			if (c == null) {
 				if (putError) {
-					openMessageDialog("Asakusa Frameworkのバージョンをプロパティーページで設定して下さい。");
+					openMessageDialog("Asakusa FrameworkのバージョンをDMDL Editorのプロパティーページで設定して下さい。");
 				}
 				return null;
 			}
@@ -55,18 +55,18 @@ public class BuildPropertiesUtil {
 		Display.getDefault().syncExec(new Runnable() {
 			@Override
 			public void run() {
-				MessageDialog.openWarning(null, "build.properties error", message);
+				MessageDialog.openWarning(null, "DMDL Editor - build.properties error", message);
 			}
 		});
 	}
 
 	private static void openFileNotFoundErrorDialog(String fname) {
 		final String message = MessageFormat.format("プロジェクト内にAsakusa Frameworkのbuild.propertiesが見つかりません。\n"
-				+ "プロジェクトのプロパティーでbuild.propertiesの場所を指定して下さい。\n\n" + "現在指定されているパス={0}", fname);
+				+ "DMDL EditorのParserプロパティーページでbuild.propertiesの場所を指定して下さい。\n\n" + "現在指定されているパス={0}", fname);
 		Display.getDefault().syncExec(new Runnable() {
 			@Override
 			public void run() {
-				MessageDialog.openWarning(null, "build.properties error", message);
+				MessageDialog.openWarning(null, "DMDL Editor - build.properties error", message);
 			}
 		});
 	}
@@ -75,7 +75,8 @@ public class BuildPropertiesUtil {
 		Display.getDefault().syncExec(new Runnable() {
 			@Override
 			public void run() {
-				ErrorDialog.openError(null, "build.properties error", "build.propertiesの読み込み中にエラーが発生しました。", status);
+				ErrorDialog.openError(null, "DMDL Editor - build.properties error",
+						"build.propertiesの読み込み中にエラーが発生しました。", status);
 			}
 		});
 	}

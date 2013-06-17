@@ -50,9 +50,9 @@
       </page>
       <page
             category="dmdl-editor-plugin.page"
-            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.property.DMDLClassPathPropertyPage"
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.property.DMDLParserPropertyPage"
             id="dmdl-editor-plugin.classpath.page"
-            name="Parser">
+            name="DmdlParser">
          <enabledWhen>
             <or>
                <instanceof

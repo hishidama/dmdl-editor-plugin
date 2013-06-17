@@ -12,11 +12,16 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.ui.PlatformUI;
 
 public class DMDLCompileHandler extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+		if (!PlatformUI.getWorkbench().saveAllEditors(true)) {
+			return null;
+		}
+
 		IProject project = ProjectUtil.getProject(event);
 		if (project == null) {
 			MessageDialog.openInformation(null, "DMDL compile", "IProjectが見つかりませんでした。\nプロジェクトを選択してから実行して下さい。");

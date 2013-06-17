@@ -28,12 +28,17 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 public class DMDLErrorCheckHandler extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+		if (!PlatformUI.getWorkbench().saveAllEditors(true)) {
+			return null;
+		}
+
 		FileList list = new FileList();
 
 		ISelection selection = HandlerUtil.getCurrentSelection(event);

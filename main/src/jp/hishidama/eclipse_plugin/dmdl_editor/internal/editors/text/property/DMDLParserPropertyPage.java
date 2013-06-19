@@ -44,6 +44,7 @@ public class DMDLParserPropertyPage extends PropertyPage {
 	private Table versionTable;
 	private Text buildProperties;
 	private CheckboxTableViewer classpathViewer;
+	private Button replaceButton;
 	private Button removeButton;
 
 	@Override
@@ -84,6 +85,12 @@ public class DMDLParserPropertyPage extends PropertyPage {
 		versionTable.setHeaderVisible(false);
 		versionTable.setLinesVisible(true);
 		CheckedTableUtil.setSingleCheckedTable(versionTable);
+		versionTable.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				refreshReplaceButton();
+			}
+		});
 
 		TableColumn col = new TableColumn(versionTable, SWT.NONE);
 		col.setWidth(256);
@@ -110,6 +117,18 @@ public class DMDLParserPropertyPage extends PropertyPage {
 				item.setChecked(true);
 			}
 		}
+
+		// refreshReplaceButton();
+	}
+
+	private void refreshReplaceButton() {
+		int checked = 0;
+		for (TableItem item : versionTable.getItems()) {
+			if (item.getChecked()) {
+				checked++;
+			}
+		}
+		replaceButton.setEnabled(checked == 1);
 	}
 
 	private void createBuildPropertiesField(Composite composite, final IProject project) {
@@ -164,7 +183,9 @@ public class DMDLParserPropertyPage extends PropertyPage {
 			{
 				classpathViewer = CheckboxTableViewer.newCheckList(rows, SWT.BORDER | SWT.MULTI);
 				Table table = classpathViewer.getTable();
-				GridData tableGrid = GridDataFactory.fillDefaults().minSize(380, 20 * 9).hint(512, 20 * 9).create();
+				GridData tableGrid = new GridData(GridData.FILL_HORIZONTAL);
+				tableGrid.widthHint = 380;
+				tableGrid.minimumHeight = 20 * 9;
 				table.setLayoutData(tableGrid);
 				table.setLinesVisible(true);
 				ParserClassUtil.initTable(classpathViewer, project);
@@ -218,6 +239,25 @@ public class DMDLParserPropertyPage extends PropertyPage {
 			layout.verticalSpacing = 5;
 			rows.setLayout(layout);
 			rows.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
+
+			Button button0 = new Button(rows, SWT.NONE);
+			button0.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
+			button0.setText("Replace default");
+			button0.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					DMDLEditorConfiguration c = null;
+					for (TableItem item : versionTable.getItems()) {
+						if (item.getChecked()) {
+							c = (DMDLEditorConfiguration) item.getData();
+							break;
+						}
+					}
+					ParserClassUtil.initTableDefault(classpathViewer, project, c);
+				}
+			});
+			replaceButton = button0;
+			refreshReplaceButton();
 
 			Button button1 = new Button(rows, SWT.NONE);
 			button1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));

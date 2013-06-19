@@ -196,6 +196,10 @@ public class DMDLPropertyPageUtil {
 
 	public static List<Library> getDefaultLibraries(IProject project) {
 		DMDLEditorConfiguration c = getConfiguration(project);
+		return getDefaultLibraries(project, c);
+	}
+
+	public static List<Library> getDefaultLibraries(IProject project, DMDLEditorConfiguration c) {
 		if (c == null) {
 			return Collections.emptyList();
 		}

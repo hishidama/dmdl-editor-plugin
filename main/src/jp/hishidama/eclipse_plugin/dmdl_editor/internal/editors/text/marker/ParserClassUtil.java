@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DMDLEditorConfiguration;
 import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DMDLEditorConfiguration.Library;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.property.DMDLPropertyPageUtil;
@@ -35,6 +36,11 @@ public class ParserClassUtil {
 
 	public static void initTableDefault(CheckboxTableViewer viewer, IProject project) {
 		List<Library> libs = DMDLPropertyPageUtil.getDefaultLibraries(project);
+		setTable(viewer, libs);
+	}
+
+	public static void initTableDefault(CheckboxTableViewer viewer, IProject project, DMDLEditorConfiguration c) {
+		List<Library> libs = DMDLPropertyPageUtil.getDefaultLibraries(project, c);
 		setTable(viewer, libs);
 	}
 

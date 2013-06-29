@@ -27,9 +27,15 @@ public class SetDataModelNamePage extends WizardPage {
 	private IProject project;
 	private String path;
 
+	public static enum PositionType {
+		FILE_FIRST, FILE_FIRST_COMMENT, FILE_LAST, DM_BEFORE, DM_REPLACE, DM_AFTER
+	}
+
 	private Text file;
+	private List<Button> positionList = new ArrayList<Button>();
+	private Text positionModelName;
 	private Text desc;
-	private Text text;
+	private Text modelName;
 	private List<Field> fieldList = new ArrayList<Field>();
 	private ModifyListener listener = new ModifyListener() {
 		@Override
@@ -80,18 +86,48 @@ public class SetDataModelNamePage extends WizardPage {
 					if (dialog.open() == Window.OK) {
 						IFile f = dialog.getSelectedFile();
 						file.setText(f.getProjectRelativePath().toPortableString());
+						String model = dialog.getSelectedModelName();
+						if (model != null) {
+							positionModelName.setText(model);
+						}
 					}
 				}
 			});
 		}
 		{
 			Label label = new Label(composite, SWT.NONE);
+			label.setText("作成する位置");
+
+			Composite field = new Composite(composite, SWT.NONE);
+			field.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+			field.setLayout(new GridLayout(5, false));
+
+			createPosition(field, "ファイルの先頭", PositionType.FILE_FIRST);
+			createPosition(field, "ファイルの先頭（コメントの後）", PositionType.FILE_FIRST_COMMENT);
+			createPosition(field, "ファイルの末尾", PositionType.FILE_LAST).setSelection(true);
+			new Label(field, SWT.NONE); // dummy
+			new Label(field, SWT.NONE); // dummy
+
+			createPosition(field, "データモデルの前", PositionType.DM_BEFORE);
+			createPosition(field, "データモデルを置換", PositionType.DM_REPLACE);
+			createPosition(field, "データモデルの後", PositionType.DM_AFTER);
+			{
+				new Label(field, SWT.NONE).setText("データモデル");
+				positionModelName = new Text(field, SWT.BORDER);
+				positionModelName.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+				positionModelName.addModifyListener(listener);
+			}
+
+			new Label(composite, SWT.NONE); // dummy
+		}
+		{
+			Label label = new Label(composite, SWT.NONE);
 			label.setText("データモデル名");
 
-			text = new Text(composite, SWT.BORDER);
-			text.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-			text.setText("");
-			text.addModifyListener(listener);
+			modelName = new Text(composite, SWT.BORDER);
+			modelName.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+			modelName.setText("");
+			modelName.addModifyListener(listener);
 
 			new Label(composite, SWT.NONE); // dummy
 		}
@@ -123,6 +159,22 @@ public class SetDataModelNamePage extends WizardPage {
 
 		validate(false);
 		setControl(composite);
+	}
+
+	private Button createPosition(Composite field, String text, PositionType pos) {
+		Button button = new Button(field, SWT.RADIO);
+		button.setText(text);
+		button.setData(pos);
+		button.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				validate(true);
+			}
+		});
+
+		positionList.add(button);
+
+		return button;
 	}
 
 	private Button createField(Composite composite, DataModelType type) {
@@ -160,7 +212,18 @@ public class SetDataModelNamePage extends WizardPage {
 			return;
 		}
 
-		String name = text.getText().trim();
+		PositionType pos = getPosition();
+		if (pos.name().startsWith("DM_")) {
+			String src = positionModelName.getText().trim();
+			if (src.isEmpty()) {
+				if (setError) {
+					setErrorMessage("作成位置のデータモデル名を入力して下さい。");
+				}
+				return;
+			}
+		}
+
+		String name = modelName.getText().trim();
 		if (name.isEmpty()) {
 			if (setError) {
 				setErrorMessage("データモデル名を入力して下さい。");
@@ -202,13 +265,31 @@ public class SetDataModelNamePage extends WizardPage {
 		setPageComplete(true);
 	}
 
-	public String getDmdlFile() {
-		String value = file.getText().trim();
-		return value;
+	public static class FilePosition {
+		public String filePath;
+		public PositionType position;
+		public String modelName;
+	}
+
+	public FilePosition getDmdlFile() {
+		FilePosition f = new FilePosition();
+		f.filePath = file.getText().trim();
+		f.position = getPosition();
+		f.modelName = positionModelName.getText().trim();
+		return f;
+	}
+
+	private PositionType getPosition() {
+		for (Button button : positionList) {
+			if (button.getSelection()) {
+				return (PositionType) button.getData();
+			}
+		}
+		return null;
 	}
 
 	public String getDataModelName() {
-		String value = text.getText().trim();
+		String value = modelName.getText().trim();
 		return value;
 	}
 

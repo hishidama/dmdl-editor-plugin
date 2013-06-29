@@ -6,7 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.DMDLSimpleParser;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.StringScanner;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.index.IndexContainer;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.CommentToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.DMDLToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelList;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.util.DMDLFileUtil;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.CreateDataModelJoinKeyPage;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.CreateDataModelJoinPage;
@@ -16,6 +22,8 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.CreateDataMo
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.CreateDataModelSummarizePage;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.DataModelType;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.SetDataModelNamePage;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.SetDataModelNamePage.FilePosition;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.SetDataModelNamePage.PositionType;
 import jp.hishidama.eclipse_plugin.util.FileUtil;
 
 import org.eclipse.core.resources.IFile;
@@ -208,19 +216,103 @@ public class NewDataModelWizard extends Wizard implements IWorkbenchWizard {
 		CreateDataModelPage<?> createPage = getLastPage();
 		String text = createPage.getDataModelText();
 
-		String path = modelPage.getDmdlFile();
-		IFile file = project.getFile(path);
+		FilePosition f = modelPage.getDmdlFile();
+		IFile file = project.getFile(f.filePath);
 		if (!file.exists()) {
 			FileUtil.save(file, text);
 		} else {
 			StringBuilder sb = FileUtil.load(file);
-			sb.append("\n");
-			sb.append(text);
-			FileUtil.save(file, sb.toString());
+			String s = insert(sb, f, text);
+			FileUtil.save(file, s);
 		}
 		if (DMDLFileUtil.openEditor(file) == null) {
 			IndexContainer ic = IndexContainer.getContainer(project);
 			ic.refresh(file, null);
 		}
+	}
+
+	private String insert(StringBuilder sb, FilePosition f, String text) {
+		PositionType pos = f.position;
+		ModelToken model = null;
+
+		ModelList models = null;
+		if (f.position.name().startsWith("DM_") || f.position == PositionType.FILE_FIRST_COMMENT) {
+			DMDLSimpleParser parser = new DMDLSimpleParser();
+			models = parser.parse(new StringScanner(sb.toString()));
+		}
+		if (f.position.name().startsWith("DM_")) {
+			for (ModelToken m : models.getNamedModelList()) {
+				if (f.modelName.equals(m.getModelName())) {
+					model = m;
+					break;
+				}
+			}
+			if (model == null) {
+				pos = PositionType.FILE_LAST;
+			}
+		}
+
+		int n;
+		switch (pos) {
+		case FILE_FIRST:
+			return text + "\n" + sb;
+		case FILE_LAST:
+			return sb + "\n" + text;
+		case FILE_FIRST_COMMENT:
+			n = posAfterComment(sb, models, text);
+			break;
+		case DM_BEFORE:
+			n = model.getStart();
+			text = "\n" + text;
+			break;
+		case DM_AFTER:
+			n = model.getEnd();
+			text = "\n" + text;
+			break;
+		case DM_REPLACE:
+			n = model.getStart();
+			sb.replace(model.getStart(), model.getEnd(), "");
+			text = "\n" + text;
+			break;
+		default:
+			throw new UnsupportedOperationException("pos=" + pos);
+		}
+
+		if (n < sb.length() && sb.charAt(n) == '\r') {
+			n++;
+		}
+		if (n < sb.length() && sb.charAt(n) == '\n') {
+			n++;
+		}
+		return sb.substring(0, n) + text + sb.substring(n);
+	}
+
+	private int posAfterComment(StringBuilder sb, ModelList models, String text) {
+		CommentToken lastComment = null;
+		for (DMDLToken token : models.getBody()) {
+			if (token instanceof ModelToken) {
+				for (DMDLToken t : ((ModelToken) token).getBody()) {
+					if (t instanceof CommentToken) {
+						CommentToken c = (CommentToken) t;
+						if (c.isBlock()) {
+							if (lastComment == null) {
+								lastComment = c;
+							}
+						} else {
+							lastComment = c;
+							continue;
+						}
+					}
+					break;
+				}
+			}
+			break;
+		}
+		if (lastComment != null) {
+			int n = lastComment.getEnd();
+			return n;
+		}
+
+		return sb.length();
 	}
 }

@@ -34,6 +34,17 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
 public class FileUtil {
+	public static String addExtension(String path, String ext) {
+		assert ext.startsWith(".");
+		if (path.endsWith(ext)) {
+			return path;
+		}
+		if (path.endsWith(".")) {
+			return path.substring(0, path.length() - 1) + ext;
+		} else {
+			return path + ext;
+		}
+	}
 
 	public static void createFolder(IProject project, IPath path) throws CoreException {
 		IFolder folder = project.getFolder(path);

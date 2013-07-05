@@ -12,6 +12,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -76,6 +78,16 @@ public class SetDataModelNamePage extends WizardPage {
 			file.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 			file.setText(path);
 			file.addModifyListener(listener);
+			file.addFocusListener(new FocusAdapter() {
+				@Override
+				public void focusLost(FocusEvent e) {
+					String path = file.getText();
+					String path2 = FileUtil.addExtension(path.trim(), ".dmdl");
+					if (!path2.equals(path)) {
+						file.setText(path2);
+					}
+				}
+			});
 
 			Button button = new Button(composite, SWT.PUSH);
 			button.setText("select");

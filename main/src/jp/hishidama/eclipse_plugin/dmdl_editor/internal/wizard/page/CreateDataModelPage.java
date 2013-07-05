@@ -1,5 +1,6 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,7 +19,9 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.viewer.DataModelTreeViewer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CellLabelProvider;
+import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.ICellModifier;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeSelection;
@@ -33,6 +36,8 @@ import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -113,6 +118,16 @@ public abstract class CreateDataModelPage<R extends DataModelRow> extends Wizard
 				public void selectionChanged(SelectionChangedEvent event) {
 					ITreeSelection selection = (ITreeSelection) event.getSelection();
 					doSelectionChange(selection);
+				}
+			});
+			sourceViewer.addDoubleClickListener(new IDoubleClickListener() {
+				@Override
+				public void doubleClick(DoubleClickEvent event) {
+					ITreeSelection selection = (ITreeSelection) event.getSelection();
+					doSelectionChange(selection);
+					if (copyButton.isEnabled()) {
+						doCopy();
+					}
 				}
 			});
 		}
@@ -231,6 +246,13 @@ public abstract class CreateDataModelPage<R extends DataModelRow> extends Wizard
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		defineColumns(table);
+
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				doAdd(-1);
+			}
+		});
 
 		tableViewer.setCellEditors(editors.toArray(new CellEditor[editors.size()]));
 		tableViewer.setColumnProperties(cprops.toArray(new String[cprops.size()]));
@@ -359,10 +381,14 @@ public abstract class CreateDataModelPage<R extends DataModelRow> extends Wizard
 		}
 	}
 
-	protected void doAdd() {
+	private void doAdd() {
+		int index = tableViewer.getTable().getSelectionIndex();
+		doAdd(index);
+	}
+
+	protected void doAdd(int index) {
 		R row = newAddRow();
 
-		int index = tableViewer.getTable().getSelectionIndex();
 		if (index < 0) {
 			defineList.add(row);
 			index = defineList.size() - 1;
@@ -607,14 +633,16 @@ public abstract class CreateDataModelPage<R extends DataModelRow> extends Wizard
 				return;
 			}
 		}
+		int line = 1;
 		for (R row : defineList) {
 			String message = row.validate();
 			if (message != null) {
 				if (setError) {
-					setErrorMessage(message);
+					setErrorMessage(MessageFormat.format("{0}（{1}行目）", message, line));
 				}
 				return;
 			}
+			line++;
 		}
 
 		String message = validateOther();

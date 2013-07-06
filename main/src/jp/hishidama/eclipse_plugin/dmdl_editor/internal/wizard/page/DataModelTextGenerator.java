@@ -33,13 +33,16 @@ public class DataModelTextGenerator {
 
 		appendDescription(desc);
 		sb.append(indent);
-		sb.append(name);
+		sb.append(StringUtil.get(name, "プロパティー名が未定義"));
 		sb.append(" : ");
-		sb.append(type);
+		sb.append(StringUtil.get(type, "データ型が未定義"));
 		sb.append(";\n");
 	}
 
 	public void appendRefProperty(String refModelName) {
+		if (refModelName == null) {
+			refModelName = "";
+		}
 		if (!refModelName.equals(this.refNameOnly)) {
 			block(refModelName, null, false, false);
 		}
@@ -50,22 +53,22 @@ public class DataModelTextGenerator {
 
 		appendDescription(desc);
 		sb.append(indent);
-		sb.append(StringUtil.nonEmpty(refName) ? refName : name);
+		sb.append(StringUtil.nonEmpty(refName) ? refName : StringUtil.get(name, "参照元プロパティー名が未定義"));
 		sb.append(" -> ");
-		sb.append(StringUtil.nonEmpty(name) ? name : refName);
+		sb.append(StringUtil.nonEmpty(name) ? name : StringUtil.get(refName, "プロパティー名が未定義"));
 		sb.append(";\n");
 	}
 
 	public void appendSumProperty(String name, String desc, String type, String refModelName, String refName) {
-		block(refModelName, "=>", true, true);
+		block(StringUtil.get(refModelName, "集計元データモデル名が未定義"), "=>", true, true);
 
 		appendDescription(desc);
 		sb.append(indent);
-		sb.append(type);
+		sb.append(StringUtil.get(type, "集計方法が未定義"));
 		sb.append(" ");
-		sb.append(StringUtil.nonEmpty(refName) ? refName : name);
+		sb.append(StringUtil.nonEmpty(refName) ? refName : StringUtil.get(name, "集計対象プロパティー名が未定義"));
 		sb.append(" -> ");
-		sb.append(StringUtil.nonEmpty(name) ? name : refName);
+		sb.append(StringUtil.nonEmpty(name) ? name : StringUtil.get(refName, "プロパティー名が未定義"));
 		sb.append(";\n");
 	}
 
@@ -73,7 +76,7 @@ public class DataModelTextGenerator {
 
 	public void appendKey(String name, String refName) {
 		key.append(key.length() == 0 ? " % " : ", ");
-		key.append(StringUtil.nonEmpty(name) ? name : refName);
+		key.append(StringUtil.nonEmpty(name) ? name : StringUtil.get(refName, "キー名が未定義"));
 	}
 
 	private void block(String refModelName, String arrow, boolean block, boolean lf) {

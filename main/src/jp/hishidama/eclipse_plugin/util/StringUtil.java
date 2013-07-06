@@ -13,6 +13,14 @@ public class StringUtil {
 		return s == null || s.isEmpty();
 	}
 
+	public static String get(String s, String defaultString) {
+		if (nonEmpty(s)) {
+			return s;
+		} else {
+			return defaultString;
+		}
+	}
+
 	public static String toCamelCase(String name) {
 		if (name == null) {
 			return null;

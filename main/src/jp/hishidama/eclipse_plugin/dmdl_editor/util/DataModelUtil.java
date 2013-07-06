@@ -55,6 +55,9 @@ public class DataModelUtil {
 	}
 
 	public static String getResolvedDataType(IProject project, String modelName, String propertyName) {
+		if (project == null) {
+			return null;
+		}
 		IndexContainer ic = IndexContainer.getContainer(project);
 		return ic.getResolvedDataType(modelName, propertyName);
 	}

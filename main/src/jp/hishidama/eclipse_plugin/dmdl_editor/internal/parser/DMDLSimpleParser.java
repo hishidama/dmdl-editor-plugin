@@ -48,14 +48,12 @@ public class DMDLSimpleParser {
 				break;
 			case DMDLSimpleScanner.EOF:
 				if (!list.isEmpty()) {
-					acceptDataModel(topList, scanner, modelStart,
-							scanner.getOffset(), list);
+					acceptDataModel(topList, scanner, modelStart, scanner.getOffset(), list);
 				}
 				return;
 			case ';':
 				acceptWord(list, scanner, start, start + 1);
-				acceptDataModel(topList, scanner, modelStart,
-						scanner.getOffset(), list);
+				acceptDataModel(topList, scanner, modelStart, scanner.getOffset(), list);
 				modelStart = scanner.getOffset();
 				list = new ArrayList<DMDLToken>();
 				break;
@@ -107,14 +105,12 @@ public class DMDLSimpleParser {
 		}
 	}
 
-	protected void acceptDataModel(List<DMDLToken> list,
-			DMDLSimpleScanner scanner, int start, int end,
+	protected void acceptDataModel(List<DMDLToken> list, DMDLSimpleScanner scanner, int start, int end,
 			List<DMDLToken> partList) {
 		list.add(new ModelToken(start, end, partList));
 	}
 
-	protected void parseBlock(List<DMDLToken> topList,
-			DMDLSimpleScanner scanner, int blockStart) {
+	protected void parseBlock(List<DMDLToken> topList, DMDLSimpleScanner scanner, int blockStart) {
 		List<DMDLToken> bodyList = new ArrayList<DMDLToken>();
 		acceptWord(bodyList, scanner, blockStart, blockStart + 1);
 
@@ -131,27 +127,22 @@ public class DMDLSimpleParser {
 				break;
 			case ';':
 				acceptWord(list, scanner, start, start + 1);
-				acceptProperty(bodyList, scanner, propertyStart,
-						scanner.getOffset(), list);
+				acceptProperty(bodyList, scanner, propertyStart, scanner.getOffset(), list);
 				list = new ArrayList<DMDLToken>();
 				propertyStart = scanner.getOffset();
 				break;
 			case DMDLSimpleScanner.EOF:
 				if (!list.isEmpty()) {
-					acceptProperty(bodyList, scanner, propertyStart,
-							scanner.getOffset(), list);
+					acceptProperty(bodyList, scanner, propertyStart, scanner.getOffset(), list);
 				}
-				acceptModelBlock(topList, scanner, blockStart,
-						scanner.getOffset(), bodyList);
+				acceptModelBlock(topList, scanner, blockStart, scanner.getOffset(), bodyList);
 				return;
 			case '}': {
 				if (!list.isEmpty()) {
-					acceptProperty(bodyList, scanner, propertyStart,
-							scanner.getOffset(), list);
+					acceptProperty(bodyList, scanner, propertyStart, scanner.getOffset(), list);
 				}
 				acceptWord(bodyList, scanner, start, start + 1);
-				acceptModelBlock(topList, scanner, blockStart,
-						scanner.getOffset(), bodyList);
+				acceptModelBlock(topList, scanner, blockStart, scanner.getOffset(), bodyList);
 				return;
 			}
 			case '@':
@@ -199,32 +190,27 @@ public class DMDLSimpleParser {
 		}
 	}
 
-	protected void acceptProperty(List<DMDLToken> list,
-			DMDLSimpleScanner scanner, int start, int end,
+	protected void acceptProperty(List<DMDLToken> list, DMDLSimpleScanner scanner, int start, int end,
 			List<DMDLToken> bodyList) {
 		list.add(new PropertyToken(start, end, bodyList));
 	}
 
-	protected void acceptModelBlock(List<DMDLToken> list,
-			DMDLSimpleScanner scanner, int start, int end,
+	protected void acceptModelBlock(List<DMDLToken> list, DMDLSimpleScanner scanner, int start, int end,
 			List<DMDLToken> bodyList) {
 		list.add(new BlockToken(start, end, bodyList));
 	}
 
-	protected void parseBlockComment(List<DMDLToken> list,
-			DMDLSimpleScanner scanner, int blockStart, boolean top) {
+	protected void parseBlockComment(List<DMDLToken> list, DMDLSimpleScanner scanner, int blockStart, boolean top) {
 		for (;;) {
 			char c = scanner.read();
 			switch (c) {
 			case DMDLSimpleScanner.EOF:
-				acceptComment(list, scanner, blockStart, scanner.getOffset(),
-						true, top);
+				acceptComment(list, scanner, blockStart, scanner.getOffset(), true, top);
 				return;
 			case '*':
 				char d = scanner.read();
 				if (d == '/') {
-					acceptComment(list, scanner, blockStart,
-							scanner.getOffset(), true, top);
+					acceptComment(list, scanner, blockStart, scanner.getOffset(), true, top);
 					return;
 				} else {
 					scanner.unread();
@@ -236,8 +222,7 @@ public class DMDLSimpleParser {
 		}
 	}
 
-	protected void parseLineComment(List<DMDLToken> list,
-			DMDLSimpleScanner scanner, int commentStart, boolean top) {
+	protected void parseLineComment(List<DMDLToken> list, DMDLSimpleScanner scanner, int commentStart, boolean top) {
 		for (;;) {
 			char c = scanner.read();
 			switch (c) {
@@ -246,13 +231,11 @@ public class DMDLSimpleParser {
 				if (d != '\n') {
 					scanner.unread();
 				}
-				acceptComment(list, scanner, commentStart, scanner.getOffset(),
-						false, top);
+				acceptComment(list, scanner, commentStart, scanner.getOffset(), false, top);
 				return;
 			case '\n':
 			case DMDLSimpleScanner.EOF:
-				acceptComment(list, scanner, commentStart, scanner.getOffset(),
-						false, top);
+				acceptComment(list, scanner, commentStart, scanner.getOffset(), false, top);
 				return;
 			default:
 				break;
@@ -260,15 +243,13 @@ public class DMDLSimpleParser {
 		}
 	}
 
-	protected void acceptComment(List<DMDLToken> list,
-			DMDLSimpleScanner scanner, int start, int end, boolean block,
+	protected void acceptComment(List<DMDLToken> list, DMDLSimpleScanner scanner, int start, int end, boolean block,
 			boolean top) {
 		String s = scanner.getString(start, end);
 		list.add(new CommentToken(start, end, s, block));
 	}
 
-	protected void parseDescription(List<DMDLToken> list,
-			DMDLSimpleScanner scanner, int descStart) {
+	protected void parseDescription(List<DMDLToken> list, DMDLSimpleScanner scanner, int descStart) {
 		for (;;) {
 			char c = scanner.read();
 			switch (c) {
@@ -284,20 +265,25 @@ public class DMDLSimpleParser {
 			case '\"':
 				acceptDescription(list, scanner, descStart, scanner.getOffset());
 				return;
+			case '\\':
+				char e = scanner.read();
+				if (e == DMDLSimpleScanner.EOF) {
+					acceptDescription(list, scanner, descStart, scanner.getOffset());
+					return;
+				}
+				break;
 			default:
 				break;
 			}
 		}
 	}
 
-	protected void acceptDescription(List<DMDLToken> list,
-			DMDLSimpleScanner scanner, int start, int end) {
+	protected void acceptDescription(List<DMDLToken> list, DMDLSimpleScanner scanner, int start, int end) {
 		String s = scanner.getString(start, end);
 		list.add(new DescriptionToken(start, end, s));
 	}
 
-	protected void parseAnnotation(List<DMDLToken> list,
-			DMDLSimpleScanner scanner, int start) {
+	protected void parseAnnotation(List<DMDLToken> list, DMDLSimpleScanner scanner, int start) {
 		for (;;) {
 			char c = scanner.read();
 			switch (c) {
@@ -318,14 +304,12 @@ public class DMDLSimpleParser {
 		}
 	}
 
-	protected void acceptAnnotation(List<DMDLToken> list,
-			DMDLSimpleScanner scanner, int start, int end) {
+	protected void acceptAnnotation(List<DMDLToken> list, DMDLSimpleScanner scanner, int start, int end) {
 		String s = scanner.getString(start, end);
 		list.add(new AnnotationToken(start, end, s));
 	}
 
-	protected void parseArgs(List<DMDLToken> list, DMDLSimpleScanner scanner,
-			int blockStart) {
+	protected void parseArgs(List<DMDLToken> list, DMDLSimpleScanner scanner, int blockStart) {
 		List<DMDLToken> bodyList = new ArrayList<DMDLToken>();
 		acceptWord(bodyList, scanner, blockStart, blockStart + 1);
 
@@ -341,28 +325,23 @@ public class DMDLSimpleParser {
 			case '\n':
 				break;
 			case ',':
-				acceptArg(bodyList, scanner, argStart, scanner.getOffset(),
-						argList);
+				acceptArg(bodyList, scanner, argStart, scanner.getOffset(), argList);
 				acceptWord(bodyList, scanner, start, start + 1);
 				argList = new ArrayList<DMDLToken>(3);
 				argStart = scanner.getOffset();
 				break;
 			case DMDLSimpleScanner.EOF:
 				if (!argList.isEmpty()) {
-					acceptArg(bodyList, scanner, argStart, scanner.getOffset(),
-							argList);
+					acceptArg(bodyList, scanner, argStart, scanner.getOffset(), argList);
 				}
-				acceptArgs(list, scanner, blockStart, scanner.getOffset(),
-						bodyList);
+				acceptArgs(list, scanner, blockStart, scanner.getOffset(), bodyList);
 				return;
 			case ')':
 				if (!argList.isEmpty()) {
-					acceptArg(bodyList, scanner, argStart, scanner.getOffset(),
-							argList);
+					acceptArg(bodyList, scanner, argStart, scanner.getOffset(), argList);
 				}
 				acceptWord(bodyList, scanner, start, start + 1);
-				acceptArgs(list, scanner, blockStart, scanner.getOffset(),
-						bodyList);
+				acceptArgs(list, scanner, blockStart, scanner.getOffset(), bodyList);
 				return;
 			case '/': {
 				char d = scanner.read();
@@ -406,18 +385,17 @@ public class DMDLSimpleParser {
 		}
 	}
 
-	protected void acceptArgs(List<DMDLToken> list, DMDLSimpleScanner scanner,
-			int start, int end, List<DMDLToken> bodyList) {
+	protected void acceptArgs(List<DMDLToken> list, DMDLSimpleScanner scanner, int start, int end,
+			List<DMDLToken> bodyList) {
 		list.add(new ArgumentsToken(start, end, bodyList));
 	}
 
-	protected void acceptArg(List<DMDLToken> list, DMDLSimpleScanner scanner,
-			int start, int end, List<DMDLToken> bodyList) {
+	protected void acceptArg(List<DMDLToken> list, DMDLSimpleScanner scanner, int start, int end,
+			List<DMDLToken> bodyList) {
 		list.add(new ArgumentToken(start, end, bodyList));
 	}
 
-	protected void parseArray(List<DMDLToken> argList,
-			DMDLSimpleScanner scanner, int arrayStart) {
+	protected void parseArray(List<DMDLToken> argList, DMDLSimpleScanner scanner, int arrayStart) {
 		List<DMDLToken> list = new ArrayList<DMDLToken>();
 		acceptWord(list, scanner, arrayStart, arrayStart + 1);
 
@@ -434,13 +412,11 @@ public class DMDLSimpleParser {
 				acceptWord(list, scanner, start, start + 1);
 				break;
 			case DMDLSimpleScanner.EOF:
-				acceptArray(argList, scanner, arrayStart, scanner.getOffset(),
-						list);
+				acceptArray(argList, scanner, arrayStart, scanner.getOffset(), list);
 				return;
 			case '}': {
 				acceptWord(list, scanner, start, start + 1);
-				acceptArray(argList, scanner, arrayStart, scanner.getOffset(),
-						list);
+				acceptArray(argList, scanner, arrayStart, scanner.getOffset(), list);
 				return;
 			}
 			case '/': {
@@ -482,13 +458,12 @@ public class DMDLSimpleParser {
 		}
 	}
 
-	protected void acceptArray(List<DMDLToken> list, DMDLSimpleScanner scanner,
-			int start, int end, List<DMDLToken> bodyList) {
+	protected void acceptArray(List<DMDLToken> list, DMDLSimpleScanner scanner, int start, int end,
+			List<DMDLToken> bodyList) {
 		list.add(new ArrayToken(start, end, bodyList));
 	}
 
-	protected void parseWord(List<DMDLToken> list, DMDLSimpleScanner scanner,
-			int start) {
+	protected void parseWord(List<DMDLToken> list, DMDLSimpleScanner scanner, int start) {
 		String s = scanner.getString(start, start + 1);
 		char c = s.charAt(0);
 		if (SYMBOL.contains(c)) {
@@ -498,8 +473,7 @@ public class DMDLSimpleParser {
 		}
 	}
 
-	protected void parseWord0(List<DMDLToken> list, DMDLSimpleScanner scanner,
-			int start) {
+	protected void parseWord0(List<DMDLToken> list, DMDLSimpleScanner scanner, int start) {
 		for (;;) {
 			char c = scanner.read();
 			switch (c) {
@@ -517,8 +491,7 @@ public class DMDLSimpleParser {
 		}
 	}
 
-	protected void parseSymbol(List<DMDLToken> list, DMDLSimpleScanner scanner,
-			int start, char c) {
+	protected void parseSymbol(List<DMDLToken> list, DMDLSimpleScanner scanner, int start, char c) {
 		switch (c) {
 		case DMDLSimpleScanner.EOF:
 			return;
@@ -538,8 +511,7 @@ public class DMDLSimpleParser {
 		acceptWord(list, scanner, start, scanner.getOffset());
 	}
 
-	protected void acceptWord(List<DMDLToken> list, DMDLSimpleScanner scanner,
-			int start, int end) {
+	protected void acceptWord(List<DMDLToken> list, DMDLSimpleScanner scanner, int start, int end) {
 		String s = scanner.getString(start, end);
 		list.add(new WordToken(start, end, s));
 	}

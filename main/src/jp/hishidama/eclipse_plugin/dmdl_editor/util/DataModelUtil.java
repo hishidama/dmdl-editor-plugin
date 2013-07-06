@@ -152,6 +152,7 @@ public class DataModelUtil {
 		if (s.endsWith("\"")) {
 			s = s.substring(0, s.length() - 1);
 		}
+		s = s.replaceAll("\\\\\"", "\"");
 		return s;
 	}
 
@@ -159,6 +160,7 @@ public class DataModelUtil {
 		if (s == null) {
 			return null;
 		}
+		s = s.replaceAll("\"", "\\\\\"");
 		return "\"" + s + "\"";
 	}
 }

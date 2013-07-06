@@ -29,6 +29,7 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.internal.util.DMDLFileUtil.Docume
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelFile;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelInfo;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelProperty;
+import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelUtil;
 import jp.hishidama.eclipse_plugin.util.StringUtil;
 
 import org.eclipse.core.resources.IFile;
@@ -146,7 +147,7 @@ public class IndexContainer implements Serializable {
 		}
 		for (PropertyToken token : plist) {
 			String pname = token.getName();
-			String pdesc = token.getPropertyDescription();
+			String pdesc = DataModelUtil.decodeDescription(token.getPropertyDescription());
 
 			DataModelProperty p;
 			if (token.getRefNameToken() == null) {

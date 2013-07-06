@@ -241,7 +241,7 @@ public class CreateDataModelJoinPage extends CreateDataModelPage<DataModelJoinRo
 					String pname = StringUtil.nonEmpty(row.name) ? row.name : row.refProperty;
 					String pdesc = StringUtil.nonEmpty(row.description) ? row.description : ((p != null) ? p
 							.getDescription() : null);
-					String ptype = (p != null) ? p.getDataType() : null;
+					String ptype = (p != null) ? p.getResolvedDataType() : null;
 					DataModelProperty n = new DataModelProperty(pname, pdesc, ptype);
 					DMDLTreeData.Property prop = new DMDLTreeData.Property(project, null, n);
 					prop.setOtherData(row);

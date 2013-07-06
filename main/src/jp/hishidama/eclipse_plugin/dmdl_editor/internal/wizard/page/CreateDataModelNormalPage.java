@@ -146,7 +146,7 @@ public class CreateDataModelNormalPage extends CreateDataModelPage<DataModelNorm
 		DataModelNormalRow row = new DataModelNormalRow();
 		row.name = prop.getName();
 		row.description = prop.getDescription();
-		row.dataType = prop.getDataType();
+		row.dataType = prop.getResolvedDataType();
 		return row;
 	}
 

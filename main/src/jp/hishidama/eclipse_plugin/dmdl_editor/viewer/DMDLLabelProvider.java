@@ -63,7 +63,7 @@ public class DMDLLabelProvider extends LabelProvider {
 					sb.append(desc);
 				}
 
-				String type = prop.getDataType();
+				String type = prop.getResolvedDataType();
 				if (type != null) {
 					sb.append(" : ");
 					sb.append(type);

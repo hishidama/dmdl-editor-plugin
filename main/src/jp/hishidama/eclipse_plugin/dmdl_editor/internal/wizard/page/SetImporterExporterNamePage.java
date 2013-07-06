@@ -18,6 +18,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
@@ -50,7 +51,7 @@ public class SetImporterExporterNamePage extends WizardPage {
 
 		{
 			Label label = new Label(composite, SWT.NONE);
-			label.setText("ソースディレクトリー");
+			label.setText("生成先ソースディレクトリー");
 
 			srcText = new Text(composite, SWT.BORDER);
 			GridData grid = new GridData(GridData.FILL_HORIZONTAL);
@@ -75,6 +76,22 @@ public class SetImporterExporterNamePage extends WizardPage {
 		createField(composite, ImporterExporterType.WINDGATE_CSV_EXPORTER, "$(modelName.toCamelCase)ToCsv");
 		createField(composite, ImporterExporterType.WINDGATE_JDBC_IMPORTER, "$(modelName.toCamelCase)FromTable");
 		createField(composite, ImporterExporterType.WINDGATE_JDBC_EXPORTER, "$(modelName.toCamelCase)ToTable");
+
+		{
+			Group group = new Group(composite, SWT.NONE);
+			group.setText("例");
+			GridData grid = new GridData(GridData.FILL_HORIZONTAL);
+			grid.horizontalSpan = 2;
+			group.setLayoutData(grid);
+			group.setLayout(new GridLayout(1, false));
+
+			Label label = new Label(group, SWT.NONE);
+			label.setText("対象となるデータモデル（前のページで指定したデータモデル）が「word_count」、\n"
+					+ "「パッケージ名」が「com.example」、「@directio.csv Importer」が「job.$(modelName.toCamelCase)FromCsv」のとき、\n"
+					+ "「com.example.job.WordCountFromCsv」というクラスが生成されます。\n"
+					+ "親クラスは、build.proerptiesの「asakusa.modelgen.package」で指定されているパッケージが「com.modelgen」だとすると\n"
+					+ "「com.modelgen.dmdl.csv.AbstractWordCountCsvInputDescription」となります。（このクラスが無いと、生成されたソースはコンパイルエラーになります）");
+		}
 
 		validate(false);
 		setControl(composite);
@@ -113,7 +130,7 @@ public class SetImporterExporterNamePage extends WizardPage {
 		setPageComplete(false);
 		if (srcText.getText().trim().isEmpty()) {
 			if (setError) {
-				setErrorMessage("ソースディレクトリーを入力して下さい。");
+				setErrorMessage("生成先ソースディレクトリーを入力して下さい。");
 			}
 			return;
 		}

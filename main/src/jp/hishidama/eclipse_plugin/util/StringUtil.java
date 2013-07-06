@@ -49,6 +49,38 @@ public class StringUtil {
 		return Character.toLowerCase(s.charAt(0)) + s.substring(1);
 	}
 
+	public static String append(String packageName, String name) {
+		if (packageName.endsWith(".")) {
+			packageName = packageName.substring(0, packageName.length() - 1);
+		}
+		if (name.startsWith(".")) {
+			name = name.substring(1);
+		}
+		if (packageName.isEmpty()) {
+			return name;
+		} else {
+			return packageName + "." + name;
+		}
+	}
+
+	public static String getPackageName(String name) {
+		int n = name.lastIndexOf('.');
+		if (n >= 0) {
+			return name.substring(0, n);
+		} else {
+			return "";
+		}
+	}
+
+	public static String getSimpleName(String name) {
+		int n = name.lastIndexOf('.');
+		if (n >= 0) {
+			return name.substring(n + 1);
+		} else {
+			return name;
+		}
+	}
+
 	public static String replace(String s, String modelName, String propName, String propDesc) {
 		StringBuilder sb = new StringBuilder(s.length());
 		for (int pos = 0;;) {

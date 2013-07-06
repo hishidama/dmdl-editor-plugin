@@ -15,7 +15,10 @@ import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -53,6 +56,18 @@ public class SelectDataModelPage extends WizardPage {
 				@Override
 				public void checkStateChanged(CheckStateChangedEvent event) {
 					refreshChecked(event.getElement());
+				}
+			});
+			viewer.getTree().addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseDown(MouseEvent e) {
+					Point point = new Point(e.x, e.y);
+					Tree tree = (Tree) e.widget;
+					TreeItem item = tree.getItem(point);
+					if (item != null && item.getBounds(0).contains(point)) {
+						item.setChecked(!item.getChecked());
+						refreshChecked(item.getData());
+					}
 				}
 			});
 		}

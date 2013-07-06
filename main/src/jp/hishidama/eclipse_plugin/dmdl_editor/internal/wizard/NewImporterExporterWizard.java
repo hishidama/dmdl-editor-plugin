@@ -15,6 +15,7 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.SelectDataMo
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.SelectDataModelPage.ModelFile;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.SetImporterExporterMethodPage;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.SetImporterExporterNamePage;
+import jp.hishidama.eclipse_plugin.util.StringUtil;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -145,7 +146,8 @@ public class NewImporterExporterWizard extends Wizard implements IWorkbenchWizar
 				if (className != null) {
 					ImporterExporterGenerator generator = ImporterExporterGenerator.get(page.getType());
 					try {
-						generator.generate(project, properties, page, mf.model, dir, packName, className, first);
+						String name = StringUtil.append(packName, className);
+						generator.generate(project, properties, page, mf.model, dir, name, first);
 						first = false;
 					} catch (CoreException e) {
 						ErrorDialog.openError(getShell(), "error", "生成中にエラーが発生しました。", e.getStatus());

@@ -41,19 +41,21 @@ public abstract class ImporterExporterGenerator extends ClassGenerator {
 	}
 
 	public void generate(IProject project, DmdlCompilerProperties properties, SetImporterExporterMethodPage page,
-			ModelToken model, String dir, String packageName, String className, boolean open) throws CoreException {
+			ModelToken model, String dir, String name, boolean open) throws CoreException {
 		this.properties = properties;
 		this.page = page;
 		this.project = project;
 		this.model = model;
 		this.dir = dir;
-		String resolvedName = StringUtil.replace(className, model.getModelName(), "", "");
-		String contents = super.generate(packageName, resolvedName);
+		String resolvedName = StringUtil.replace(name, model.getModelName(), "", "");
+		String packageName = StringUtil.getPackageName(resolvedName);
+		String simpleName = StringUtil.getSimpleName(resolvedName);
+		String contents = super.generate(packageName, simpleName);
 
 		IFile file = getFile(packageName);
 		FileUtil.save(file, contents);
 		if (open) {
-			FileUtil.openFile(file, packageName + "." + resolvedName);
+			FileUtil.openFile(file, resolvedName);
 		}
 	}
 

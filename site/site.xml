@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/jp.hishidama.eclipse_plugin.dmdl_editor.feature_0.1.2.201307061234.jar" id="jp.hishidama.eclipse_plugin.dmdl_editor.feature" version="0.1.2.201307061234">
+   <feature url="features/jp.hishidama.eclipse_plugin.dmdl_editor.feature_0.1.2.201307072104.jar" id="jp.hishidama.eclipse_plugin.dmdl_editor.feature" version="0.1.2.201307072104">
       <category name="jp.hishidama.eclipse_plugin.category.dmdl_editor"/>
    </feature>
    <category-def name="jp.hishidama.eclipse_plugin.category.dmdl_editor" label="DMDL Editor"/>

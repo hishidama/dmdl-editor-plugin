@@ -41,13 +41,12 @@ public class SelectDataModelPage extends WizardPage {
 	@Override
 	public void createControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
+		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 		composite.setLayout(new GridLayout(1, false));
 
 		{
 			tree = new Tree(composite, SWT.BORDER | SWT.CHECK);
-			GridData grid = new GridData(GridData.FILL);
-			grid.widthHint = 512;
-			grid.heightHint = 256;
+			GridData grid = new GridData(GridData.FILL_BOTH);
 			tree.setLayoutData(grid);
 			rebuild();
 

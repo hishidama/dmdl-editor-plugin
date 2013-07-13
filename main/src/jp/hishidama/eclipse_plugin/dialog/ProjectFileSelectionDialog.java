@@ -3,6 +3,8 @@ package jp.hishidama.eclipse_plugin.dialog;
 import java.util.HashSet;
 import java.util.Set;
 
+import jp.hishidama.eclipse_plugin.util.StringUtil;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -20,8 +22,7 @@ public class ProjectFileSelectionDialog extends ElementTreeSelectionDialog {
 	private IProject project;
 
 	public ProjectFileSelectionDialog(Shell parent, IProject project) {
-		super(parent, new WorkbenchLabelProvider(),
-				new BaseWorkbenchContentProvider());
+		super(parent, new WorkbenchLabelProvider(), new BaseWorkbenchContentProvider());
 		setInput(project);
 	}
 
@@ -41,7 +42,7 @@ public class ProjectFileSelectionDialog extends ElementTreeSelectionDialog {
 	}
 
 	public void setInitialSelection(String initialPath) {
-		if (initialPath == null) {
+		if (StringUtil.isEmpty(initialPath)) {
 			return;
 		}
 
@@ -62,8 +63,7 @@ public class ProjectFileSelectionDialog extends ElementTreeSelectionDialog {
 
 		addFilter(new ViewerFilter() {
 			@Override
-			public boolean select(Viewer viewer, Object parentElement,
-					Object element) {
+			public boolean select(Viewer viewer, Object parentElement, Object element) {
 				if (element instanceof IFile) {
 					IFile file = (IFile) element;
 					return set.contains(file.getFileExtension());

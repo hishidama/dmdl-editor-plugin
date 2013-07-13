@@ -75,7 +75,7 @@ public class DMDLParserPropertyPage extends PropertyPage {
 	private void createVersionTable(Composite composite) {
 		{
 			Label label = new Label(composite, SWT.NONE);
-			label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
+			label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 			label.setText("version name:");
 		}
 
@@ -166,13 +166,13 @@ public class DMDLParserPropertyPage extends PropertyPage {
 
 	private void createClasspathTable(Composite composite, final IProject project) {
 		Label label = new Label(composite, SWT.NONE);
-		label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
+		label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 		label.setText("jar files (classpath):");
 
 		{
 			Composite rows = new Composite(composite, SWT.NONE);
 			{
-				rows.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
+				rows.setLayoutData(new GridData(GridData.FILL_BOTH));
 				GridLayout layout = new GridLayout(1, false);
 				layout.marginWidth = 0;
 				layout.marginHeight = 0;
@@ -183,7 +183,7 @@ public class DMDLParserPropertyPage extends PropertyPage {
 			{
 				classpathViewer = CheckboxTableViewer.newCheckList(rows, SWT.BORDER | SWT.MULTI);
 				Table table = classpathViewer.getTable();
-				GridData tableGrid = new GridData(GridData.FILL_HORIZONTAL);
+				GridData tableGrid = new GridData(GridData.FILL_BOTH);
 				tableGrid.widthHint = 380;
 				tableGrid.minimumHeight = 20 * 9;
 				table.setLayoutData(tableGrid);

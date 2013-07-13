@@ -22,6 +22,13 @@ public class PropertyToken extends DMDLBodyToken {
 			setTypeToken(findWord(n + 1, +1));
 		} else {
 			n = indexOf(WordType.ALLOW);
+			if (n < 0) {
+				n = indexOf(WordType.SUMMARIZED_DEF);
+				if (n >= 0) {
+					WordToken word = (WordToken) bodyList.get(n);
+					word.setWordType(WordType.ALLOW);
+				}
+			}
 			if (n >= 0) {
 				setRefNameToken(findWord(n - 1, -1));
 				setNameToken(findWord(n + 1, +1));

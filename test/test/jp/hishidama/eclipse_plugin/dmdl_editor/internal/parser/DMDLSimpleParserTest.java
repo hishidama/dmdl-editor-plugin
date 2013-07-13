@@ -238,6 +238,36 @@ public class DMDLSimpleParserTest extends DMDLSimpleParserTestCase {
 	}
 
 	@Test
+	public void parse_summarize_dualArrow() {
+		DMDLSimpleParser parser = new DMDLSimpleParser();
+		String actual = "\"test4\"\n" //
+				+ "summarized word_count_total = word_count_model => {\n"
+				+ "  any   word  => word;\n"
+				+ "  count count => count;\n" + "};";
+
+		ModelList models = parser.parse(new StringScanner(actual));
+		List<DMDLToken> list = models.getBody();
+
+		assertEquals(1, list.size());
+		DMDLToken token = list.get(0);
+		// System.out.println(token);
+
+		DMDLToken expected = model(
+				desc("test4"),
+				word("summarized"),
+				word("word_count_total"),
+				word("="),
+				word("word_count_model"),
+				word("=>"),
+				block(word("{"), prop(word("any"), word("word"), word("=>"), word("word"), word(";")),
+						prop(word("count"), word("count"), word("=>"), word("count"), word(";")), word("}")), word(";"));
+		// System.out.println("expected=" + expected);
+		// System.out.println("actual  =" + token);
+		assertEqualsToken(expected, token);
+
+		assertEnd(actual, models);
+	}
+	@Test
 	public void parse_projective1() {
 		DMDLSimpleParser parser = new DMDLSimpleParser();
 		String actual = "projective proj_model = {\n"//

@@ -14,7 +14,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 
-public class AttributeRemover extends AttributeUpdater<DeleteRegion> {
+public class AttributeRemover extends AttributeUpdater {
 
 	private Set<String> modelAttr;
 	private Set<String> propAttr;
@@ -34,35 +34,48 @@ public class AttributeRemover extends AttributeUpdater<DeleteRegion> {
 		return set;
 	}
 
+	private int deleteStart;
+	private int deleteEnd;
+
 	@Override
 	protected void execute(IFile file, IDocument doc, ModelToken model) {
 
 		boolean delete = false;
+		deleteStart = -1;
+		deleteEnd = -1;
 		for (DMDLToken token : model.getBody()) {
-			delete = removeToken(file, modelAttr, token, delete);
+			delete = removeToken(file, doc, modelAttr, token, delete);
+			if (!delete) {
+				addRemoveRegion(file, doc);
+			}
 		}
+		addRemoveRegion(file, doc);
 
 		for (PropertyToken prop : model.getOwnPropertyList()) {
 			delete = false;
 			for (DMDLToken token : prop.getBody()) {
-				delete = removeToken(file, propAttr, token, delete);
+				delete = removeToken(file, doc, propAttr, token, delete);
+				if (!delete) {
+					addRemoveRegion(file, doc);
+				}
 			}
+			addRemoveRegion(file, doc);
 		}
 	}
 
-	private boolean removeToken(IFile file, Set<String> attrName,
-			DMDLToken token, boolean delete) {
+	private boolean removeToken(IFile file, IDocument doc, Set<String> attrName, DMDLToken token, boolean delete) {
 		if (token instanceof CommentToken) {
 			return delete;
 		}
 		if (token instanceof AnnotationToken) {
 			AnnotationToken atoken = (AnnotationToken) token;
 			if (attrName.contains(atoken.getText())) {
-				addDeleteRegion(file, token);
+				deleteStart = token.getStart();
+				deleteEnd = token.getEnd();
 				return true;
 			}
 		} else if ((token instanceof ArgumentsToken) && delete) {
-			addDeleteRegion(file, token);
+			deleteEnd = token.getEnd();
 		}
 		return false;
 	}
@@ -117,32 +130,17 @@ public class AttributeRemover extends AttributeUpdater<DeleteRegion> {
 		}
 	}
 
-	private void addDeleteRegion(IFile file, DMDLToken token) {
-		addRegion(file, new DeleteRegion(token));
-	}
-
-	@Override
-	protected void executeFinish(IDocument doc, DeleteRegion region) {
-		int start = getLineTop(doc, region.start);
-		int end = getLineEnd(doc, start, region.end);
-		try {
-			doc.replace(start, end - start, "");
-		} catch (BadLocationException e) {
-			e.printStackTrace();
+	private void addRemoveRegion(IFile file, IDocument doc) {
+		if (deleteStart < 0 || deleteEnd < 0) {
+			return;
 		}
-	}
-}
 
-class DeleteRegion implements UpdateRegion<DeleteRegion> {
-	public int start, end;
+		int start = getLineTop(doc, deleteStart);
+		int end = getLineEnd(doc, start, deleteEnd);
 
-	public DeleteRegion(DMDLToken token) {
-		this.start = token.getStart();
-		this.end = token.getEnd();
-	}
+		addRemoveRegion(file, start, end);
 
-	@Override
-	public int compareTo(DeleteRegion that) {
-		return that.start - this.start; // 降順
+		deleteStart = -1;
+		deleteEnd = -1;
 	}
 }

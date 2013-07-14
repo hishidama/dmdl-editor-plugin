@@ -8,10 +8,9 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.WordToken;
 import jp.hishidama.eclipse_plugin.util.StringUtil;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 
-public class AttributeAppender extends AttributeUpdater<AppendRegion> {
+public class AttributeAppender extends AttributeUpdater {
 
 	private String modelAttr;
 	private String propAttr;
@@ -71,30 +70,6 @@ public class AttributeAppender extends AttributeUpdater<AppendRegion> {
 		}
 
 		String text = StringUtil.replace(attr, modelName, propName, propDesc);
-		addRegion(file, new AppendRegion(offset, text));
-	}
-
-	@Override
-	protected void executeFinish(IDocument doc, AppendRegion region) {
-		try {
-			doc.replace(region.offset, 0, region.text);
-		} catch (BadLocationException e) {
-			e.printStackTrace();
-		}
-	}
-}
-
-class AppendRegion implements UpdateRegion<AppendRegion> {
-	public int offset;
-	public String text;
-
-	public AppendRegion(int offset, String text) {
-		this.offset = offset;
-		this.text = text;
-	}
-
-	@Override
-	public int compareTo(AppendRegion that) {
-		return that.offset - this.offset; // 降順
+		addAppendRegion(file, offset, text);
 	}
 }

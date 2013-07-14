@@ -18,7 +18,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 
-public abstract class AttributeUpdater<R extends UpdateRegion<R>> {
+public abstract class AttributeUpdater {
 
 	public abstract void setAttribute(String modelAttr, String propAttr);
 
@@ -58,27 +58,35 @@ public abstract class AttributeUpdater<R extends UpdateRegion<R>> {
 		}
 	}
 
-	private Map<IPath, List<R>> regionMap = new LinkedHashMap<IPath, List<R>>();
+	private Map<IPath, List<Region>> regionMap = new LinkedHashMap<IPath, List<Region>>();
 
-	protected final void addRegion(IFile file, R region) {
+	protected final void addAppendRegion(IFile file, int offset, String text) {
+		addRegion(file, new Region(offset, offset, text));
+	}
+
+	protected final void addRemoveRegion(IFile file, int start, int end) {
+		addRegion(file, new Region(start, end, ""));
+	}
+
+	private void addRegion(IFile file, Region region) {
 		IPath path = file.getFullPath();
-		List<R> list = regionMap.get(path);
+		List<Region> list = regionMap.get(path);
 		if (list == null) {
-			list = new ArrayList<R>();
+			list = new ArrayList<Region>();
 			regionMap.put(path, list);
 		}
 		list.add(region);
 	}
 
 	private boolean executeFinish() throws IOException {
-		for (Entry<IPath, List<R>> entry : regionMap.entrySet()) {
+		for (Entry<IPath, List<Region>> entry : regionMap.entrySet()) {
 			IPath path = entry.getKey();
 			DocumentManager dm = DMDLFileUtil.getDocument(path);
 			try {
 				IDocument doc = dm.getDocument();
-				List<R> list = entry.getValue();
+				List<Region> list = entry.getValue();
 				Collections.sort(list);
-				for (R region : list) {
+				for (Region region : list) {
 					executeFinish(doc, region);
 				}
 				dm.commit();
@@ -89,5 +97,43 @@ public abstract class AttributeUpdater<R extends UpdateRegion<R>> {
 		return true;
 	}
 
-	protected abstract void executeFinish(IDocument doc, R region);
+	protected void executeFinish(IDocument doc, Region region) {
+		try {
+			int offset = region.getOffset();
+			int length = region.getLength();
+			String text = region.getText();
+			doc.replace(offset, length, text);
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static class Region implements Comparable<Region> {
+		private int start;
+		private int end;
+		private String text;
+
+		public Region(int start, int end, String text) {
+			this.start = start;
+			this.end = end;
+			this.text = text;
+		}
+
+		public int getOffset() {
+			return start;
+		}
+
+		public int getLength() {
+			return end - start;
+		}
+
+		public String getText() {
+			return text;
+		}
+
+		@Override
+		public int compareTo(Region that) {
+			return that.start - this.start; // 降順
+		}
+	}
 }

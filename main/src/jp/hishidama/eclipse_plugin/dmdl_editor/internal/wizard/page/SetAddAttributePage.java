@@ -123,7 +123,7 @@ public class SetAddAttributePage extends SetAttributePage {
 	}
 
 	@Override
-	public AttributeUpdater<?> getUpdater() {
+	public AttributeUpdater getUpdater() {
 		return new AttributeAppender();
 	}
 }

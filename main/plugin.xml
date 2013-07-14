@@ -390,6 +390,9 @@
       <classpath
             class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.attribute.WindgateJdbcAttributeDefinition">
       </classpath>
+      <classpath
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.attribute.WindgateTsvAttributeDefinition">
+      </classpath>
    </extension>
 
 </plugin>

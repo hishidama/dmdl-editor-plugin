@@ -2,6 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="dmdlEditorConfiguration" name="DMDLEditor configuration" schema="schema/dmdlEditorConfiguration.exsd"/>
+   <extension-point id="dmdlAttributeWizardDefinition" name="DMDL AttributeWizard definition" schema="schema/dmdlAttributeWizardDefinition.exsd"/>
 
    <extension
          point="org.eclipse.ui.editors">
@@ -376,6 +377,18 @@
       </classpath>
       <classpath
             class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.AsakusaFramework05Configration">
+      </classpath>
+   </extension>
+   <extension
+         point="jp.hishidama.eclipse_plugin.dmdl_editor.dmdlAttributeWizardDefinition">
+      <classpath
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.attribute.DirectioCsvAttributeDefinition">
+      </classpath>
+      <classpath
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.attribute.WindgateCsvAttributeDefinition">
+      </classpath>
+      <classpath
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.attribute.WindgateJdbcAttributeDefinition">
       </classpath>
    </extension>
 

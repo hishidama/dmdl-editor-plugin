@@ -5,6 +5,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DMDLAttributeWizardDefinition;
+import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DMDLEditorConfiguration;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
@@ -12,45 +16,71 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 
-import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DMDLEditorConfiguration;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
-
 public class ExtensionLoader {
-
 	private static final String CONFIGURATION_POINT_ID = Activator.PLUGIN_ID + ".dmdlEditorConfiguration";
+	private static final String ATTRIBUTE_DEF_POINT_ID = Activator.PLUGIN_ID + ".dmdlAttributeWizardDefinition";
 
-	private List<DMDLEditorConfiguration> list;
+	private List<DMDLEditorConfiguration> configList;
+	private List<DMDLAttributeWizardDefinition> attrDefList;
 
 	public List<DMDLEditorConfiguration> getConfigurations() {
-		if (list != null) {
-			return list;
+		if (configList != null) {
+			return configList;
 		}
 
-		IExtensionRegistry registory = Platform.getExtensionRegistry();
-		IExtensionPoint point = registory.getExtensionPoint(CONFIGURATION_POINT_ID);
-		if (point == null) {
-			throw new IllegalStateException(CONFIGURATION_POINT_ID);
-		}
+		IExtensionPoint point = getExtensionPoint(CONFIGURATION_POINT_ID);
 
-		list = new ArrayList<DMDLEditorConfiguration>();
+		configList = new ArrayList<DMDLEditorConfiguration>();
 		for (IExtension extension : point.getExtensions()) {
 			for (IConfigurationElement element : extension.getConfigurationElements()) {
 				try {
 					Object obj = element.createExecutableExtension("class");
 					if (obj instanceof DMDLEditorConfiguration) {
-						list.add((DMDLEditorConfiguration) obj);
+						configList.add((DMDLEditorConfiguration) obj);
 					}
 				} catch (CoreException e) {
 					Activator.getDefault().getLog().log(e.getStatus());
 				}
 			}
 		}
-		Collections.sort(list, new Comparator<DMDLEditorConfiguration>() {
+		Collections.sort(configList, new Comparator<DMDLEditorConfiguration>() {
 			@Override
 			public int compare(DMDLEditorConfiguration c0, DMDLEditorConfiguration c1) {
 				return c0.getConfigurationName().compareTo(c1.getConfigurationName());
 			}
 		});
-		return list;
+		return configList;
+	}
+
+	public List<DMDLAttributeWizardDefinition> getAttributeWizardDefinitions() {
+		if (attrDefList != null) {
+			return attrDefList;
+		}
+
+		IExtensionPoint point = getExtensionPoint(ATTRIBUTE_DEF_POINT_ID);
+
+		attrDefList = new ArrayList<DMDLAttributeWizardDefinition>();
+		for (IExtension extension : point.getExtensions()) {
+			for (IConfigurationElement element : extension.getConfigurationElements()) {
+				try {
+					Object obj = element.createExecutableExtension("class");
+					if (obj instanceof DMDLAttributeWizardDefinition) {
+						attrDefList.add((DMDLAttributeWizardDefinition) obj);
+					}
+				} catch (CoreException e) {
+					Activator.getDefault().getLog().log(e.getStatus());
+				}
+			}
+		}
+		return attrDefList;
+	}
+
+	private IExtensionPoint getExtensionPoint(String id) {
+		IExtensionRegistry registory = Platform.getExtensionRegistry();
+		IExtensionPoint point = registory.getExtensionPoint(id);
+		if (point == null) {
+			throw new IllegalStateException(id);
+		}
+		return point;
 	}
 }

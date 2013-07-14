@@ -139,6 +139,9 @@ public class StringUtil {
 	}
 
 	public static String toString(List<?> list) {
+		if (list == null) {
+			return null;
+		}
 		StringBuilder sb = new StringBuilder(512);
 		for (Object obj : list) {
 			if (sb.length() != 0) {

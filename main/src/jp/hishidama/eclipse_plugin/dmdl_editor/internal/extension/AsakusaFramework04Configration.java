@@ -17,7 +17,7 @@ public class AsakusaFramework04Configration extends AsakusaFrameworkConfigration
 
 	@Override
 	protected String getVersionPrefix() {
-		return "0.4.";
+		return "0.4";
 	}
 
 	@Override

@@ -117,7 +117,7 @@ public class AttributeWizard extends Wizard implements IWorkbenchWizard {
 		List<ModelFile> list = modelPage.getModelList();
 
 		try {
-			AttributeUpdater updater = setAttrPage.getUpdater();
+			AttributeUpdater updater = setAttrPage.getUpdater(selectPage);
 			updater.setAttribute(modelAttr, propAttr);
 			if (!updater.execute(list)) {
 				return false;

@@ -176,5 +176,5 @@ public abstract class SetAttributePage extends WizardPage {
 		return String.format("%s.%s", key, getName());
 	}
 
-	public abstract AttributeUpdater getUpdater();
+	public abstract AttributeUpdater getUpdater(SelectAddRemovePage selectPage);
 }

@@ -68,6 +68,10 @@ public abstract class AttributeUpdater {
 		addRegion(file, new Region(start, end, ""));
 	}
 
+	protected final void addReplaceRegion(IFile file, int start, int end, String text) {
+		addRegion(file, new Region(start, end, text));
+	}
+
 	private void addRegion(IFile file, Region region) {
 		IPath path = file.getFullPath();
 		List<Region> list = regionMap.get(path);

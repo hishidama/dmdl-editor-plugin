@@ -1,6 +1,9 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page;
 
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.update.AttributeAppender;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.SelectAddRemovePage.AddPattern;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.update.AttributeAppender4Add;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.update.AttributeAppender4Nothing;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.update.AttributeAppender4Replace;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.update.AttributeUpdater;
 
 import org.eclipse.swt.SWT;
@@ -123,7 +126,17 @@ public class SetAddAttributePage extends SetAttributePage {
 	}
 
 	@Override
-	public AttributeUpdater getUpdater() {
-		return new AttributeAppender();
+	public AttributeUpdater getUpdater(SelectAddRemovePage selectPage) {
+		AddPattern pattern = selectPage.getAddPattern();
+		switch (pattern) {
+		case ADD:
+			return new AttributeAppender4Add();
+		case NOTHING:
+			return new AttributeAppender4Nothing();
+		case REPLACE:
+			return new AttributeAppender4Replace();
+		default:
+			throw new UnsupportedOperationException("pattern=" + pattern);
+		}
 	}
 }

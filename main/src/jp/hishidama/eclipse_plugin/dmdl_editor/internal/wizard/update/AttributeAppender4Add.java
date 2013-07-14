@@ -10,7 +10,7 @@ import jp.hishidama.eclipse_plugin.util.StringUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.IDocument;
 
-public class AttributeAppender extends AttributeUpdater {
+public class AttributeAppender4Add extends AttributeUpdater {
 
 	private String modelAttr;
 	private String propAttr;

@@ -59,7 +59,7 @@ public class SetRemoveAttributePage extends SetAttributePage {
 	}
 
 	@Override
-	public AttributeUpdater getUpdater() {
+	public AttributeUpdater getUpdater(SelectAddRemovePage selectPage) {
 		return new AttributeRemover();
 	}
 }

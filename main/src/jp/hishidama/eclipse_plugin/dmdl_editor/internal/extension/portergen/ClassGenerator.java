@@ -57,7 +57,7 @@ public abstract class ClassGenerator {
 	private Map<String, String> classNameMap = new HashMap<String, String>();
 	private Set<String> simpleNameSet = new HashSet<String>();
 
-	protected String getCachedClassName(String className) {
+	protected final String getCachedClassName(String className) {
 		if (className == null) {
 			className = "";
 		}

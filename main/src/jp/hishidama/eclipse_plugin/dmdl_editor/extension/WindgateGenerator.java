@@ -32,7 +32,14 @@ public abstract class WindgateGenerator extends DMDLImporterExporterGenerator {
 	 * WindGate CSV項目の追加.
 	 */
 	protected final void addFieldWindgateCsv() {
-		addTextField(GROUP_WINDGATE_CSV, KEY_PATH, true, "getPath()", "ファイルのパス",
+		addFieldWindgatePath(GROUP_WINDGATE_CSV);
+	}
+
+	/**
+	 * WindGateのpath項目の追加.
+	 */
+	protected final void addFieldWindgatePath(String groupName) {
+		addTextField(groupName, KEY_PATH, true, "getPath()", "ファイルのパス",
 				"プロファイル内で指定されているresource.local.basePath からの相対パス\n" + "「data.csv」と入力すると\nreturn \"data.csv\";\nになります。");
 	}
 
@@ -63,7 +70,7 @@ public abstract class WindgateGenerator extends DMDLImporterExporterGenerator {
 	 *            生成先
 	 */
 	protected final void appendMethodProfileName(StringBuilder sb) {
-		appendMethod(sb, "getProfileName", map.get(KEY_PROFILE_NAME));
+		appendMethod(sb, "getProfileName", getValue(KEY_PROFILE_NAME));
 	}
 
 	/**
@@ -73,7 +80,7 @@ public abstract class WindgateGenerator extends DMDLImporterExporterGenerator {
 	 *            生成先
 	 */
 	protected final void appendMethodPath(StringBuilder sb) {
-		appendMethod(sb, "getPath", map.get(KEY_PATH));
+		appendMethod(sb, "getPath", getValue(KEY_PATH));
 	}
 
 	/**
@@ -83,7 +90,7 @@ public abstract class WindgateGenerator extends DMDLImporterExporterGenerator {
 	 *            生成先
 	 */
 	protected final void appendMethodTableName(StringBuilder sb) {
-		String name = map.get(KEY_TABLE_NAME);
+		String name = getValue(KEY_TABLE_NAME);
 		if (!name.trim().isEmpty()) {
 			appendMethod(sb, "getTableName", name);
 		}
@@ -96,7 +103,7 @@ public abstract class WindgateGenerator extends DMDLImporterExporterGenerator {
 	 *            生成先
 	 */
 	protected final void appendMethodColumnNames(StringBuilder sb) {
-		appendMethodList(sb, "getColumnNames", map.get(KEY_COLUMN_NAMES));
+		appendMethodList(sb, "getColumnNames", getValue(KEY_COLUMN_NAMES));
 	}
 
 	/**
@@ -106,7 +113,7 @@ public abstract class WindgateGenerator extends DMDLImporterExporterGenerator {
 	 *            生成先
 	 */
 	protected final void appendMethodCondition(StringBuilder sb) {
-		String cond = map.get(KEY_CONDITION);
+		String cond = getValue(KEY_CONDITION);
 		if (cond.trim().isEmpty()) {
 			appendMethodNull(sb, "getCondition");
 		} else {

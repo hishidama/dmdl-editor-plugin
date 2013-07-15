@@ -415,6 +415,12 @@
       <classpath
             class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.portergen.WindgateJdbcExporterGenerator">
       </classpath>
+      <classpath
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.portergen.WindgateTsvImporterGenerator">
+      </classpath>
+      <classpath
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.portergen.WindgateTsvExporterGenerator">
+      </classpath>
    </extension>
 
 </plugin>

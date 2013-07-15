@@ -10,6 +10,7 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.portergen.Clas
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.util.BuildPropertiesUtil;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.NewImporterExporterWizard;
+import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelUtil;
 import jp.hishidama.eclipse_plugin.util.FileUtil;
 import jp.hishidama.eclipse_plugin.util.StringUtil;
 
@@ -29,6 +30,11 @@ public abstract class DMDLImporterExporterGenerator extends ClassGenerator {
 	public static final String GROUP_EXPORTER = "Exporter";
 
 	public static final String KEY_DATA_SIZE = "Importer.dataSize";
+	public static final String KEY_MODEL_CLASS_NAME = "modelClassName";
+
+	public DMDLImporterExporterGenerator() {
+		initializeFields();
+	}
 
 	public final String getFullName() {
 		return getName() + "_" + (isExporter() ? "Exporter" : "Importer");
@@ -69,7 +75,7 @@ public abstract class DMDLImporterExporterGenerator extends ClassGenerator {
 	 * @see #addComboField(String, String, boolean, String, String, String,
 	 *      String...)
 	 */
-	public abstract void initializeFields();
+	protected abstract void initializeFields();
 
 	// フィールド定義用
 	/**
@@ -165,7 +171,7 @@ public abstract class DMDLImporterExporterGenerator extends ClassGenerator {
 		list.add(data);
 	}
 
-	protected Map<String, String> map;
+	private Map<String, String> map;
 	protected IProject project;
 	protected ModelToken model;
 	protected String dir;
@@ -178,6 +184,7 @@ public abstract class DMDLImporterExporterGenerator extends ClassGenerator {
 		this.project = project;
 		this.model = model;
 		this.dir = dir;
+
 		String resolvedName = StringUtil.replace(name, model.getModelName(), "", "");
 		String packageName = StringUtil.getPackageName(resolvedName);
 		String simpleName = StringUtil.getSimpleName(resolvedName);
@@ -201,6 +208,14 @@ public abstract class DMDLImporterExporterGenerator extends ClassGenerator {
 	@Override
 	protected void initialize() {
 		properties = BuildPropertiesUtil.getBuildProperties(project, true);
+	}
+
+	protected String getValue(String key) {
+		if (key.equals(KEY_MODEL_CLASS_NAME)) {
+			String modelName = model.getModelName();
+			return DataModelUtil.getModelClass(project, modelName);
+		}
+		return map.get(key);
 	}
 
 	protected String getGeneratedClassName(String middle, String simpleName) {
@@ -238,6 +253,19 @@ public abstract class DMDLImporterExporterGenerator extends ClassGenerator {
 
 	// メソッド生成用
 	/**
+	 * getModelType()メソッド生成.
+	 * 
+	 * @param sb
+	 *            生成先
+	 */
+	protected final void appendMethodModelType(StringBuilder sb) {
+		String model = getCachedClassName(getValue(KEY_MODEL_CLASS_NAME));
+		String rtype = String.format("Class<? extends %s>", model);
+		String value = String.format("%s.class", model);
+		appendMethod(sb, rtype, "getModelType", value, "");
+	}
+
+	/**
 	 * getDataSize()メソッド生成.
 	 * 
 	 * @param sb
@@ -247,7 +275,7 @@ public abstract class DMDLImporterExporterGenerator extends ClassGenerator {
 		// DataSizeは親クラスで定義されている内部クラスなので、importしなくてよい。
 		// getCachedClassName("com.asakusafw.vocabulary.external.ImporterDescription.DataSize");
 		String name = "DataSize";
-		String size = String.format("%s.%s", name, map.get(KEY_DATA_SIZE));
+		String size = String.format("%s.%s", name, getValue(KEY_DATA_SIZE));
 		appendMethod(sb, name, "getDataSize", size, "");
 	}
 
@@ -324,7 +352,21 @@ public abstract class DMDLImporterExporterGenerator extends ClassGenerator {
 		appendMethod(sb, rtype, method, buf, "");
 	}
 
-	private void appendMethod(StringBuilder sb, String rtype, String method, CharSequence value, String quote) {
+	/**
+	 * メソッド生成.
+	 * 
+	 * @param sb
+	 *            生成先
+	 * @param rtype
+	 *            戻り型
+	 * @param method
+	 *            メソッド名
+	 * @param value
+	 *            戻り値
+	 * @param quote
+	 *            値を囲むクォーテーション（無い場合は空文字列）
+	 */
+	protected final void appendMethod(StringBuilder sb, String rtype, String method, CharSequence value, String quote) {
 		sb.append("\n\t@Override\n");
 		sb.append("\tpublic ");
 		sb.append(rtype);

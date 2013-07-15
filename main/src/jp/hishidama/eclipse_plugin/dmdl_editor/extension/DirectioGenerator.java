@@ -44,7 +44,7 @@ public abstract class DirectioGenerator extends DMDLImporterExporterGenerator {
 	 *            生成先
 	 */
 	protected final void appendMethodBasePath(StringBuilder sb) {
-		appendMethod(sb, "getBasePath", map.get(KEY_BASE_PATH));
+		appendMethod(sb, "getBasePath", getValue(KEY_BASE_PATH));
 	}
 
 	/**
@@ -54,7 +54,7 @@ public abstract class DirectioGenerator extends DMDLImporterExporterGenerator {
 	 *            生成先
 	 */
 	protected final void appendMethodResourcePattern(StringBuilder sb) {
-		appendMethod(sb, "getResourcePattern", map.get(KEY_RESOURCE_PATTERN));
+		appendMethod(sb, "getResourcePattern", getValue(KEY_RESOURCE_PATTERN));
 	}
 
 	/**
@@ -64,7 +64,7 @@ public abstract class DirectioGenerator extends DMDLImporterExporterGenerator {
 	 *            生成先
 	 */
 	protected final void appendMethodOrder(StringBuilder sb) {
-		appendMethodList(sb, "getOrder", map.get(KEY_ORDER));
+		appendMethodList(sb, "getOrder", getValue(KEY_ORDER));
 	}
 
 	/**
@@ -74,6 +74,6 @@ public abstract class DirectioGenerator extends DMDLImporterExporterGenerator {
 	 *            生成先
 	 */
 	protected final void appendMethodDeletePatterns(StringBuilder sb) {
-		appendMethodList(sb, "getDeletePatterns", map.get(KEY_DELETE_PATTERN));
+		appendMethodList(sb, "getDeletePatterns", getValue(KEY_DELETE_PATTERN));
 	}
 }

@@ -41,7 +41,6 @@ public class SetImporterExporterMethodPage extends WizardPage {
 		setTitle("メソッドの内容の指定");
 		setDescription(MessageFormat.format("{0}クラスの各メソッドの内容を入力して下さい。", gen.getDisplayName()));
 		this.generator = gen;
-		gen.initializeFields();
 	}
 
 	public final DMDLImporterExporterGenerator getGenerator() {

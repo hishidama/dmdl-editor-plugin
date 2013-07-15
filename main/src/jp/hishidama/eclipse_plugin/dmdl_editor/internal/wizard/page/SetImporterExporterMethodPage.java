@@ -1,8 +1,14 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DMDLImporterExporterDefinition;
+import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DMDLImporterExporterDefinition.FieldData;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.WizardPage;
@@ -19,18 +25,8 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 
 public class SetImporterExporterMethodPage extends WizardPage {
-	private static final String KEY_BASEPATH = "basePath";
-	private static final String KEY_RESOUCE_PATTERN = "resourcePattern";
-	private static final String KEY_ORDER = "order";
-	private static final String KEY_DELETE_PATTERN = "deletePatterns";
-	private static final String KEY_PROFILE_NAME = "profileName";
-	private static final String KEY_PATH = "path";
-	private static final String KEY_TABLE_NAME = "tableName";
-	private static final String KEY_COLUMN_NAMES = "columnNames";
-	private static final String KEY_CONDITION = "condition";
-	private static final String KEY_DATA_SIZE = "dataSize";
 
-	private final ImporterExporterType type;
+	private final DMDLImporterExporterDefinition definition;
 	private final Map<String, Field> fieldMap = new LinkedHashMap<String, Field>();
 
 	private ModifyListener listener = new ModifyListener() {
@@ -40,15 +36,16 @@ public class SetImporterExporterMethodPage extends WizardPage {
 		}
 	};
 
-	public SetImporterExporterMethodPage(ImporterExporterType type) {
-		super("SetImporterExporterMethodPage." + type);
+	public SetImporterExporterMethodPage(DMDLImporterExporterDefinition definition) {
+		super("SetImporterExporterMethodPage." + definition.getDisplayName());
 		setTitle("メソッドの内容の指定");
-		setDescription(MessageFormat.format("{0}クラスの各メソッドの内容を入力して下さい。", type.displayName()));
-		this.type = type;
+		setDescription(MessageFormat.format("{0}クラスの各メソッドの内容を入力して下さい。", definition.getDisplayName()));
+		this.definition = definition;
+		definition.initializeFields();
 	}
 
-	public ImporterExporterType getType() {
-		return type;
+	public final DMDLImporterExporterDefinition getDefinition() {
+		return definition;
 	}
 
 	@Override
@@ -65,55 +62,19 @@ public class SetImporterExporterMethodPage extends WizardPage {
 	}
 
 	private void rebuild(Composite composite) {
-		if (isDirectio()) {
-			Group group = createGroup(composite, "@directio.csv");
-			createTextField(group, KEY_BASEPATH, true, "getBasePath()", "ベースパス", "論理パス\n"
-					+ "「example」と入力すると\nreturn \"example\";\nになります。");
-			createTextField(group, KEY_RESOUCE_PATTERN, true, "getResourcePattern()", "リソースパターン", "ファイル名のパターン\n"
-					+ "「data.csv」と入力すると\nreturn \"data.csv\";\nになります。");
-		}
-		if (type == ImporterExporterType.DIRECTIO_CSV_EXPORTER) {
-			Group group = createGroup(composite, type.displayName());
-			createTextField(group, KEY_ORDER, false, "getOrder()", "ソート順", "出力ファイルのソート用カラム名（カンマ区切り）\n"
-					+ "「+id1, -id2」と入力すると\nreturn Arrays.asList(\"+id1\", \"-id2\");\nになります。");
-			createTextField(
-					group,
-					KEY_DELETE_PATTERN,
-					false,
-					"getDeletePatterns()",
-					"削除パターン",
-					"出力を行う前に削除するファイル名パターン（カンマ区切り）\n"
-							+ "「data*.csv, test*.csv」と入力すると\nreturn Arrays.asList(\"data*.csv\", \"test*.csv\");\nになります。");
-		}
-		if (isWindgate()) {
-			Group group = createGroup(composite, "@windgate");
-			createTextField(group, KEY_PROFILE_NAME, true, "getProfileName()", "プロファイル", "プロファイル\n"
-					+ "「example」と入力すると\nreturn \"example\";\nになります。\n"
-					+ "この例の場合、$ASAKUSA_HOME/windgate/profile/example.properties が使われることになります。");
-		}
-		if (isWindgateCsv()) {
-			Group group = createGroup(composite, "@windgate.csv");
-			createTextField(group, KEY_PATH, true, "getPath()", "ファイルのパス",
-					"プロファイル内で指定されているresource.local.basePath からの相対パス\n"
-							+ "「data.csv」と入力すると\nreturn \"data.csv\";\nになります。");
-		}
-		if (isWindgateJdbc()) {
-			Group group = createGroup(composite, "@windgate.jdbc");
-			createTextField(group, KEY_TABLE_NAME, false, "getTableName()", "テーブル名", "テーブル名\n"
-					+ "「TABLE1」と入力すると\nreturn \"TABLE1\";\n未入力だとgetTableName()は生成（オーバーライド）されず、DMDLで指定されたテーブル名が使われます。");
-			createTextField(group, KEY_COLUMN_NAMES, false, "getColumnNames()", "カラム名", "絞り込むカラム名（カンマ区切り）\n"
-					+ "「COL1, COL2」と入力すると\nreturn Arrays.asList(\"COL1\", \"COL2\");\n"
-					+ "未入力だと\nreturn super.getColumnNames();\nとなります。");
-		}
-		if (type == ImporterExporterType.WINDGATE_JDBC_IMPORTER) {
-			Group group = createGroup(composite, type.displayName());
-			createTextField(group, KEY_CONDITION, false, "getCondition()", "WHERE条件", "インポーターが利用する抽出条件（SQLの条件式）\n"
-					+ "「COL1 = 123」と入力すると\nreturn \"COL1 = 123\";\nになります。");
-		}
-		if (isImporter()) {
-			Group group = createGroup(composite, "Importer");
-			createComboField(group, KEY_DATA_SIZE, true, "getDataSize()", "データサイズ", "入力の推定データサイズ", "UNKNOWN", "TINY",
-					"SMALL", "LARGE");
+		Map<String, List<FieldData>> map = definition.getFields();
+		for (Entry<String, List<FieldData>> entry : map.entrySet()) {
+			String groupName = entry.getKey();
+			Group group = createGroup(composite, groupName);
+			for (FieldData data : entry.getValue()) {
+				if (data.combo == null) {
+					createTextField(group, data.keyName, data.required, data.displayName, data.description,
+							data.toolTip);
+				} else {
+					createComboField(group, data.keyName, data.required, data.displayName, data.description,
+							data.toolTip, data.combo);
+				}
+			}
 		}
 	}
 
@@ -142,7 +103,7 @@ public class SetImporterExporterMethodPage extends WizardPage {
 	}
 
 	private void createComboField(Group group, String key, boolean required, String label, String desc, String tip,
-			String... values) {
+			List<String> values) {
 		createLabel(group, required, label, desc, tip);
 
 		Combo combo = new Combo(group, SWT.BORDER | SWT.DROP_DOWN | SWT.READ_ONLY);
@@ -151,7 +112,7 @@ public class SetImporterExporterMethodPage extends WizardPage {
 
 		String value = getSetting(key);
 		if (value == null) {
-			value = values[0];
+			value = values.get(0);
 		}
 		boolean found = false;
 		for (String s : values) {
@@ -161,7 +122,7 @@ public class SetImporterExporterMethodPage extends WizardPage {
 			}
 		}
 		if (!found) {
-			value = values[0];
+			value = values.get(0);
 		}
 		combo.setText(nonNull(value));
 		combo.addModifyListener(listener);
@@ -217,74 +178,16 @@ public class SetImporterExporterMethodPage extends WizardPage {
 		setPageComplete(true);
 	}
 
-	private boolean isImporter() {
-		return type.name().endsWith("IMPORTER");
-	}
-
-	private boolean isDirectio() {
-		return type.name().startsWith("DIRECTIO");
-	}
-
-	private boolean isWindgate() {
-		return type.name().startsWith("WINDGATE");
-	}
-
-	private boolean isWindgateCsv() {
-		return type.name().startsWith("WINDGATE_CSV");
-	}
-
-	private boolean isWindgateJdbc() {
-		return type.name().startsWith("WINDGATE_JDBC");
-	}
-
-	public final String getBasePath() {
-		return getValue(KEY_BASEPATH);
-	}
-
-	public final String getResourcePattern() {
-		return getValue(KEY_RESOUCE_PATTERN);
-	}
-
-	public final String getOrder() {
-		return getValue(KEY_ORDER);
-	}
-
-	public final String getDeletePatterns() {
-		return getValue(KEY_DELETE_PATTERN);
-	}
-
-	public final String getProfileName() {
-		return getValue(KEY_PROFILE_NAME);
-	}
-
-	public final String getPath() {
-		return getValue(KEY_PATH);
-	}
-
-	public final String getTableName() {
-		return getValue(KEY_TABLE_NAME);
-	}
-
-	public final String getColumnNames() {
-		return getValue(KEY_COLUMN_NAMES);
-	}
-
-	public final String getCondition() {
-		return getValue(KEY_CONDITION);
-	}
-
-	public final String getDataSize() {
-		return getValue(KEY_DATA_SIZE);
-	}
-
-	private String getValue(String key) {
-		Field f = fieldMap.get(key);
-		if (f == null) {
-			return null;
+	public Map<String, String> getValues() {
+		Map<String, String> map = new HashMap<String, String>(fieldMap.size());
+		for (Entry<String, Field> entry : fieldMap.entrySet()) {
+			String key = entry.getKey();
+			Field f = entry.getValue();
+			String value = f.getText();
+			map.put(key, value);
+			setSetting(key, value);
 		}
-		String value = f.getText();
-		setSetting(key, value);
-		return value;
+		return map;
 	}
 
 	// DialogSettings
@@ -304,7 +207,7 @@ public class SetImporterExporterMethodPage extends WizardPage {
 	}
 
 	private String getKey1(String key) {
-		return String.format("SetImporterExporterMethodPage.%s.%s", type.name(), key);
+		return String.format("SetImporterExporterMethodPage.%s.%s", definition.getName(), key);
 	}
 
 	private String getKey2(String key) {

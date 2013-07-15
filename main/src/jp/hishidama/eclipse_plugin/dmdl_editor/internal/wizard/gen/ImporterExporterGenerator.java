@@ -1,10 +1,11 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.gen;
 
+import java.util.Map;
+
+import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DMDLImporterExporterDefinition;
 import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DmdlCompilerProperties;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.util.BuildPropertiesUtil;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.ImporterExporterType;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.SetImporterExporterMethodPage;
 import jp.hishidama.eclipse_plugin.util.FileUtil;
 import jp.hishidama.eclipse_plugin.util.StringUtil;
 
@@ -15,35 +16,16 @@ import org.eclipse.core.runtime.CoreException;
 
 public abstract class ImporterExporterGenerator extends ClassGenerator {
 
-	protected SetImporterExporterMethodPage page;
+	protected Map<String, String> map;
 	protected IProject project;
 	protected ModelToken model;
 	protected String dir;
 	protected DmdlCompilerProperties properties;
 
-	public static ImporterExporterGenerator get(ImporterExporterType type) {
-		switch (type) {
-		case DIRECTIO_CSV_IMPORTER:
-			return new DirectioCsvImporterGenerator();
-		case DIRECTIO_CSV_EXPORTER:
-			return new DirectioCsvExporterGenerator();
-		case WINDGATE_CSV_IMPORTER:
-			return new WindgateCsvImporterGenerator();
-		case WINDGATE_CSV_EXPORTER:
-			return new WindgateCsvExporterGenerator();
-		case WINDGATE_JDBC_IMPORTER:
-			return new WindgateJdbcImporterGenerator();
-		case WINDGATE_JDBC_EXPORTER:
-			return new WindgateJdbcExporterGenerator();
-		default:
-			throw new UnsupportedOperationException("type=" + type);
-		}
-	}
-
-	public void generate(IProject project, DmdlCompilerProperties properties, SetImporterExporterMethodPage page,
+	public void generate(IProject project, DmdlCompilerProperties properties, Map<String, String> map,
 			ModelToken model, String dir, String name, boolean open) throws CoreException {
 		this.properties = properties;
-		this.page = page;
+		this.map = map;
 		this.project = project;
 		this.model = model;
 		this.dir = dir;
@@ -109,7 +91,7 @@ public abstract class ImporterExporterGenerator extends ClassGenerator {
 		// DataSizeは親クラスで定義されている内部クラスなので、importしなくてよい。
 		// getCachedClassName("com.asakusafw.vocabulary.external.ImporterDescription.DataSize");
 		String name = "DataSize";
-		String size = String.format("%s.%s", name, page.getDataSize());
+		String size = String.format("%s.%s", name, map.get(DMDLImporterExporterDefinition.KEY_DATA_SIZE));
 		appendMethod(sb, name, "getDataSize", size, "");
 	}
 

@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DMDLImporterExporterDefinition;
 import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DmdlCompilerProperties;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.gen.ImporterExporterGenerator;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.WizardPage;
@@ -27,7 +27,7 @@ public class SetImporterExporterNamePage extends WizardPage {
 	private static final String SETTINGS_SRC = "SetImporterExporterNamePage.src";
 	private static final String SETTINGS_PACKAGE = "SetImporterExporterNamePage.package";
 
-	private List<DMDLImporterExporterDefinition> defList;
+	private List<ImporterExporterGenerator> generatorList;
 
 	private Text srcText;
 	private Text packageText;
@@ -45,8 +45,8 @@ public class SetImporterExporterNamePage extends WizardPage {
 		setDescription("作成するImporter/Exporterの種類を選択し、生成するクラス名を入力して下さい。");
 	}
 
-	public void setDefinitions(List<DMDLImporterExporterDefinition> defList) {
-		this.defList = defList;
+	public void setGenerators(List<ImporterExporterGenerator> genList) {
+		this.generatorList = genList;
 	}
 
 	@Override
@@ -77,8 +77,8 @@ public class SetImporterExporterNamePage extends WizardPage {
 			packageText.addModifyListener(listener);
 		}
 
-		for (DMDLImporterExporterDefinition def : defList) {
-			createField(composite, def);
+		for (ImporterExporterGenerator gen : generatorList) {
+			createField(composite, gen);
 		}
 
 		{
@@ -101,13 +101,13 @@ public class SetImporterExporterNamePage extends WizardPage {
 		setControl(composite);
 	}
 
-	private void createField(Composite composite, DMDLImporterExporterDefinition def) {
+	private void createField(Composite composite, ImporterExporterGenerator gen) {
 		Field f = new Field();
-		f.def = def;
+		f.generator = gen;
 
 		f.check = new Button(composite, SWT.CHECK);
-		f.check.setText(def.getDisplayName());
-		f.check.setSelection(getSettingBoolean(def));
+		f.check.setText(gen.getDisplayName());
+		f.check.setSelection(getSettingBoolean(gen));
 		f.check.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -116,7 +116,7 @@ public class SetImporterExporterNamePage extends WizardPage {
 		});
 
 		f.text = new Text(composite, SWT.BORDER);
-		f.text.setText(nonNull(getSetting(def, def.getDefaultClassName())));
+		f.text.setText(nonNull(getSetting(gen, gen.getDefaultClassName())));
 		GridData grid = new GridData(GridData.FILL_HORIZONTAL);
 		f.text.setLayoutData(grid);
 		f.text.addModifyListener(listener);
@@ -125,7 +125,7 @@ public class SetImporterExporterNamePage extends WizardPage {
 	}
 
 	private static class Field {
-		public DMDLImporterExporterDefinition def;
+		public ImporterExporterGenerator generator;
 		public Button check;
 		public Text text;
 	}
@@ -191,17 +191,17 @@ public class SetImporterExporterNamePage extends WizardPage {
 		return value;
 	}
 
-	public Map<DMDLImporterExporterDefinition, String> getClassName() {
-		Map<DMDLImporterExporterDefinition, String> map = new HashMap<DMDLImporterExporterDefinition, String>();
+	public Map<ImporterExporterGenerator, String> getClassName() {
+		Map<ImporterExporterGenerator, String> map = new HashMap<ImporterExporterGenerator, String>();
 		for (Field f : fieldList) {
 			boolean check = f.check.getSelection();
 			String value = f.text.getText().trim();
 
-			setSetting(f.def, check);
-			setSetting(f.def, value);
+			setSetting(f.generator, check);
+			setSetting(f.generator, value);
 
 			if (check) {
-				map.put(f.def, value);
+				map.put(f.generator, value);
 			}
 		}
 		return map;
@@ -219,29 +219,29 @@ public class SetImporterExporterNamePage extends WizardPage {
 		settings.put(key, value);
 	}
 
-	private boolean getSettingBoolean(DMDLImporterExporterDefinition def) {
+	private boolean getSettingBoolean(ImporterExporterGenerator gen) {
 		IDialogSettings settings = getDialogSettings();
-		return settings.getBoolean(getKey(def, "checked"));
+		return settings.getBoolean(getKey(gen, "checked"));
 	}
 
-	private void setSetting(DMDLImporterExporterDefinition def, boolean value) {
+	private void setSetting(ImporterExporterGenerator gen, boolean value) {
 		IDialogSettings settings = getDialogSettings();
-		settings.put(getKey(def, "checked"), value);
+		settings.put(getKey(gen, "checked"), value);
 	}
 
-	private String getSetting(DMDLImporterExporterDefinition def, String defalutValue) {
+	private String getSetting(ImporterExporterGenerator gen, String defalutValue) {
 		IDialogSettings settings = getDialogSettings();
-		String value = settings.get(getKey(def, "text"));
+		String value = settings.get(getKey(gen, "text"));
 		return (value != null) ? value : defalutValue;
 	}
 
-	private void setSetting(DMDLImporterExporterDefinition def, String value) {
+	private void setSetting(ImporterExporterGenerator gen, String value) {
 		IDialogSettings settings = getDialogSettings();
-		settings.put(getKey(def, "text"), value);
+		settings.put(getKey(gen, "text"), value);
 	}
 
-	private String getKey(DMDLImporterExporterDefinition def, String suffix) {
-		return String.format("SetImporterExporterNamePage.%s.%s", def.getName(), suffix);
+	private String getKey(ImporterExporterGenerator gen, String suffix) {
+		return String.format("SetImporterExporterNamePage.%s.%s", gen.getDisplayName(), suffix);
 	}
 
 	protected static String nonNull(String s) {

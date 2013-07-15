@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DMDLImporterExporterDefinition;
-import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DMDLImporterExporterDefinition.FieldData;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.gen.ImporterExporterGenerator;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.gen.ImporterExporterGenerator.FieldData;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.WizardPage;
@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Widget;
 
 public class SetImporterExporterMethodPage extends WizardPage {
 
-	private final DMDLImporterExporterDefinition definition;
+	private final ImporterExporterGenerator generator;
 	private final Map<String, Field> fieldMap = new LinkedHashMap<String, Field>();
 
 	private ModifyListener listener = new ModifyListener() {
@@ -36,16 +36,16 @@ public class SetImporterExporterMethodPage extends WizardPage {
 		}
 	};
 
-	public SetImporterExporterMethodPage(DMDLImporterExporterDefinition definition) {
-		super("SetImporterExporterMethodPage." + definition.getDisplayName());
+	public SetImporterExporterMethodPage(ImporterExporterGenerator gen) {
+		super("SetImporterExporterMethodPage." + gen.getDisplayName());
 		setTitle("メソッドの内容の指定");
-		setDescription(MessageFormat.format("{0}クラスの各メソッドの内容を入力して下さい。", definition.getDisplayName()));
-		this.definition = definition;
-		definition.initializeFields();
+		setDescription(MessageFormat.format("{0}クラスの各メソッドの内容を入力して下さい。", gen.getDisplayName()));
+		this.generator = gen;
+		gen.initializeFields();
 	}
 
-	public final DMDLImporterExporterDefinition getDefinition() {
-		return definition;
+	public final ImporterExporterGenerator getGenerator() {
+		return generator;
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class SetImporterExporterMethodPage extends WizardPage {
 	}
 
 	private void rebuild(Composite composite) {
-		Map<String, List<FieldData>> map = definition.getFields();
+		Map<String, List<FieldData>> map = generator.getFields();
 		for (Entry<String, List<FieldData>> entry : map.entrySet()) {
 			String groupName = entry.getKey();
 			Group group = createGroup(composite, groupName);
@@ -207,7 +207,7 @@ public class SetImporterExporterMethodPage extends WizardPage {
 	}
 
 	private String getKey1(String key) {
-		return String.format("SetImporterExporterMethodPage.%s.%s", definition.getName(), key);
+		return String.format("SetImporterExporterMethodPage.%s.%s", generator.getDisplayName(), key);
 	}
 
 	private String getKey2(String key) {

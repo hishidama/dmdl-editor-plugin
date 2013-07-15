@@ -3,6 +3,27 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.gen;
 public class DirectioCsvImporterGenerator extends DirectioGenerator {
 
 	@Override
+	public String getName() {
+		return "@directio.csv";
+	}
+
+	@Override
+	public boolean isExporter() {
+		return false;
+	}
+
+	@Override
+	public String getDefaultClassName() {
+		return "$(modelName.toCamelCase)FromCsv";
+	}
+
+	@Override
+	public void initializeFields() {
+		addDirectioCsv();
+		addImporterDataSize();
+	}
+
+	@Override
 	protected String getExtendsClassName(String modelCamelName) {
 		String sname = String.format("Abstract%sCsvInputDescription", modelCamelName);
 		return getGeneratedClassName(".dmdl.csv.", sname);

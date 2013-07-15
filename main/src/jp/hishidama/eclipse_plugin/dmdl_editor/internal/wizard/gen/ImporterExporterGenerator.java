@@ -1,8 +1,11 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.gen;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
-import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DMDLImporterExporterDefinition;
 import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DmdlCompilerProperties;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.util.BuildPropertiesUtil;
@@ -15,6 +18,78 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 
 public abstract class ImporterExporterGenerator extends ClassGenerator {
+	public static final String GROUP_IMPORTER = "Importer";
+	public static final String GROUP_EXPORTER = "Exporter";
+
+	public static final String KEY_DATA_SIZE = "Importer.dataSize";
+
+	public final String getDisplayName() {
+		return getName() + " " + (isExporter() ? "Exporter" : "Importer");
+	}
+
+	public abstract String getName();
+
+	public abstract boolean isExporter();
+
+	public abstract String getDefaultClassName();
+
+	public abstract void initializeFields();
+
+	protected final void addImporterDataSize() {
+		addComboField(GROUP_IMPORTER, KEY_DATA_SIZE, true, "getDataSize()", "データサイズ", "入力の推定データサイズ", "UNKNOWN", "TINY",
+				"SMALL", "LARGE");
+	}
+
+	public static class FieldData {
+		public String groupName;
+		public String keyName;
+		public boolean required;
+		public String displayName;
+		public String description;
+		public String toolTip;
+		public List<String> combo;
+	}
+
+	private Map<String, List<FieldData>> fieldMap = new LinkedHashMap<String, List<FieldData>>();
+
+	public final Map<String, List<FieldData>> getFields() {
+		return fieldMap;
+	}
+
+	protected final void addTextField(String groupName, String keyName, boolean required, String displayName,
+			String description, String toolTip) {
+		FieldData data = new FieldData();
+		data.groupName = groupName;
+		data.keyName = keyName;
+		data.required = required;
+		data.displayName = displayName;
+		data.description = description;
+		data.toolTip = toolTip;
+		addField(data);
+	}
+
+	protected final void addComboField(String groupName, String keyName, boolean required, String displayName,
+			String description, String toolTip, String... value) {
+		FieldData data = new FieldData();
+		data.groupName = groupName;
+		data.keyName = keyName;
+		data.required = required;
+		data.displayName = displayName;
+		data.description = description;
+		data.toolTip = toolTip;
+		data.combo = Arrays.asList(value);
+		addField(data);
+	}
+
+	private void addField(FieldData data) {
+		String group = data.groupName;
+		List<FieldData> list = fieldMap.get(group);
+		if (list == null) {
+			list = new ArrayList<FieldData>();
+			fieldMap.put(group, list);
+		}
+		list.add(data);
+	}
 
 	protected Map<String, String> map;
 	protected IProject project;
@@ -91,7 +166,7 @@ public abstract class ImporterExporterGenerator extends ClassGenerator {
 		// DataSizeは親クラスで定義されている内部クラスなので、importしなくてよい。
 		// getCachedClassName("com.asakusafw.vocabulary.external.ImporterDescription.DataSize");
 		String name = "DataSize";
-		String size = String.format("%s.%s", name, map.get(DMDLImporterExporterDefinition.KEY_DATA_SIZE));
+		String size = String.format("%s.%s", name, map.get(KEY_DATA_SIZE));
 		appendMethod(sb, name, "getDataSize", size, "");
 	}
 

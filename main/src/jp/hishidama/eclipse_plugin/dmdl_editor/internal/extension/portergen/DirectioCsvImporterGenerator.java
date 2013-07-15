@@ -1,10 +1,12 @@
-package jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.gen;
+package jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.portergen;
 
-public class WindgateCsvImporterGenerator extends WindgateGenerator {
+import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DirectioGenerator;
+
+public class DirectioCsvImporterGenerator extends DirectioGenerator {
 
 	@Override
 	public String getName() {
-		return "@windgate.csv";
+		return "@directio.csv";
 	}
 
 	@Override
@@ -19,21 +21,20 @@ public class WindgateCsvImporterGenerator extends WindgateGenerator {
 
 	@Override
 	public void initializeFields() {
-		addWindgate();
-		addWindgateCsv();
-		addImporterDataSize();
+		addFieldDirectioCsv();
+		addFieldImporterDataSize();
 	}
 
 	@Override
 	protected String getExtendsClassName(String modelCamelName) {
-		String sname = String.format("Abstract%sCsvImporterDescription", modelCamelName);
+		String sname = String.format("Abstract%sCsvInputDescription", modelCamelName);
 		return getGeneratedClassName(".dmdl.csv.", sname);
 	}
 
 	@Override
 	protected void appendMethods(StringBuilder sb) {
-		appendMethodProfileName(sb);
-		appendMethodPath(sb);
+		appendMethodBasePath(sb);
+		appendMethodResourcePattern(sb);
 		appendMethodDataSize(sb);
 	}
 }

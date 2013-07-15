@@ -2,22 +2,15 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DMDLImporterExporterGenerator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DmdlCompilerProperties;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.util.BuildPropertiesUtil;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.util.DMDLFileUtil;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.gen.DirectioCsvExporterGenerator;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.gen.DirectioCsvImporterGenerator;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.gen.ImporterExporterGenerator;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.gen.WindgateCsvExporterGenerator;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.gen.WindgateCsvImporterGenerator;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.gen.WindgateJdbcExporterGenerator;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.gen.WindgateJdbcImporterGenerator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.SelectDataModelPage;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.SelectDataModelPage.ModelFile;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page.SetImporterExporterMethodPage;
@@ -54,17 +47,15 @@ public class NewImporterExporterWizard extends Wizard implements IWorkbenchWizar
 	@Override
 	public void addPages() {
 		List<IFile> list = DMDLFileUtil.getSelectionDmdlFiles();
-		ImporterExporterGenerator[] gens = { new DirectioCsvImporterGenerator(), new DirectioCsvExporterGenerator(),
-				new WindgateCsvImporterGenerator(), new WindgateCsvExporterGenerator(),
-				new WindgateJdbcImporterGenerator(), new WindgateJdbcExporterGenerator() };
+		List<DMDLImporterExporterGenerator> gens = Activator.getExtensionLoader().getImporterExporterGenerators();
 
 		modelPage = new SelectDataModelPage("Importer/Exporterを作成するデータモデルの指定", list);
 		modelPage.setDescription("Importer/Exporterを作成するデータモデルを選択して下さい。");
 		addPage(modelPage);
 		namePage = new SetImporterExporterNamePage();
-		namePage.setGenerators(Arrays.asList(gens));
+		namePage.setGenerators(gens);
 		addPage(namePage);
-		for (ImporterExporterGenerator gen : gens) {
+		for (DMDLImporterExporterGenerator gen : gens) {
 			SetImporterExporterMethodPage methodPage = new SetImporterExporterMethodPage(gen);
 			methodPageList.add(methodPage);
 			addPage(methodPage);
@@ -75,7 +66,7 @@ public class NewImporterExporterWizard extends Wizard implements IWorkbenchWizar
 	public IWizardPage getNextPage(IWizardPage page) {
 		IWizardPage nextPage = super.getNextPage(page);
 
-		Set<ImporterExporterGenerator> set = null;
+		Set<DMDLImporterExporterGenerator> set = null;
 		while (nextPage instanceof SetImporterExporterMethodPage) {
 			SetImporterExporterMethodPage methodPage = (SetImporterExporterMethodPage) nextPage;
 			if (set == null) {
@@ -94,7 +85,7 @@ public class NewImporterExporterWizard extends Wizard implements IWorkbenchWizar
 	public IWizardPage getPreviousPage(IWizardPage page) {
 		IWizardPage prevPage = super.getPreviousPage(page);
 
-		Set<ImporterExporterGenerator> set = null;
+		Set<DMDLImporterExporterGenerator> set = null;
 		while (prevPage instanceof SetImporterExporterMethodPage) {
 			SetImporterExporterMethodPage methodPage = (SetImporterExporterMethodPage) prevPage;
 			if (set == null) {
@@ -123,7 +114,7 @@ public class NewImporterExporterWizard extends Wizard implements IWorkbenchWizar
 
 	@Override
 	public boolean canFinish() {
-		Set<ImporterExporterGenerator> set = namePage.getClassName().keySet();
+		Set<DMDLImporterExporterGenerator> set = namePage.getClassName().keySet();
 
 		IWizardPage[] pages = getPages();
 		for (IWizardPage page : pages) {
@@ -144,7 +135,7 @@ public class NewImporterExporterWizard extends Wizard implements IWorkbenchWizar
 		List<ModelFile> list = modelPage.getModelList();
 		String dir = namePage.getSrcDirectory();
 		String packName = namePage.getPackageName();
-		Map<ImporterExporterGenerator, String> map = namePage.getClassName();
+		Map<DMDLImporterExporterGenerator, String> map = namePage.getClassName();
 
 		boolean first = true;
 		for (ModelFile mf : list) {
@@ -153,7 +144,7 @@ public class NewImporterExporterWizard extends Wizard implements IWorkbenchWizar
 				properties = BuildPropertiesUtil.getBuildProperties(project, true);
 			}
 			for (SetImporterExporterMethodPage page : methodPageList) {
-				ImporterExporterGenerator generator = page.getGenerator();
+				DMDLImporterExporterGenerator generator = page.getGenerator();
 				String className = map.get(generator);
 				if (className != null) {
 					try {

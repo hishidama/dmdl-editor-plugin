@@ -1,4 +1,6 @@
-package jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.gen;
+package jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.portergen;
+
+import jp.hishidama.eclipse_plugin.dmdl_editor.extension.WindgateGenerator;
 
 public class WindgateJdbcExporterGenerator extends WindgateGenerator {
 
@@ -19,8 +21,8 @@ public class WindgateJdbcExporterGenerator extends WindgateGenerator {
 
 	@Override
 	public void initializeFields() {
-		addWindgate();
-		addWindgateJdbc();
+		addFieldWindgate();
+		addFieldWindgateJdbc();
 	}
 
 	@Override

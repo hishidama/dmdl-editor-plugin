@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.gen.ImporterExporterGenerator;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.gen.ImporterExporterGenerator.FieldData;
+import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DMDLImporterExporterGenerator;
+import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DMDLImporterExporterGenerator.FieldData;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.wizard.WizardPage;
@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Widget;
 
 public class SetImporterExporterMethodPage extends WizardPage {
 
-	private final ImporterExporterGenerator generator;
+	private final DMDLImporterExporterGenerator generator;
 	private final Map<String, Field> fieldMap = new LinkedHashMap<String, Field>();
 
 	private ModifyListener listener = new ModifyListener() {
@@ -36,7 +36,7 @@ public class SetImporterExporterMethodPage extends WizardPage {
 		}
 	};
 
-	public SetImporterExporterMethodPage(ImporterExporterGenerator gen) {
+	public SetImporterExporterMethodPage(DMDLImporterExporterGenerator gen) {
 		super("SetImporterExporterMethodPage." + gen.getDisplayName());
 		setTitle("メソッドの内容の指定");
 		setDescription(MessageFormat.format("{0}クラスの各メソッドの内容を入力して下さい。", gen.getDisplayName()));
@@ -44,7 +44,7 @@ public class SetImporterExporterMethodPage extends WizardPage {
 		gen.initializeFields();
 	}
 
-	public final ImporterExporterGenerator getGenerator() {
+	public final DMDLImporterExporterGenerator getGenerator() {
 		return generator;
 	}
 

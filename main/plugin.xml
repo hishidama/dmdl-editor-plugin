@@ -3,6 +3,7 @@
 <plugin>
    <extension-point id="dmdlEditorConfiguration" name="DMDLEditor configuration" schema="schema/dmdlEditorConfiguration.exsd"/>
    <extension-point id="dmdlAttributeWizardDefinition" name="DMDL AttributeWizard definition" schema="schema/dmdlAttributeWizardDefinition.exsd"/>
+   <extension-point id="dmdlImporterExporterGenerator" name="DMDL Importer/Exporter generator" schema="schema/dmdlImporterExporterGenerator.exsd"/>
 
    <extension
          point="org.eclipse.ui.editors">
@@ -392,6 +393,27 @@
       </classpath>
       <classpath
             class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.attribute.WindgateTsvAttributeDefinition">
+      </classpath>
+   </extension>
+   <extension
+         point="jp.hishidama.eclipse_plugin.dmdl_editor.dmdlImporterExporterGenerator">
+      <classpath
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.portergen.DirectioCsvImporterGenerator">
+      </classpath>
+      <classpath
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.portergen.DirectioCsvExporterGenerator">
+      </classpath>
+      <classpath
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.portergen.WindgateCsvImporterGenerator">
+      </classpath>
+      <classpath
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.portergen.WindgateCsvExporterGenerator">
+      </classpath>
+      <classpath
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.portergen.WindgateJdbcImporterGenerator">
+      </classpath>
+      <classpath
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.portergen.WindgateJdbcExporterGenerator">
       </classpath>
    </extension>
 

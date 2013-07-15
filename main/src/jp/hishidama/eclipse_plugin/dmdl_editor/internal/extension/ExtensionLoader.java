@@ -7,6 +7,7 @@ import java.util.List;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DMDLAttributeWizardDefinition;
 import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DMDLEditorConfiguration;
+import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DMDLImporterExporterGenerator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
 
 import org.eclipse.core.runtime.CoreException;
@@ -19,9 +20,11 @@ import org.eclipse.core.runtime.Platform;
 public class ExtensionLoader {
 	private static final String CONFIGURATION_POINT_ID = Activator.PLUGIN_ID + ".dmdlEditorConfiguration";
 	private static final String ATTRIBUTE_DEF_POINT_ID = Activator.PLUGIN_ID + ".dmdlAttributeWizardDefinition";
+	private static final String GENERATOR_POINT_ID = Activator.PLUGIN_ID + ".dmdlImporterExporterGenerator";
 
 	private List<DMDLEditorConfiguration> configList;
 	private List<DMDLAttributeWizardDefinition> attrDefList;
+	private List<DMDLImporterExporterGenerator> generatorList;
 
 	public List<DMDLEditorConfiguration> getConfigurations() {
 		if (configList != null) {
@@ -73,6 +76,41 @@ public class ExtensionLoader {
 			}
 		}
 		return attrDefList;
+	}
+
+	public List<DMDLImporterExporterGenerator> getImporterExporterGenerators() {
+		if (generatorList != null) {
+			return generatorList;
+		}
+
+		IExtensionPoint point = getExtensionPoint(GENERATOR_POINT_ID);
+
+		generatorList = new ArrayList<DMDLImporterExporterGenerator>();
+		for (IExtension extension : point.getExtensions()) {
+			for (IConfigurationElement element : extension.getConfigurationElements()) {
+				try {
+					Object obj = element.createExecutableExtension("class");
+					if (obj instanceof DMDLImporterExporterGenerator) {
+						generatorList.add((DMDLImporterExporterGenerator) obj);
+					}
+				} catch (CoreException e) {
+					Activator.getDefault().getLog().log(e.getStatus());
+				}
+			}
+		}
+		Collections.sort(generatorList, new Comparator<DMDLImporterExporterGenerator>() {
+			@Override
+			public int compare(DMDLImporterExporterGenerator c0, DMDLImporterExporterGenerator c1) {
+				int c = c0.getName().compareTo(c1.getName());
+				if (c != 0) {
+					return c;
+				}
+				int b0 = c0.isExporter() ? 1 : 0;
+				int b1 = c1.isExporter() ? 1 : 0;
+				return b0 - b1;
+			}
+		});
+		return generatorList;
 	}
 
 	private IExtensionPoint getExtensionPoint(String id) {

@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DMDLImporterExporterGenerator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DmdlCompilerProperties;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.gen.ImporterExporterGenerator;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -38,7 +38,7 @@ public class SetImporterExporterNamePage extends WizardPage {
 	private static final String SETTINGS_SRC = "SetImporterExporterNamePage.src";
 	private static final String SETTINGS_PACKAGE = "SetImporterExporterNamePage.package";
 
-	private List<ImporterExporterGenerator> generatorList;
+	private List<DMDLImporterExporterGenerator> generatorList;
 
 	private Text srcText;
 	private Text packageText;
@@ -56,7 +56,7 @@ public class SetImporterExporterNamePage extends WizardPage {
 		setDescription("作成するImporter/Exporterの種類を選択し、生成するクラス名を入力して下さい。");
 	}
 
-	public void setGenerators(List<ImporterExporterGenerator> genList) {
+	public void setGenerators(List<DMDLImporterExporterGenerator> genList) {
 		this.generatorList = genList;
 	}
 
@@ -103,7 +103,7 @@ public class SetImporterExporterNamePage extends WizardPage {
 			col1.setText("class name");
 			col1.setWidth(512);
 
-			for (ImporterExporterGenerator gen : generatorList) {
+			for (DMDLImporterExporterGenerator gen : generatorList) {
 				createField(table, gen);
 			}
 			TableViewer viewer = new TableViewer(table);
@@ -153,11 +153,11 @@ public class SetImporterExporterNamePage extends WizardPage {
 	private static final int COL_CLASS_NAME = 1;
 
 	private static class Field {
-		public ImporterExporterGenerator generator;
+		public DMDLImporterExporterGenerator generator;
 		public TableItem item;
 	}
 
-	private void createField(Table table, ImporterExporterGenerator gen) {
+	private void createField(Table table, DMDLImporterExporterGenerator gen) {
 		Field f = new Field();
 		f.generator = gen;
 
@@ -267,8 +267,8 @@ public class SetImporterExporterNamePage extends WizardPage {
 		return value;
 	}
 
-	public Map<ImporterExporterGenerator, String> getClassName() {
-		Map<ImporterExporterGenerator, String> map = new HashMap<ImporterExporterGenerator, String>();
+	public Map<DMDLImporterExporterGenerator, String> getClassName() {
+		Map<DMDLImporterExporterGenerator, String> map = new HashMap<DMDLImporterExporterGenerator, String>();
 		for (Field f : fieldList) {
 			boolean check = f.item.getChecked();
 			String value = f.item.getText(COL_CLASS_NAME).trim();
@@ -295,28 +295,28 @@ public class SetImporterExporterNamePage extends WizardPage {
 		settings.put(key, value);
 	}
 
-	private boolean getSettingBoolean(ImporterExporterGenerator gen) {
+	private boolean getSettingBoolean(DMDLImporterExporterGenerator gen) {
 		IDialogSettings settings = getDialogSettings();
 		return settings.getBoolean(getKey(gen, "checked"));
 	}
 
-	private void setSetting(ImporterExporterGenerator gen, boolean value) {
+	private void setSetting(DMDLImporterExporterGenerator gen, boolean value) {
 		IDialogSettings settings = getDialogSettings();
 		settings.put(getKey(gen, "checked"), value);
 	}
 
-	private String getSetting(ImporterExporterGenerator gen, String defalutValue) {
+	private String getSetting(DMDLImporterExporterGenerator gen, String defalutValue) {
 		IDialogSettings settings = getDialogSettings();
 		String value = settings.get(getKey(gen, "text"));
 		return (value != null) ? value : defalutValue;
 	}
 
-	private void setSetting(ImporterExporterGenerator gen, String value) {
+	private void setSetting(DMDLImporterExporterGenerator gen, String value) {
 		IDialogSettings settings = getDialogSettings();
 		settings.put(getKey(gen, "text"), value);
 	}
 
-	private String getKey(ImporterExporterGenerator gen, String suffix) {
+	private String getKey(DMDLImporterExporterGenerator gen, String suffix) {
 		return String.format("SetImporterExporterNamePage.%s.%s", gen.getFullName(), suffix);
 	}
 

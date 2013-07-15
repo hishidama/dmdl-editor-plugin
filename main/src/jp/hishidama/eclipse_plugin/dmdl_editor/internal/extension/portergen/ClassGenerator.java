@@ -1,4 +1,4 @@
-package jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.gen;
+package jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.portergen;
 
 import java.util.ArrayList;
 import java.util.Collections;

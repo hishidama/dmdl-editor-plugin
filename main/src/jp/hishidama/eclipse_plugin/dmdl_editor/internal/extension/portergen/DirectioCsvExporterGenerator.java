@@ -1,6 +1,8 @@
-package jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.gen;
+package jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.portergen;
 
-public class DirectioCsvImporterGenerator extends DirectioGenerator {
+import jp.hishidama.eclipse_plugin.dmdl_editor.extension.DirectioGenerator;
+
+public class DirectioCsvExporterGenerator extends DirectioGenerator {
 
 	@Override
 	public String getName() {
@@ -9,23 +11,23 @@ public class DirectioCsvImporterGenerator extends DirectioGenerator {
 
 	@Override
 	public boolean isExporter() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public String getDefaultClassName() {
-		return "$(modelName.toCamelCase)FromCsv";
+		return "$(modelName.toCamelCase)ToCsv";
 	}
 
 	@Override
 	public void initializeFields() {
-		addDirectioCsv();
-		addImporterDataSize();
+		addFieldDirectioCsv();
+		addFieldDirectioCsvExporter();
 	}
 
 	@Override
 	protected String getExtendsClassName(String modelCamelName) {
-		String sname = String.format("Abstract%sCsvInputDescription", modelCamelName);
+		String sname = String.format("Abstract%sCsvOutputDescription", modelCamelName);
 		return getGeneratedClassName(".dmdl.csv.", sname);
 	}
 
@@ -33,6 +35,7 @@ public class DirectioCsvImporterGenerator extends DirectioGenerator {
 	protected void appendMethods(StringBuilder sb) {
 		appendMethodBasePath(sb);
 		appendMethodResourcePattern(sb);
-		appendMethodDataSize(sb);
+		appendMethodOrder(sb);
+		appendMethodDeletePatterns(sb);
 	}
 }

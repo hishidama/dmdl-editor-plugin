@@ -1,5 +1,6 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -152,15 +153,17 @@ public class NewImporterExporterWizard extends Wizard implements IWorkbenchWizar
 				properties = BuildPropertiesUtil.getBuildProperties(project, true);
 			}
 			for (SetImporterExporterMethodPage page : methodPageList) {
-				String className = map.get(page.getGenerator());
+				ImporterExporterGenerator generator = page.getGenerator();
+				String className = map.get(generator);
 				if (className != null) {
-					ImporterExporterGenerator generator = page.getGenerator();
 					try {
 						String name = StringUtil.append(packName, className);
 						generator.generate(project, properties, page.getValues(), mf.model, dir, name, first);
 						first = false;
 					} catch (CoreException e) {
-						ErrorDialog.openError(getShell(), "error", "生成中にエラーが発生しました。", e.getStatus());
+						String message = MessageFormat.format("生成中にエラーが発生しました\nmodel={0}\ntype={1}",
+								mf.model.getModelName(), generator.getDisplayName());
+						ErrorDialog.openError(getShell(), "error", message, e.getStatus());
 					}
 				}
 			}

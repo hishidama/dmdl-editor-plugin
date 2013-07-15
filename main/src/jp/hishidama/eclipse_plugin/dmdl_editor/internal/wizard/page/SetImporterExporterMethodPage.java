@@ -207,7 +207,7 @@ public class SetImporterExporterMethodPage extends WizardPage {
 	}
 
 	private String getKey1(String key) {
-		return String.format("SetImporterExporterMethodPage.%s.%s", generator.getDisplayName(), key);
+		return String.format("SetImporterExporterMethodPage.%s.%s", generator.getFullName(), key);
 	}
 
 	private String getKey2(String key) {

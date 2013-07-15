@@ -23,6 +23,10 @@ public abstract class ImporterExporterGenerator extends ClassGenerator {
 
 	public static final String KEY_DATA_SIZE = "Importer.dataSize";
 
+	public final String getFullName() {
+		return getName() + "_" + (isExporter() ? "Exporter" : "Importer");
+	}
+
 	public final String getDisplayName() {
 		return getName() + " " + (isExporter() ? "Exporter" : "Importer");
 	}

@@ -407,6 +407,12 @@
             class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.portergen.DirectioCsvExporterGenerator">
       </classpath>
       <classpath
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.portergen.DirectioSeqfileImporterGenerator">
+      </classpath>
+      <classpath
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.portergen.DirectioSeqfileExporterGenerator">
+      </classpath>
+      <classpath
             class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.portergen.WindgateCsvImporterGenerator">
       </classpath>
       <classpath

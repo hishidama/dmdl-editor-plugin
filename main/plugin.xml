@@ -386,6 +386,9 @@
             class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.attribute.DirectioCsvAttributeDefinition">
       </classpath>
       <classpath
+            class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.attribute.DirectioSeqfileAttributeDefinition">
+      </classpath>
+      <classpath
             class="jp.hishidama.eclipse_plugin.dmdl_editor.internal.extension.attribute.WindgateCsvAttributeDefinition">
       </classpath>
       <classpath

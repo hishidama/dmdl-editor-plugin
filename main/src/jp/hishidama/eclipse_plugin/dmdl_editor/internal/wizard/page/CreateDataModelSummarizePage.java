@@ -1,6 +1,7 @@
 package jp.hishidama.eclipse_plugin.dmdl_editor.internal.wizard.page;
 
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Map;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelInfo;
@@ -167,6 +168,22 @@ public class CreateDataModelSummarizePage extends CreateDataModelPage<DataModelS
 	protected String getCopyToolTipText() {
 		return "データモデルのプロパティーを集計対象にします。\n" + "例えばp1とp2をコピーすると、\n"
 				+ "summarized model = src => { any p1->p1; any p2->p2; }\n" + "となります。";
+	}
+
+	@Override
+	protected DataModelSummarizeRow newDefinitionCopyRow(DataModelProperty prop) {
+		DataModelSummarizeRow row = new DataModelSummarizeRow();
+		row.name = prop.getName();
+		row.description = prop.getDescription();
+		row.sumType = StringUtil.get(prop.getSumType(), "any");
+		row.refModelName = prop.getRefModelName();
+		row.refProperty = prop.getRefPropertyName();
+
+		DataModelInfo info = prop.getParent();
+		List<String> list = info.getGroupKey(row.refModelName);
+		row.key = list.contains(row.name);
+
+		return row;
 	}
 
 	@Override

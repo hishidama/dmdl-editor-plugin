@@ -142,6 +142,11 @@ public class CreateDataModelNormalPage extends CreateDataModelPage<DataModelNorm
 	}
 
 	@Override
+	protected DataModelNormalRow newDefinitionCopyRow(DataModelProperty prop) {
+		return newCopyRow(prop.getParent(), prop);
+	}
+
+	@Override
 	protected DataModelNormalRow newCopyRow(DataModelInfo info, DataModelProperty prop) {
 		DataModelNormalRow row = new DataModelNormalRow();
 		row.name = prop.getName();

@@ -137,6 +137,17 @@ public class CreateDataModelJoinPage extends CreateDataModelPage<DataModelJoinRo
 	}
 
 	@Override
+	protected DataModelJoinRow newDefinitionCopyRow(DataModelProperty prop) {
+		DataModelJoinRow row = new DataModelJoinRow();
+		row.name = prop.getName();
+		row.description = prop.getDescription();
+		row.refModelName = prop.getRefModelName();
+		row.refProperty = prop.getRefPropertyName();
+		row.prop = prop;
+		return row;
+	}
+
+	@Override
 	protected DataModelJoinRow newCopyRow(DataModelInfo info, DataModelProperty prop) {
 		DataModelJoinRow row = new DataModelJoinRow();
 		row.name = prop.getName();

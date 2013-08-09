@@ -3,70 +3,52 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.assist;
 import java.util.ArrayList;
 import java.util.List;
 
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.assist.Assist.Word;
+
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.DMDLTextToken;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.DMDLToken;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.WordToken;
-
 public class AssistMatcher {
 	protected static final String ANY = new String();
 
-	protected List<DMDLToken> list;
+	protected List<Word> list;
 	protected int offset;
 	protected int matched;
-	protected DMDLToken cursorToken;
 
-	public AssistMatcher(List<DMDLToken> list, int offset) {
+	public AssistMatcher(List<Word> list, int offset) {
 		this.list = list;
 		this.offset = offset;
 	}
 
 	public int matchFirst(String... expected) {
 		matched = 0;
-		cursorToken = null;
 		for (int i = 0; i < expected.length; i++) {
 			if (list.size() <= i) {
 				break;
 			}
-			DMDLToken t = list.get(i);
-			if (offset <= t.getStart()) {
-				break;
-			}
+			Word t = list.get(i);
 			if (expected[i] == ANY) {
 				matched++;
-				if (t.getStart() <= offset && offset <= t.getEnd()) {
-					cursorToken = t;
-				}
 				continue;
 			}
-			if (t instanceof WordToken) {
-				String word = ((WordToken) t).getText(t.getStart(), offset);
+			String word = t.getText();
+			if (word != null) {
 				if (expected[i].equals(word)) {
 					matched++;
-					cursorToken = null;
 					continue;
 				}
 			}
-			break;
+			matched = 0;
+			return matched;
 		}
 
 		return matched;
 	}
 
 	public int matchLast(String... expected) {
-		cursorToken = null;
 		int n = list.size() - 1;
-		if (n >= 0) {
-			DMDLToken last = list.get(n);
-			if (last.getStart() <= offset && offset <= last.getEnd()) {
-				cursorToken = last;
-				n--;
-			}
-		}
 		for (int i = expected.length - 1; i >= 0; i--) {
 			if (n < i) {
 				continue;
@@ -79,9 +61,9 @@ public class AssistMatcher {
 				if (expected[j] == ANY) {
 					matched++;
 				} else {
-					DMDLToken t = list.get(n - i + j);
-					if (t instanceof WordToken) {
-						String word = ((WordToken) t).getText();
+					Word t = list.get(n - i + j);
+					String word = t.getText();
+					if (word != null) {
 						if (expected[j].equals(word)) {
 							matched++;
 						}
@@ -97,20 +79,6 @@ public class AssistMatcher {
 		return matched;
 	}
 
-	public boolean existsCursorToken() {
-		return cursorToken != null;
-	}
-
-	public String getCursorText() {
-		if (cursorToken == null) {
-			return null;
-		}
-		if (cursorToken instanceof DMDLTextToken) {
-			return ((DMDLTextToken) cursorToken).getText(cursorToken.getStart(), offset);
-		}
-		return null;
-	}
-
 	/**
 	 * トークン取得.
 	 *
@@ -118,29 +86,31 @@ public class AssistMatcher {
 	 *            インデックス（マイナスの場合、リストの末尾からのインデックスを意味する（-1が一番末尾））
 	 * @return トークン（範囲外の場合はnull）
 	 */
-	public DMDLToken getToken(int n) {
+	public Word getToken(int n) {
 		if (n < 0) {
-			if (cursorToken != null) {
-				n--;
-			}
 			n += list.size();
 		}
 		return (0 <= n && n < list.size()) ? list.get(n) : null;
 	}
 
 	public String getWord(int n) {
-		DMDLToken token = getToken(n);
-		if (token instanceof DMDLTextToken) {
-			return ((DMDLTextToken) token).getText();
+		Word token = getToken(n);
+		if (token != null) {
+			return token.getText();
+		}
+		return null;
+	}
+
+	public String getLastWord() {
+		int n = list.size() - 1;
+		if (n >= 0) {
+			return list.get(n).getText();
 		}
 		return null;
 	}
 
 	public int lastIndexOf(String find) {
 		int n = list.size() - 1;
-		if (cursorToken != null) {
-			n--;
-		}
 		for (; n >= 0; n--) {
 			if (find.equals(getWord(n))) {
 				return n;
@@ -150,28 +120,24 @@ public class AssistMatcher {
 	}
 
 	public List<ICompletionProposal> createAssist(IDocument document, String... candidate) {
-		if (cursorToken != null) {
-			int start = cursorToken.getStart();
-			int len = offset - start;
-			String text;
-			try {
-				text = document.get(start, len);
-			} catch (BadLocationException e) {
-				return null;
-			}
-			List<ICompletionProposal> list = new ArrayList<ICompletionProposal>();
-			for (String s : candidate) {
-				if (s == null) {
-					continue;
-				}
-				if (s.length() >= text.length() && s.substring(0, text.length()).equalsIgnoreCase(text)) {
-					list.add(new CompletionProposal(s, start, len, s.length()));
-				}
-			}
-			return list;
-		} else {
-			return createAssist(candidate);
+		int start = list.get(list.size() - 1).getStart();
+		int len = offset - start;
+		String text;
+		try {
+			text = document.get(start, len);
+		} catch (BadLocationException e) {
+			return null;
 		}
+		List<ICompletionProposal> list = new ArrayList<ICompletionProposal>();
+		for (String s : candidate) {
+			if (s == null) {
+				continue;
+			}
+			if (s.length() >= text.length() && s.substring(0, text.length()).equalsIgnoreCase(text)) {
+				list.add(new CompletionProposal(s, start, len, s.length()));
+			}
+		}
+		return list;
 	}
 
 	public List<ICompletionProposal> createAssist(String... candidate) {

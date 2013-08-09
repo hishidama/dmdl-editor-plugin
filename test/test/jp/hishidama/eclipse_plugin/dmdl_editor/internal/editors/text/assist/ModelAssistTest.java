@@ -123,32 +123,16 @@ public class ModelAssistTest extends AssistTest {
 	@Test
 	public void block() {
 		ModelAssist assist = new ModelAssist();
-		DMDLDocument document = createDocument("a=");
-		int offset = 2;
-		ModelToken token = getModel(document);
-		List<ICompletionProposal> list = assist.getModelAssist(document, offset, token);
-		assertEqualsList(list, "{\n};");
+		test2(assist, "a=", "{\n};");
 	}
 
 	@Test
 	public void block_end() {
 		ModelAssist assist = new ModelAssist();
-		DMDLDocument document = createDocument("a={}");
-		int offset = 4;
-		ModelToken token = getModel(document);
-		List<ICompletionProposal> list = assist.getModelAssist(document, offset, token);
-		assertEqualsList(list, ";");
+		test2(assist, "a={}", ";");
 	}
 
-	@Test
-	public void block_end2() {
-		ModelAssist assist = new ModelAssist();
-		DMDLDocument document = createDocument("a={} ");
-		int offset = 5;
-		ModelToken token = getModel(document);
-		List<ICompletionProposal> list = assist.getModelAssist(document, offset, token);
-		assertEqualsList(list, ";");
-	}
+	// summarized
 
 	@Test
 	public void summarized_ref() {
@@ -158,11 +142,7 @@ public class ModelAssistTest extends AssistTest {
 				return new String[] { "abc", "aaa", "def" };
 			}
 		};
-		DMDLDocument document = createDocument("summarized s=");
-		int offset = 13;
-		ModelToken token = getModel(document);
-		List<ICompletionProposal> list = assist.getModelAssist(document, offset, token);
-		assertEqualsList(list, "abc", "aaa", "def");
+		test2(assist, "summarized s=", "abc", "aaa", "def");
 	}
 
 	@Test
@@ -173,62 +153,58 @@ public class ModelAssistTest extends AssistTest {
 				return new String[] { "abc", "aaa", "def" };
 			}
 		};
-		DMDLDocument document = createDocument("summarized s=a");
-		int offset = 14;
-		ModelToken token = getModel(document);
-		List<ICompletionProposal> list = assist.getModelAssist(document, offset, token);
-		assertEqualsList(list, "abc", "aaa", "=> {\n}");
+		test1(assist, "summarized s=a", "abc", "aaa", "=> {\n}");
+	}
+
+	@Test
+	public void summarized_end() {
+		ModelAssist assist = new ModelAssist();
+		test2(assist, "summarized s=a => { any abc->abc; }", "%", ";");
 	}
 
 	@Test
 	public void summarized_key() {
 		ModelAssist assist = new ModelAssist();
-		DMDLDocument document = createDocument("summarized s=a => { any abc->abc; any aaa->aaa; } %");
-		int offset = 51;
-		ModelToken token = getModel(document);
-		List<ICompletionProposal> list = assist.getModelAssist(document, offset, token);
-		assertEqualsList(list, "abc", "aaa");
+		test2(assist, "summarized s=a => { any abc->abc; any aaa->aaa; } %", "abc", "aaa");
 	}
 
 	@Test
 	public void summarized_key_name() {
 		ModelAssist assist = new ModelAssist();
-		DMDLDocument document = createDocument("summarized s=a => { any abc->abc; any aaa->bbb; } % a");
-		int offset = 53;
-		ModelToken token = getModel(document);
-		List<ICompletionProposal> list = assist.getModelAssist(document, offset, token);
-		assertEqualsList(list, "abc");
+		test1(assist, "summarized s=a => { any abc->abc; any aaa->bbb; } % a", "abc");
 	}
 
 	@Test
 	public void summarized_key_name_match() {
 		ModelAssist assist = new ModelAssist();
-		DMDLDocument document = createDocument("summarized s=a => { any abc->abc; any aaa->bbb; } % abc");
-		int offset = 55;
-		ModelToken token = getModel(document);
-		List<ICompletionProposal> list = assist.getModelAssist(document, offset, token);
-		assertEqualsList(list, ",", ";");
+		test2(assist, "summarized s=a => { any abc->abc; any aaa->bbb; } % abc", ",", ";");
 	}
 
 	@Test
 	public void summarized_key_name_() {
 		ModelAssist assist = new ModelAssist();
-		DMDLDocument document = createDocument("summarized s=a => { any abc->abc; any aaa->bbb; } % a ");
-		int offset = 54;
-		ModelToken token = getModel(document);
-		List<ICompletionProposal> list = assist.getModelAssist(document, offset, token);
-		assertEqualsList(list, ",", ";");
+		test1(assist, "summarized s=a => { any abc->abc; any aaa->bbb; } % a ", ",", ";");
 	}
 
 	@Test
 	public void summarized_key_name_notFound() {
 		ModelAssist assist = new ModelAssist();
-		DMDLDocument document = createDocument("summarized s=a => { any abc->abc; any aaa->bbb; } % zzz");
-		int offset = 55;
-		ModelToken token = getModel(document);
-		List<ICompletionProposal> list = assist.getModelAssist(document, offset, token);
-		assertEqualsList(list, ",", ";");
+		test1(assist, "summarized s=a => { any abc->abc; any aaa->bbb; } % zzz", ",", ";");
 	}
+
+	@Test
+	public void summarized_key2() {
+		ModelAssist assist = new ModelAssist();
+		test2(assist, "summarized s=a => { any abc->abc; any aaa->bbb; } % abc,", "abc", "bbb");
+	}
+
+	@Test
+	public void summarized_key2_1() {
+		ModelAssist assist = new ModelAssist();
+		test1(assist, "summarized s=a => { any abc->abc; any aaa->bbb; } % abc,b", "bbb");
+	}
+
+	// joined
 
 	@Test
 	public void joined_ref() {
@@ -238,11 +214,7 @@ public class ModelAssistTest extends AssistTest {
 				return new String[] { "abc", "aaa", "def" };
 			}
 		};
-		DMDLDocument document = createDocument("joined j=");
-		int offset = 9;
-		ModelToken token = getModel(document);
-		List<ICompletionProposal> list = assist.getModelAssist(document, offset, token);
-		assertEqualsList(list, "abc", "aaa", "def");
+		test2(assist, "joined j=", "abc", "aaa", "def");
 	}
 
 	@Test
@@ -253,12 +225,105 @@ public class ModelAssistTest extends AssistTest {
 				return new String[] { "abc", "aaa", "def" };
 			}
 		};
-		DMDLDocument document = createDocument("joined j=a");
-		int offset = 10;
-		ModelToken token = getModel(document);
-		List<ICompletionProposal> list = assist.getModelAssist(document, offset, token);
-		assertEqualsList(list, "abc", "aaa", "-> {\n}", "%");
+		test1(assist, "joined j=a", "abc", "aaa", "-> {\n}", "%");
 	}
+
+	@Test
+	public void joined_key() {
+		ModelAssist assist = new ModelAssist();
+		test2(assist, "joined j=a -> { abc->abc; aaa->aaa; } %", "abc", "aaa");
+	}
+
+	@Test
+	public void joined_key_name() {
+		ModelAssist assist = new ModelAssist();
+		test1(assist, "joined j=a -> { abc->abc; aaa->aaa; } % a", "abc", "aaa");
+	}
+
+	@Test
+	public void joined_key_name2() {
+		ModelAssist assist = new ModelAssist();
+		test1(assist, "joined j=a -> { abc->abc; aaa->aaa; } % ab", "abc");
+	}
+
+	@Test
+	public void joined_key_match() {
+		ModelAssist assist = new ModelAssist();
+		test2(assist, "joined j=a -> { abc->abc; aaa->aaa; } % abc", ",", ";", "+");
+	}
+
+	@Test
+	public void joined_key2() {
+		ModelAssist assist = new ModelAssist();
+		test2(assist, "joined j=a -> { abc->abc; aaa->bbb; } % abc,", "abc", "bbb");
+	}
+
+	@Test
+	public void joined_key2_1() {
+		ModelAssist assist = new ModelAssist();
+		test1(assist, "joined j=a -> { abc->abc; aaa->bbb; } % abc,a", "abc");
+	}
+
+	@Test
+	public void joined_ref2() {
+		ModelAssist assist = new ModelAssist() {
+			@Override
+			protected String[] getModelNames(DMDLToken token, String modelName) {
+				return new String[] { "abc", "aaa", "def" };
+			}
+		};
+		test2(assist, "joined j=zzz+", "abc", "aaa", "def");
+	}
+
+	@Test
+	public void joined2_name() {
+		ModelAssist assist = new ModelAssist();
+		test2(assist, "joined j=a % abc+ b", "-> {\n}", "%");
+	}
+
+	@Test
+	public void joined2_end() {
+		ModelAssist assist = new ModelAssist();
+		test2(assist, "joined j=a % abc+ b -> {bbb->bbb;ccc->ccc;}", "%", ";");
+	}
+
+	@Test
+	public void joined2_key() {
+		ModelAssist assist = new ModelAssist();
+		test2(assist, "joined j=a % abc+ b -> {bbb->bbb;ccc->ccc;}%", "bbb", "ccc");
+	}
+
+	@Test
+	public void joined2_key1() {
+		ModelAssist assist = new ModelAssist();
+		test1(assist, "joined j=a % abc+ b -> {bbb->bbb;ccc->ccc;}%b", "bbb");
+	}
+
+	@Test
+	public void joined2_key_match() {
+		ModelAssist assist = new ModelAssist();
+		test2(assist, "joined j=a % abc+ b -> {bbb->bbb;ccc->ccc;}%bbb", ",", ";");
+	}
+
+	@Test
+	public void joined2_key2() {
+		ModelAssist assist = new ModelAssist();
+		test2(assist, "joined j=a % abc+ b -> {bbb->bbb;ccc->ddd;} % bbb,", "bbb", "ddd");
+	}
+
+	@Test
+	public void joined2_key2_1() {
+		ModelAssist assist = new ModelAssist();
+		test1(assist, "joined j=a % abc+ b -> {bbb->bbb;ccc->ddd;} % bbb,d", "ddd");
+	}
+
+	@Test
+	public void joined2_key2_match() {
+		ModelAssist assist = new ModelAssist();
+		test2(assist, "joined j=a % abc+ b -> {bbb->bbb;ccc->ddd;} % bbb,ddd", ",", ";");
+	}
+
+	// projective
 
 	@Test
 	public void projective_ref() {
@@ -268,11 +333,7 @@ public class ModelAssistTest extends AssistTest {
 				return new String[] { "abc", "aaa", "def" };
 			}
 		};
-		DMDLDocument document = createDocument("projective p=");
-		int offset = 13;
-		ModelToken token = getModel(document);
-		List<ICompletionProposal> list = assist.getModelAssist(document, offset, token);
-		assertEqualsList(list, "abc", "aaa", "def");
+		test2(assist, "projective p=", "abc", "aaa", "def");
 	}
 
 	@Test
@@ -283,10 +344,19 @@ public class ModelAssistTest extends AssistTest {
 				return new String[] { "abc", "aaa", "def" };
 			}
 		};
-		DMDLDocument document = createDocument("projective p=a");
-		int offset = 14;
+		test1(assist, "projective p=a", "abc", "aaa", "-> {\n}", "+");
+	}
+
+	private static void test1(ModelAssist assist, String text, String... expected) {
+		DMDLDocument document = createDocument(text);
+		int offset = text.length();
 		ModelToken token = getModel(document);
 		List<ICompletionProposal> list = assist.getModelAssist(document, offset, token);
-		assertEqualsList(list, "abc", "aaa", "-> {\n}", "+");
+		assertEqualsList(list, expected);
+	}
+
+	private static void test2(ModelAssist assist, String text, String... expected) {
+		test1(assist, text, expected);
+		test1(assist, text + " ", expected);
 	}
 }

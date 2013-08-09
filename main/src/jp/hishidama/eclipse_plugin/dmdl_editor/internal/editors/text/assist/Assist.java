@@ -8,6 +8,7 @@ import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ArgumentsTo
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.BlockToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.CommentToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.DMDLBodyToken;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.DMDLTextToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.DescriptionToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken;
@@ -22,17 +23,56 @@ public class Assist {
 
 	protected static final String[] SUM_ASSIST = { "any", "count", "sum", "min", "max" };
 
-	protected List<DMDLToken> getList(DMDLBodyToken token, int offset) {
-		List<DMDLToken> list = new ArrayList<DMDLToken>();
+	protected static class Word {
+
+		private DMDLToken token;
+		private int offset;
+
+		Word(DMDLToken token, int offset) {
+			this.token = token;
+			this.offset = offset;
+		}
+
+		public String getText() {
+			if (token instanceof DMDLTextToken) {
+				DMDLTextToken w = (DMDLTextToken) token;
+				return w.getText(w.getStart(), offset);
+			}
+			return null;
+		}
+
+		public int getStart() {
+			return token.getStart();
+		}
+
+		public int getEnd() {
+			return token.getEnd();
+		}
+
+		public DMDLToken getToken() {
+			return token;
+		}
+
+		@Override
+		public String toString() {
+			if (token instanceof DMDLTextToken) {
+				return getText();
+			}
+			return token.toString();
+		}
+	}
+
+	protected List<Word> getList(DMDLBodyToken token, int offset) {
+		List<Word> list = new ArrayList<Word>();
 		for (DMDLToken t : token.getBody()) {
-			if (offset < t.getStart()) {
+			if (offset <= t.getStart()) {
 				break;
 			}
 			if (t instanceof CommentToken || t instanceof DescriptionToken || t instanceof AnnotationToken
 					|| t instanceof ArgumentsToken) {
 				continue;
 			}
-			list.add(t);
+			list.add(new Word(t, offset));
 		}
 		return list;
 	}
@@ -49,10 +89,11 @@ public class Assist {
 		return list.toArray(new String[list.size()]);
 	}
 
-	protected String[] getProperties(DMDLToken token) {
-		if (token == null) {
+	protected String[] getProperties(Word word) {
+		if (word == null) {
 			return new String[] {};
 		}
+		DMDLToken token = word.getToken();
 		if (token instanceof WordToken) {
 			WordToken refModelName = (WordToken) token;
 			return getRefProperties(refModelName);
@@ -97,4 +138,20 @@ public class Assist {
 		}
 		return list;
 	}
+
+	protected List<ICompletionProposal> distinctAssist(List<ICompletionProposal> list, AssistMatcher matcher,
+			String... candidate) {
+		if (list == null || list.isEmpty()) {
+			return matcher.createAssist(candidate);
+		}
+		if (list.size() == 1) {
+			String word = list.get(0).getDisplayString();
+			String last = matcher.getLastWord();
+			if (word.equals(last)) {
+				return matcher.createAssist(candidate);
+			}
+		}
+		return list;
+	}
+
 }

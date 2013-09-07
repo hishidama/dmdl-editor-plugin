@@ -1,8 +1,7 @@
 Asakusa Framework DMDLエディター Eclipseプラグイン
 ==================================================
 
-[Eclipseプラグイン開発の勉強](http://www.ne.jp/asahi/hishidama/home/tech/eclipse/plugin/develop/index.html)として、[Asakusa Framework](http://www.ne.jp/asahi/hishidama/home/tech/asakusafw/index.html)のDMDLエディターを作っています。
-
+[Eclipseプラグイン開発の勉強](http://www.ne.jp/asahi/hishidama/home/tech/eclipse/plugin/develop/index.html)として、[Asakusa Framework](http://www.ne.jp/asahi/hishidama/home/tech/asakusafw/index.html)のDMDLエディターを作っていましたが、
 DMDLエディターの機能は[Xtext版DMDLエディター](https://github.com/hishidama/xtext-dmdl-editor)に移行しました。
 今後はXtext版DMDLエディターのみメンテナンスしていくつもりです。
 

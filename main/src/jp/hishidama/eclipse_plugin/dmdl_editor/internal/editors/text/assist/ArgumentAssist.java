@@ -12,11 +12,11 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 
 public class ArgumentAssist extends Assist {
-	protected static final String[] VALUE_ASSIST = { "TRUE", "FALSE", "\"\"",
-			"\"yyyy-MM-dd HH:mm:ss\"" };
+	protected static final String[] VALUE_ASSIST = { "TRUE", "FALSE", "\"\"", "\"yyyy-MM-dd HH:mm:ss\"" };
 
-	protected List<DMDLToken> getList(DMDLBodyToken token, int offset) {
-		List<DMDLToken> list = new ArrayList<DMDLToken>();
+	@Override
+	protected List<Word> getList(DMDLBodyToken token, int offset) {
+		List<Word> list = new ArrayList<Word>();
 		for (DMDLToken t : token.getBody()) {
 			if (offset < t.getStart()) {
 				break;
@@ -24,14 +24,13 @@ public class ArgumentAssist extends Assist {
 			if (t instanceof CommentToken) {
 				continue;
 			}
-			list.add(t);
+			list.add(new Word(t, offset));
 		}
 		return list;
 	}
 
-	public List<ICompletionProposal> getArgumentAssist(IDocument document,
-			int offset, ArgumentToken token) {
-		List<DMDLToken> list = getList(token, offset);
+	public List<ICompletionProposal> getArgumentAssist(IDocument document, int offset, ArgumentToken token) {
+		List<Word> list = getList(token, offset);
 		AssistMatcher matcher = new AssistMatcher(list, offset);
 		switch (matcher.matchFirst(ANY, "=", ANY)) {
 		case 0:

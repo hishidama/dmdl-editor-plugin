@@ -17,21 +17,7 @@ public class BlockAssistTest extends AssistTest {
 	@Test
 	public void summarized() {
 		BlockAssist assist = new BlockAssist();
-		DMDLDocument document = createDocument("summarized s = a=>{");
-		int offset = 19;
-		BlockToken token = getBlock(document);
-		List<ICompletionProposal> list = assist.getBlockAssist(document, offset, token);
-		assertEqualsList(list, "any", "count", "sum", "min", "max");
-	}
-
-	@Test
-	public void summarized_() {
-		BlockAssist assist = new BlockAssist();
-		DMDLDocument document = createDocument("summarized s = a=>{\n");
-		int offset = 20;
-		BlockToken token = getBlock(document);
-		List<ICompletionProposal> list = assist.getBlockAssist(document, offset, token);
-		assertEqualsList(list, "any", "count", "sum", "min", "max");
+		test2(assist, "summarized s = a=>{", "any", "count", "sum", "min", "max");
 	}
 
 	@Test
@@ -48,32 +34,20 @@ public class BlockAssistTest extends AssistTest {
 				return new String[] { "abc", "aaa", "def" };
 			}
 		};
-		DMDLDocument document = createDocument("joined s = a->{");
-		int offset = 15;
-		BlockToken token = getBlock(document);
-		List<ICompletionProposal> list = assist.getBlockAssist(document, offset, token);
-		assertEqualsList(list, "abc", "aaa", "def");
+		test2(assist, "joined s = a->{", "abc", "aaa", "def");
 	}
 
-	@Test
-	public void joined_() {
-		BlockAssist assist = new BlockAssist() {
-			@Override
-			protected ModelToken findModel(DMDLToken token, String modelName) {
-				ModelToken model = new ModelToken(0, 0, new ArrayList<DMDLToken>());
-				return model;
-			}
-
-			@Override
-			protected String[] getRefProperties(WordToken refModelName) {
-				return new String[] { "abc", "aaa", "def" };
-			}
-		};
-		DMDLDocument document = createDocument("joined s = a->{\n");
-		int offset = 16;
+	private static void test1(BlockAssist assist, String text, String... expected) {
+		DMDLDocument document = createDocument(text);
+		int offset = text.length();
 		BlockToken token = getBlock(document);
 		List<ICompletionProposal> list = assist.getBlockAssist(document, offset, token);
-		assertEqualsList(list, "abc", "aaa", "def");
+		assertEqualsList(list, expected);
+	}
+
+	private static void test2(BlockAssist assist, String text, String... expected) {
+		test1(assist, text, expected);
+		test1(assist, text + "\n", expected);
 	}
 
 	protected static BlockToken getBlock(DMDLDocument document) {

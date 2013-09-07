@@ -3,6 +3,7 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,7 @@ public class DataModelInfo extends DataModelPosition {
 	private String type;
 
 	private List<DataModelProperty> properties;
+	private Map<String, List<String>> keyMap;
 
 	private transient Map<String, DataModelProperty> snakeMap;
 	private transient Map<String, DataModelProperty> camelMap;
@@ -90,5 +92,33 @@ public class DataModelInfo extends DataModelPosition {
 			}
 		}
 		return camelMap.get(name);
+	}
+
+	public void addGroupKey(String refModelName, String key) {
+		if (keyMap == null) {
+			keyMap = new LinkedHashMap<String, List<String>>();
+		}
+		List<String> list = keyMap.get(refModelName);
+		if (list == null) {
+			list = new ArrayList<String>();
+			keyMap.put(refModelName, list);
+		}
+		list.add(key);
+	}
+
+	public Map<String, List<String>> getGroupKey() {
+		if (keyMap == null) {
+			return Collections.emptyMap();
+		}
+		return keyMap;
+	}
+
+	public List<String> getGroupKey(String refModelName) {
+		Map<String, List<String>> map = getGroupKey();
+		List<String> list = map.get(refModelName);
+		if (list == null) {
+			return Collections.emptyList();
+		}
+		return list;
 	}
 }

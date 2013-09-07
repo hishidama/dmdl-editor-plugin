@@ -5,9 +5,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelInfo;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelProperty;
+import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelUtil;
 import jp.hishidama.eclipse_plugin.dmdl_editor.viewer.DMDLTreeData;
 import jp.hishidama.eclipse_plugin.util.StringUtil;
 
@@ -155,6 +157,33 @@ public class CreateDataModelJoinKeyPage extends CreateDataModelPage<DataModelJoi
 
 		tableViewer.refresh();
 		validate(false);
+	}
+
+	@Override
+	protected void doInitializeTable(String modelName) {
+		DataModelInfo info = DataModelUtil.findModel(project, modelName);
+		if (info != null) {
+			Map<String, List<String>> map = info.getGroupKey();
+			for (Entry<String, List<String>> entry : map.entrySet()) {
+				String mname = entry.getKey();
+				List<String> list = entry.getValue();
+				int i = 0;
+				for (String s : list) {
+					DataModelJoinKey row = (i < defineList.size()) ? defineList.get(i) : null;
+					if (row == null) {
+						row = newAddRow();
+						defineList.add(row);
+					}
+					row.set(mname, s);
+					i++;
+				}
+			}
+		}
+	}
+
+	@Override
+	protected DataModelJoinKey newDefinitionCopyRow(DataModelProperty prop) {
+		throw new IllegalStateException();
 	}
 
 	@Override

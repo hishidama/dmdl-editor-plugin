@@ -2,6 +2,7 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.assist;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
 import java.util.List;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.DMDLDocument;
@@ -31,7 +32,17 @@ public class AssistTest {
 	}
 
 	protected static void assertEqualsList(List<ICompletionProposal> list, String... expected) {
-		assertEquals(expected.length, list.size());
+		try {
+			assertEquals(expected.length, list.size());
+		} catch (Error e) {
+			String[] a = new String[list.size()];
+			for (int i = 0; i < list.size(); i++) {
+				a[i] = list.get(i).getDisplayString();
+			}
+			System.out.println("expected: " + Arrays.toString(expected));
+			System.out.println("actual:   " + Arrays.toString(a));
+			throw e;
+		}
 		int i = 0;
 		for (String s : expected) {
 			ICompletionProposal cp = list.get(i++);

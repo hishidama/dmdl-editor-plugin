@@ -12,6 +12,7 @@ import java.util.Set;
 import jp.hishidama.eclipse_plugin.dmdl_editor.dialog.DataModelPreviewDialog;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelInfo;
 import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelProperty;
+import jp.hishidama.eclipse_plugin.dmdl_editor.util.DataModelUtil;
 import jp.hishidama.eclipse_plugin.dmdl_editor.viewer.DMDLTreeData;
 import jp.hishidama.eclipse_plugin.dmdl_editor.viewer.DMDLTreeDataTransfer;
 import jp.hishidama.eclipse_plugin.dmdl_editor.viewer.DataModelTreeViewer;
@@ -54,6 +55,7 @@ public abstract class CreateDataModelPage<R extends DataModelRow> extends Wizard
 	protected IProject project;
 	protected String modelName;
 	protected String modelDescription;
+	private String initializedModelName;
 
 	protected List<R> defineList = new ArrayList<R>();
 
@@ -90,6 +92,7 @@ public abstract class CreateDataModelPage<R extends DataModelRow> extends Wizard
 	public void setModelName(String name, String description) {
 		this.modelName = name;
 		this.modelDescription = description;
+		initializeTable(name);
 	}
 
 	@Override
@@ -380,6 +383,30 @@ public abstract class CreateDataModelPage<R extends DataModelRow> extends Wizard
 			tableViewer.refresh();
 		}
 	}
+
+	private void initializeTable(String modelName) {
+		if (initializedModelName != null && initializedModelName.equals(modelName)) {
+			return;
+		}
+		initializedModelName = modelName;
+
+		defineList.clear();
+		doInitializeTable(modelName);
+		tableViewer.refresh();
+		validate(false);
+	}
+
+	protected void doInitializeTable(String modelName) {
+		List<DataModelProperty> list = DataModelUtil.getModelProperties(project, modelName);
+		if (list != null) {
+			for (DataModelProperty prop : list) {
+				R row = newDefinitionCopyRow(prop);
+				defineList.add(row);
+			}
+		}
+	}
+
+	protected abstract R newDefinitionCopyRow(DataModelProperty prop);
 
 	private void doAdd() {
 		int index = tableViewer.getTable().getSelectionIndex();

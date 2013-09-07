@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.Activator;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.DMDLSimpleParser;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.DocumentScanner;
+import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelList;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.ModelToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.PropertyToken;
@@ -143,25 +144,43 @@ public class IndexContainer implements Serializable {
 		List<PropertyToken> plist = model.getPropertyList();
 		if (plist.isEmpty()) {
 			info.setPropertyEmpty();
-			return;
-		}
-		for (PropertyToken token : plist) {
-			String pname = token.getName();
-			String pdesc = DataModelUtil.decodeDescription(token.getPropertyDescription());
+		} else {
+			for (PropertyToken token : plist) {
+				String pname = token.getName();
+				String pdesc = DataModelUtil.decodeDescription(token.getPropertyDescription());
 
-			DataModelProperty p;
-			if (token.getRefNameToken() == null) {
-				p = new DataModelProperty(pname, pdesc, token.getDataType());
-			} else {
-				String refName = token.getRefName();
-				String refModelName = token.findRefModelName();
-				p = new DataModelProperty(pname, pdesc, refModelName, refName);
-				p.setSumType(token.getSumType());
+				DataModelProperty p;
+				if (token.getRefNameToken() == null) {
+					p = new DataModelProperty(pname, pdesc, token.getDataType());
+				} else {
+					String refName = token.getRefName();
+					String refModelName = token.findRefModelName();
+					p = new DataModelProperty(pname, pdesc, refModelName, refName);
+					p.setSumType(token.getSumType());
+				}
+				WordToken nameToken = token.getNameToken();
+				p.setOffset(nameToken.getStart());
+				p.setEnd(nameToken.getEnd());
+				info.addProperty(p);
 			}
-			WordToken nameToken = token.getNameToken();
-			p.setOffset(nameToken.getStart());
-			p.setEnd(nameToken.getEnd());
-			info.addProperty(p);
+		}
+
+		String refModelName = null;
+		for (DMDLToken token : model.getBody()) {
+			if (token instanceof WordToken) {
+				WordToken word = (WordToken) token;
+				switch (word.getWordType()) {
+				case REF_MODEL_NAME:
+					refModelName = word.getText();
+					break;
+				case REF_PROPERTY_NAME:
+					String propertyName = word.getText();
+					info.addGroupKey(refModelName, propertyName);
+					break;
+				default:
+					break;
+				}
+			}
 		}
 	}
 

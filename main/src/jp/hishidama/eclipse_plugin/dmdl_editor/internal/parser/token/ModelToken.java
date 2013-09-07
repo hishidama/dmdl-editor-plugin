@@ -68,6 +68,11 @@ public class ModelToken extends DMDLBodyToken {
 					prevWord = null;
 					refModel = null;
 					continue;
+				case END:
+					typeOfNext = null;
+					prevWord = null;
+					refModel = null;
+					continue;
 				}
 				if (typeOfNext != null) {
 					word.setWordType(typeOfNext);
@@ -82,9 +87,6 @@ public class ModelToken extends DMDLBodyToken {
 					}
 					prevWord = null;
 					continue;
-				}
-				if (refModel != null) {
-
 				}
 				prevWord = word;
 				continue;

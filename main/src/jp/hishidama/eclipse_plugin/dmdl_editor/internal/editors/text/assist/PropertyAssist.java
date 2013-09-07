@@ -3,8 +3,6 @@ package jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.assist;
 import java.util.List;
 
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.BlockToken;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.DMDLTextToken;
-import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.DMDLToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.PropertyToken;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.parser.token.WordToken;
 
@@ -29,7 +27,7 @@ public class PropertyAssist extends Assist {
 	}
 
 	protected List<ICompletionProposal> getDefaultAssist(IDocument document, int offset, PropertyToken token) {
-		List<DMDLToken> list = getList(token, offset);
+		List<Word> list = getList(token, offset);
 		AssistMatcher matcher = new AssistMatcher(list, offset);
 		switch (matcher.matchFirst(ANY, ":", ANY)) {
 		case 0:
@@ -37,56 +35,41 @@ public class PropertyAssist extends Assist {
 		case 1:
 			return matcher.createAssist(":");
 		case 2:
-			return matcher.createAssist(document, TYPE_ASSIST);
+			return matcher.createAssist(TYPE_ASSIST);
 		case 3:
-			if (matcher.existsCursorToken()) {
-				List<ICompletionProposal> r = matcher.createAssist(document, TYPE_ASSIST);
-				if (r == null || r.isEmpty()) {
-					return matcher.createAssist(";");
-				}
-				if (r.size() == 1) {
-					DMDLToken t = matcher.getToken(2);
-					if (t instanceof DMDLTextToken) {
-						String word = ((DMDLTextToken) t).getText(t.getStart(), offset);
-						if (r.get(0).getDisplayString().equals(word)) {
-							return matcher.createAssist(";");
-						}
-					}
-				}
-				return r;
-			}
-			return matcher.createAssist(";");
+			List<ICompletionProposal> r = matcher.createAssist(document, TYPE_ASSIST);
+			return distinctAssist(r, matcher, ";");
 		default:
 			return null;
 		}
 	}
 
 	protected List<ICompletionProposal> getSummarizedAssist(IDocument document, int offset, PropertyToken token) {
-		List<DMDLToken> list = getList(token, offset);
+		List<Word> list = getList(token, offset);
 		AssistMatcher matcher = new AssistMatcher(list, offset);
 		switch (matcher.matchFirst(ANY, ANY, "->", ANY)) {
 		case 0:
 			return matcher.createAssist(document, SUM_ASSIST);
-		case 1:
-			if (matcher.existsCursorToken()) {
-				return matcher.createAssist(document, SUM_ASSIST);
-			} else {
+		case 1: {
+			List<ICompletionProposal> r = matcher.createAssist(document, SUM_ASSIST);
+			if (r == null || r.isEmpty()) {
 				BlockToken block = (BlockToken) token.getParent();
 				WordToken refModelName = (WordToken) block.getRefModelToken();
 				return matcher.createAssist(document, getRefProperties(refModelName));
 			}
+			return r;
+		}
 		case 2:
 			return matcher.createAssist("->");
 		case 3: {
 			String refPropertyName = matcher.getWord(1);
-			List<ICompletionProposal> r = matcher.createAssist(document, refPropertyName);
-			if (r == null || r.isEmpty()) {
-				return matcher.createAssist(";");
-			}
-			return r;
+			return matcher.createAssist(refPropertyName);
 		}
 		case 4:
-			return matcher.createAssist(";");
+			BlockToken block = (BlockToken) token.getParent();
+			WordToken refModelName = (WordToken) block.getRefModelToken();
+			List<ICompletionProposal> r = matcher.createAssist(document, getRefProperties(refModelName));
+			return distinctAssist(r, matcher, ";");
 		default:
 			return null;
 		}
@@ -94,36 +77,17 @@ public class PropertyAssist extends Assist {
 
 	protected List<ICompletionProposal> getRefAssist(IDocument document, int offset, PropertyToken token,
 			WordToken refModelName) {
-		List<DMDLToken> list = getList(token, offset);
+		List<Word> list = getList(token, offset);
 		AssistMatcher matcher = new AssistMatcher(list, offset);
 		switch (matcher.matchFirst(ANY, "->", ANY)) {
 		case 0:
 			return matcher.createAssist(document, getRefProperties(refModelName));
 		case 1:
-			if (matcher.existsCursorToken()) {
-				List<ICompletionProposal> r = matcher.createAssist(document, getRefProperties(refModelName));
-				if (r == null || r.isEmpty()) {
-					return matcher.createAssist("->");
-				}
-				if (r.size() == 1) {
-					DMDLToken t = matcher.getToken(0);
-					if (t instanceof DMDLTextToken) {
-						String word = ((DMDLTextToken) t).getText(t.getStart(), offset);
-						if (r.get(0).getDisplayString().equals(word)) {
-							return matcher.createAssist("->");
-						}
-					}
-				}
-				return r;
-			}
-			return matcher.createAssist("->");
+			List<ICompletionProposal> r = matcher.createAssist(document, getRefProperties(refModelName));
+			return distinctAssist(r, matcher, "->");
 		case 2: {
 			String refPropertyName = matcher.getWord(0);
-			List<ICompletionProposal> r = matcher.createAssist(document, refPropertyName);
-			if (r == null || r.isEmpty()) {
-				return matcher.createAssist(";");
-			}
-			return r;
+			return matcher.createAssist(refPropertyName);
 		}
 		case 3:
 			return matcher.createAssist(";");

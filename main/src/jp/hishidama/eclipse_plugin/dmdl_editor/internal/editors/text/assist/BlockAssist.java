@@ -33,13 +33,13 @@ public class BlockAssist extends Assist {
 	protected List<ICompletionProposal> getRefAssist(IDocument document, int offset, BlockToken token,
 			WordToken refModelName) {
 		if ("summarized".equals(token.getModelType())) {
-			List<DMDLToken> list = getList(token, offset);
+			List<Word> list = getList(token, offset);
 			AssistMatcher matcher = new AssistMatcher(list, offset);
 			switch (matcher.matchFirst("{")) {
 			case 0:
 				return null;
 			case 1:
-				return matcher.createAssist(document, SUM_ASSIST);
+				return matcher.createAssist(SUM_ASSIST);
 			default:
 				break;
 			}
@@ -47,14 +47,14 @@ public class BlockAssist extends Assist {
 
 		ModelToken refModel = findModel(token, refModelName.getText());
 		if (refModel != null) {
-			List<DMDLToken> list = getList(token, offset);
+			List<Word> list = getList(token, offset);
 			AssistMatcher matcher = new AssistMatcher(list, offset);
 			switch (matcher.matchFirst("{")) {
 			case 0:
 				return null;
 			case 1:
 				String[] propNames = getRefProperties(refModelName);
-				return matcher.createAssist(document, propNames);
+				return matcher.createAssist(propNames);
 			default:
 				break;
 			}
@@ -64,8 +64,8 @@ public class BlockAssist extends Assist {
 	}
 
 	@Override
-	protected List<DMDLToken> getList(DMDLBodyToken token, int offset) {
-		List<DMDLToken> list = new ArrayList<DMDLToken>();
+	protected List<Word> getList(DMDLBodyToken token, int offset) {
+		List<Word> list = new ArrayList<Word>();
 		for (DMDLToken t : token.getBody()) {
 			if (offset < t.getStart()) {
 				break;
@@ -73,7 +73,7 @@ public class BlockAssist extends Assist {
 			if (t instanceof PropertyToken || t instanceof CommentToken || t instanceof DescriptionToken) {
 				continue;
 			}
-			list.add(t);
+			list.add(new Word(t, offset));
 		}
 		return list;
 	}

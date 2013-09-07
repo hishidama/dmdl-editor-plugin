@@ -9,12 +9,11 @@ import java.util.Set;
 import jp.hishidama.eclipse_plugin.dmdl_editor.internal.editors.text.style.DMScanner.AttrType;
 
 public class WordToken extends DMDLTextToken {
-	public static final String[] PROPERTY_TYPE = { "INT", "LONG", "FLOAT",
-			"DOUBLE", "TEXT", "DECIMAL", "DATE", "DATETIME", "BOOLEAN", "BYTE",
-			"SHORT" };
+	public static final String[] PROPERTY_TYPE = { "INT", "LONG", "FLOAT", "DOUBLE", "TEXT", "DECIMAL", "DATE",
+			"DATETIME", "BOOLEAN", "BYTE", "SHORT" };
 
 	public static enum WordType {
-		UNKNOWN, DEF, COMMA, ALLOW, PERCENT,
+		UNKNOWN, DEF, COMMA, ALLOW, PERCENT, END,
 		// モデル名
 		MODEL_NAME, REF_MODEL_NAME,
 		// プロパティー
@@ -54,6 +53,7 @@ public class WordToken extends DMDLTextToken {
 		TYPE_MAP.put("%", WordType.PERCENT);
 		TYPE_MAP.put(",", WordType.COMMA);
 		TYPE_MAP.put(":", WordType.TYPE_SEPARATOR);
+		TYPE_MAP.put(";", WordType.END);
 	}
 
 	protected void initializeType(String text) {
@@ -118,8 +118,7 @@ public class WordToken extends DMDLTextToken {
 				if (refModelName != null) {
 					ModelToken refModel = findModel(refModelName.getText());
 					if (refModel != null) {
-						PropertyToken refProp = refModel
-								.findProperty(getText());
+						PropertyToken refProp = refModel.findProperty(getText());
 						if (refProp != null) {
 							WordToken refName = refProp.getNameToken();
 							if (refName != null) {
